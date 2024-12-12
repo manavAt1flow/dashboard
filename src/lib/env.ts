@@ -26,20 +26,3 @@ export const formatErrors = (
 
 const merged = serverSchema.merge(clientSchema);
 export type Env = z.infer<typeof merged>;
-
-export const validateEnv = () => {
-  if (process.env.NODE_ENV === "production") return;
-
-  const parsed = merged.safeParse(process.env);
-
-  if (!parsed.success) {
-    console.error(
-      "❌ Invalid environment variables:\n",
-      ...formatErrors(parsed.error.format())
-    );
-    throw new Error("Invalid environment variables");
-  }
-};
-
-// validate env variables
-validateEnv();

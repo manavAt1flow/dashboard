@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "<-- next --->": "",
-    "dev": "next dev",
+    "dev": "pnpm run prebuild && next dev",
     "build": "next build",
     "start": "next start",
     "<-- db --->": "",
@@ -14,7 +14,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "<-- helpers --->": "",
-    "shad": "pnpm dlx shadcn@latest"
+    "shad": "pnpm dlx shadcn@latest",
+    "prebuild": "tsx scripts/check-env.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
