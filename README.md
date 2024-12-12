@@ -24,8 +24,11 @@ pnpm install
 2. Set up environment variables:
 
 ```bash
-# Check src/lib/env.ts for required environment variables
+# Option 1: Check src/lib/env.ts for required environment variables
 # and create .env.local file with appropriate values
+
+# Option 2: If using vercel cli, pull environment variables:
+vercel env pull .env.local
 ```
 
 3. Development commands:
