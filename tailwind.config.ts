@@ -13,39 +13,63 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: [
+          "Aeonik Pro VF, sans-serif",
+          {
+            fontFeatureSettings: '"kern", "liga", "calt"',
+          },
+        ],
+        mono: ["IBM Plex Mono", "monospace"],
+      },
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+        border: {
+          DEFAULT: "hsl(var(--border))",
+          100: "hsl(var(--border-100))",
+          200: "hsl(var(--border-200))",
+          300: "hsl(var(--border-300))",
+          400: "hsl(var(--border-400))",
+          500: "hsl(var(--border-500))",
         },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+        bg: {
+          DEFAULT: "hsl(var(--bg))",
+          100: "hsl(var(--bg-100))",
+          200: "hsl(var(--bg-200))",
+          300: "hsl(var(--bg-300))",
+          400: "hsl(var(--bg-400))",
+          500: "hsl(var(--bg-500))",
         },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+        fg: {
+          DEFAULT: "hsl(var(--fg))",
+          100: "hsl(var(--fg-100))",
+          200: "hsl(var(--fg-200))",
+          300: "hsl(var(--fg-300))",
+          400: "hsl(var(--fg-400))",
+          500: "hsl(var(--fg-500))",
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          100: "hsl(var(--accent-100))",
+          200: "hsl(var(--accent-200))",
+          300: "hsl(var(--accent-300))",
+          400: "hsl(var(--accent-400))",
+          500: "hsl(var(--accent-500))",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+        error: {
+          DEFAULT: "hsl(var(--error))",
+          100: "hsl(var(--error-100))",
+          200: "hsl(var(--error-200))",
+          300: "hsl(var(--error-300))",
+          400: "hsl(var(--error-400))",
+          500: "hsl(var(--error-500))",
         },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+        ring: "hsl(var(--ring))",
+        chart: {
+          1: "hsl(var(--chart-1))",
+          2: "hsl(var(--chart-2))",
+          3: "hsl(var(--chart-3))",
+          4: "hsl(var(--chart-4))",
+          5: "hsl(var(--chart-5))",
         },
       },
       borderRadius: {
@@ -62,10 +86,15 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        shimmer: {
+          "0%": { backgroundPosition: "100% 0" },
+          "100%": { backgroundPosition: "-100% 0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        shimmer: "shimmer 1s ease-in-out infinite",
       },
     },
   },

@@ -32,7 +32,7 @@ export const Default: Story = {
         <p>Your new project will be created in your organization.</p>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="ghost">Cancel</Button>
+        <Button variant="outline">Cancel</Button>
         <Button>Deploy</Button>
       </CardFooter>
     </Card>

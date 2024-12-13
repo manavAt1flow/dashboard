@@ -13,24 +13,24 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
+export const Default: Story = {
   args: {
-    children: "Button",
+    children: "Dashboard",
     variant: "default",
   },
 };
 
-export const Secondary: Story = {
+export const Accent: Story = {
   args: {
     children: "Button",
-    variant: "secondary",
+    variant: "accent",
   },
 };
 
-export const Destructive: Story = {
+export const Error: Story = {
   args: {
     children: "Button",
-    variant: "destructive",
+    variant: "error",
   },
 };
 
@@ -41,17 +41,11 @@ export const Outline: Story = {
   },
 };
 
-export const Ghost: Story = {
-  args: {
-    children: "Button",
-    variant: "ghost",
-  },
-};
-
 export const Link: Story = {
   args: {
     children: "Button",
     variant: "link",
+    size: "slate",
   },
 };
 
