@@ -7,49 +7,6 @@ const config = {
     "./src/**/*.{ts,tsx,mdx}",
     "./node_modules/fumadocs-ui/dist/**/*.js",
   ],
-  presets: [
-    // Matchs Fumadocs colors to our theme
-    createPreset({
-      preset: {
-        light: {
-          background: "var(--bg)",
-          foreground: "var(--fg)",
-          muted: "var(--bg-100)",
-          "muted-foreground": "var(--fg-300)",
-          popover: "var(--bg)",
-          "popover-foreground": "var(--fg)",
-          card: "var(--bg)",
-          "card-foreground": "var(--fg)",
-          primary: "var(--accent)",
-          "primary-foreground": "var(--accent-fg)",
-          secondary: "var(--bg-100)",
-          "secondary-foreground": "var(--fg)",
-          accent: "var(--bg-100)",
-          "accent-foreground": "var(--fg)",
-          ring: "var(--ring)",
-          border: "var(--border)",
-        },
-        dark: {
-          background: "var(--bg)",
-          foreground: "var(--fg)",
-          muted: "var(--bg-100)",
-          "muted-foreground": "var(--fg-500)",
-          popover: "var(--bg)",
-          "popover-foreground": "var(--fg)",
-          card: "var(--bg)",
-          "card-foreground": "var(--fg)",
-          primary: "var(--accent)",
-          "primary-foreground": "var(--accent-fg)",
-          secondary: "var(--bg-100)",
-          "secondary-foreground": "var(--fg)",
-          accent: "var(--bg-100)",
-          "accent-foreground": "var(--fg)",
-          ring: "var(--ring)",
-          border: "var(--border)",
-        },
-      },
-    }),
-  ],
   prefix: "",
   theme: {
     container: {
@@ -61,12 +18,7 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: [
-          "Aeonik Pro VF, sans-serif",
-          {
-            fontFeatureSettings: 'kern", "liga", "calt"',
-          },
-        ],
+        sans: ["Aeonik Pro VF, sans-serif"],
         mono: ["IBM Plex Mono", "monospace"],
       },
       colors: {
@@ -171,6 +123,49 @@ const config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
+  presets: [
+    // Matchs Fumadocs colors to our theme
+    createPreset({
+      preset: {
+        light: {
+          background: "var(--bg)",
+          foreground: "var(--fg)",
+          muted: "var(--bg-100)",
+          "muted-foreground": "var(--fg-300)",
+          popover: "var(--bg)",
+          "popover-foreground": "var(--fg)",
+          card: "var(--bg)",
+          "card-foreground": "var(--fg)",
+          primary: "var(--accent)",
+          "primary-foreground": "var(--accent-fg)",
+          secondary: "var(--bg-100)",
+          "secondary-foreground": "var(--fg)",
+          accent: "var(--bg-100)",
+          "accent-foreground": "var(--fg)",
+          ring: "var(--ring)",
+          border: "var(--border)",
+        },
+        dark: {
+          background: "var(--bg)",
+          foreground: "var(--fg)",
+          muted: "var(--bg-100)",
+          "muted-foreground": "var(--fg-500)",
+          popover: "var(--bg)",
+          "popover-foreground": "var(--fg)",
+          card: "var(--bg)",
+          "card-foreground": "var(--fg)",
+          primary: "var(--accent)",
+          "primary-foreground": "var(--accent-fg)",
+          secondary: "var(--bg-100)",
+          "secondary-foreground": "var(--fg)",
+          accent: "var(--bg-100)",
+          "accent-foreground": "var(--fg)",
+          ring: "var(--ring)",
+          border: "var(--border)",
+        },
+      },
+    }),
+  ],
 } satisfies Config;
 
 export default config;

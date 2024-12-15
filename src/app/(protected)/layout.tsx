@@ -6,11 +6,11 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
+  /*   const supabase = await createClient();
 
   if (!supabase.auth.getSession()) {
     return redirect("/sign-in");
-  }
+  } */
 
   return <>{children}</>;
 }
