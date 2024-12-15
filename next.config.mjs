@@ -12,8 +12,8 @@ const config = {
   async rewrites() {
     return [
       {
-        source: "/",
-        destination: "https://e2b.dev",
+        source: "/:path*",
+        destination: "https://e2b.dev/:path*",
       },
     ];
   },

@@ -1,4 +1,6 @@
-import { signInWithGithub, signInWithGoogle } from "@/actions/auth-actions";
+"use client";
+
+import { signInWithOAuth } from "@/actions/auth-actions";
 import { Button } from "../ui/button";
 
 export function OAuthProviders() {
@@ -6,7 +8,7 @@ export function OAuthProviders() {
     <div className="flex flex-col gap-2 mt-8">
       <Button
         variant="outline"
-        onClick={signInWithGoogle}
+        onClick={() => signInWithOAuth("google")}
         className="flex items-center gap-2"
       >
         <svg viewBox="0 0 24 24" className="w-5 h-5">
@@ -32,7 +34,7 @@ export function OAuthProviders() {
 
       <Button
         variant="outline"
-        onClick={signInWithGithub}
+        onClick={() => signInWithOAuth("github")}
         className="flex items-center gap-2"
       >
         <svg viewBox="0 0 24 24" className="w-5 h-5">

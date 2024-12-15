@@ -21,7 +21,7 @@ export default async function Login(props: {
       <h1 className="text-2xl font-medium">Sign in</h1>
       <p className="text-sm text-fg-300 leading-6">
         Don't have an account?{" "}
-        <Link className="text-fg font-medium underline" href="/sign-up">
+        <Link className="text-fg font-medium underline" href="/auth/sign-in">
           Sign up
         </Link>
       </p>
@@ -37,7 +37,7 @@ export default async function Login(props: {
           <Label htmlFor="password">Password</Label>
           <Link
             className="text-xs underline underline-offset-[3px]"
-            href="/forgot-password"
+            href="/auth/forgot-password"
           >
             Forgot Password?
           </Link>

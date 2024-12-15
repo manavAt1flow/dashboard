@@ -4,35 +4,14 @@ import { encodedRedirect } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { Provider } from "@supabase/supabase-js";
 
-export const signInWithGoogle = async () => {
+export const signInWithOAuth = async (provider: Provider) => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: `${origin}/api/auth/callback`,
-    },
-  });
-
-  if (error) {
-    return encodedRedirect("error", "/sign-in", error.message);
-  }
-
-  if (data.url) {
-    return redirect(data.url);
-  }
-
-  return encodedRedirect("error", "/sign-in", "Something went wrong");
-};
-
-export const signInWithGithub = async () => {
-  const supabase = await createClient();
-  const origin = (await headers()).get("origin");
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "github",
+    provider: provider,
     options: {
       redirectTo: `${origin}/api/auth/callback`,
       scopes: "email",
