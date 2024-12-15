@@ -35,18 +35,19 @@ export const signInWithGithub = async () => {
     provider: "github",
     options: {
       redirectTo: `${origin}/api/auth/callback`,
+      scopes: "email",
     },
   });
 
   if (error) {
-    return encodedRedirect("error", "/sign-in", error.message);
+    return encodedRedirect("error", "/auth/sign-in", error.message);
   }
 
   if (data.url) {
     return redirect(data.url);
   }
 
-  return encodedRedirect("error", "/sign-in", "Something went wrong");
+  return encodedRedirect("error", "/auth/sign-in", "Something went wrong");
 };
 
 export const signUpAction = async (formData: FormData) => {
@@ -58,7 +59,7 @@ export const signUpAction = async (formData: FormData) => {
   if (!email || !password) {
     return encodedRedirect(
       "error",
-      "/sign-up",
+      "/auth/sign-up",
       "Email and password are required"
     );
   }
@@ -73,7 +74,7 @@ export const signUpAction = async (formData: FormData) => {
 
   if (error) {
     console.error(error.code + " " + error.message);
-    return encodedRedirect("error", "/sign-up", error.message);
+    return encodedRedirect("error", "/auth/sign-up", error.message);
   } else {
     return encodedRedirect(
       "success",
@@ -143,17 +144,13 @@ export const resetPasswordAction = async (formData: FormData) => {
   if (!password || !confirmPassword) {
     encodedRedirect(
       "error",
-      "/protected/reset-password",
+      "/auth/reset-password",
       "Password and confirm password are required"
     );
   }
 
   if (password !== confirmPassword) {
-    encodedRedirect(
-      "error",
-      "/protected/reset-password",
-      "Passwords do not match"
-    );
+    encodedRedirect("error", "/auth/reset-password", "Passwords do not match");
   }
 
   const { error } = await supabase.auth.updateUser({
@@ -161,19 +158,15 @@ export const resetPasswordAction = async (formData: FormData) => {
   });
 
   if (error) {
-    encodedRedirect(
-      "error",
-      "/protected/reset-password",
-      "Password update failed"
-    );
+    encodedRedirect("error", "/auth/reset-password", "Password update failed");
   }
 
-  encodedRedirect("success", "/protected/reset-password", "Password updated");
+  encodedRedirect("success", "/auth/reset-password", "Password updated");
 };
 
 export const signOutAction = async () => {
   const supabase = await createClient();
   await supabase.auth.signOut();
 
-  return redirect("/sign-in");
+  return redirect("/auth/sign-in");
 };

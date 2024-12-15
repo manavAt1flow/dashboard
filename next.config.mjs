@@ -9,6 +9,14 @@ const config = {
     typedRoutes: true,
     reactCompiler: true,
   },
+  async rewrites() {
+    return [
+      {
+        source: "/",
+        destination: "https://e2b.dev",
+      },
+    ];
+  },
 };
 
 export default withMDX(config);
