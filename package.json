@@ -15,7 +15,8 @@
     "build-storybook": "storybook build",
     "<-- helpers --->": "",
     "shad": "pnpm dlx shadcn@latest",
-    "prebuild": "tsx scripts/check-env.ts"
+    "prebuild": "tsx scripts/check-env.ts",
+    "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -27,12 +28,18 @@
     "@radix-ui/react-toast": "^1.2.2",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
+    "@theguild/remark-mermaid": "^0.1.3",
+    "@types/mdx": "^2.0.13",
     "autoprefixer": "10.4.20",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.1",
     "drizzle-zod": "^0.6.0",
+    "fumadocs-core": "^14.6.1",
+    "fumadocs-docgen": "^1.3.2",
+    "fumadocs-mdx": "^11.1.2",
+    "fumadocs-ui": "^14.6.1",
     "geist": "^1.2.1",
     "lucide-react": "^0.456.0",
     "next": "latest",
@@ -42,6 +49,9 @@
     "prettier": "^3.3.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
+    "remark-mermaid": "^0.2.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -58,6 +68,7 @@
     "@types/pg": "^8.11.10",
     "@types/react": "^18.3.12",
     "@types/react-dom": "18.3.1",
+    "babel-plugin-react-compiler": "19.0.0-beta-37ed2a7-20241206",
     "drizzle-kit": "^0.30.0",
     "postcss": "8.4.49",
     "storybook": "^8.4.7",
