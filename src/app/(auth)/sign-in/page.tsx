@@ -1,26 +1,42 @@
 import { signInAction } from "@/actions/auth-actions";
+import {
+  AuthFormMessage,
+  AuthMessage,
+} from "@/components/auth/auth-form-message";
+import { OAuthProviders } from "@/components/auth/oauth-provider-buttons";
+import TextSeparator from "@/components/global/text-separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 
-export default async function Login() {
+export default async function Login(props: {
+  searchParams: Promise<AuthMessage>;
+}) {
+  const searchParam = await props.searchParams;
+
   return (
-    <form className="flex-1 flex flex-col min-w-64">
+    <div className="flex flex-col w-full">
       <h1 className="text-2xl font-medium">Sign in</h1>
-      <p className="text-sm text-foreground">
+      <p className="text-sm text-fg-300 leading-6">
         Don't have an account?{" "}
-        <Link className="text-foreground font-medium underline" href="/sign-up">
+        <Link className="text-fg font-medium underline" href="/sign-up">
           Sign up
         </Link>
       </p>
-      <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
+
+      <OAuthProviders />
+
+      <TextSeparator text="or" />
+
+      <form className="flex flex-col gap-2 [&>input]:mb-3">
         <Label htmlFor="email">Email</Label>
         <Input name="email" placeholder="you@example.com" required />
         <div className="flex justify-between items-center">
           <Label htmlFor="password">Password</Label>
           <Link
-            className="text-xs text-foreground underline"
+            className="text-xs underline underline-offset-[3px]"
             href="/forgot-password"
           >
             Forgot Password?
@@ -33,7 +49,9 @@ export default async function Login() {
           required
         />
         <Button formAction={signInAction}>Sign in</Button>
-      </div>
-    </form>
+      </form>
+
+      <AuthFormMessage className="mt-4" message={searchParam} />
+    </div>
   );
 }

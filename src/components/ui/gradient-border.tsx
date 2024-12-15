@@ -31,7 +31,7 @@ export function GradientBorder({
   return (
     <div
       className={cn(
-        "p-[1px] transform-gpu",
+        "p-[0.5px] rounded-[1px] transform-gpu",
         direction,
         gradientFrom,
         gradientVia,
@@ -39,7 +39,7 @@ export function GradientBorder({
         wrapperClassName
       )}
     >
-      <div className={cn("bg-bg", className)}>{children}</div>
+      <div className={cn("bg-bg rounded-[1px]", className)}>{children}</div>
     </div>
   );
 }
