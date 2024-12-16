@@ -7,11 +7,11 @@ export const GET = async (req: NextRequest) => {
   const supabase = await createClient();
 
   const {
-    data: { session },
+    data: { user },
     error,
-  } = await supabase.auth.getSession();
+  } = await supabase.auth.getUser();
 
-  if (error || !session) {
+  if (error || !user) {
     return redirect(`/auth/sign-in`);
   }
 
@@ -22,7 +22,7 @@ export const GET = async (req: NextRequest) => {
       teams (*)
     `
     )
-    .eq("user_id", session.user.id)
+    .eq("user_id", user.id)
     .single();
 
   if (teamsError || !teamsData?.teams) {

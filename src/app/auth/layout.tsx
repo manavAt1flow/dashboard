@@ -11,8 +11,8 @@ export default async function Layout({
 }) {
   const supabase = await createClient();
 
-  if ((await supabase.auth.getSession()).data.session) {
-    return redirect("/");
+  if ((await supabase.auth.getUser()).data.user) {
+    return redirect("/dashboard");
   }
 
   return (
