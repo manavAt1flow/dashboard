@@ -1,11 +1,9 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
-export const GET = async (req: NextRequest, res: NextResponse) => {
-  const origin = req.headers.get("origin");
-
+export const GET = async (req: NextRequest) => {
   const supabase = await createClient();
 
   const {

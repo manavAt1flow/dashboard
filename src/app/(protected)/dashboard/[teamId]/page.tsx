@@ -1,7 +1,7 @@
-export default async function Index({
+export default async function Page({
   params,
 }: {
-  params: { teamId: string };
+  params: Promise<{ teamId: string }>;
 }) {
   return <></>;
 }
