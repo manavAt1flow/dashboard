@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const serverSchema = z.object({
-  DATABASE_URL: z.string().url(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string(),
   VERCEL_URL: z.string().optional(),
 });
 

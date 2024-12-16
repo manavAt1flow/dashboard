@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
@@ -7,13 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { signOutAction } from "@/actions/auth-actions";
+import { useUser } from "@/hooks/use-user";
 
-export default async function UserAvatar() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export default function UserAvatar() {
+  const { data: user } = useUser();
 
   return (
     <DropdownMenu>
@@ -28,7 +27,9 @@ export default async function UserAvatar() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem>Sign out</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => signOutAction()}>
+          Sign out
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

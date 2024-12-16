@@ -2,6 +2,7 @@ import Sidebar from "@/components/dashboard/sidebar/sidebar";
 import Topbar from "@/components/dashboard/topbar/topbar";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import ClientProviders from "@/components/globals/client-providers";
 
 export default async function Layout({
   children,
@@ -15,12 +16,14 @@ export default async function Layout({
   }
 
   return (
-    <div className="flex flex-col h-[100dvh]">
-      <Topbar />
-      <div className="flex h-full">
-        <Sidebar />
-        {children}
+    <ClientProviders>
+      <div className="flex flex-col h-[100dvh]">
+        <Topbar />
+        <div className="flex h-full">
+          <Sidebar />
+          {children}
+        </div>
       </div>
-    </div>
+    </ClientProviders>
   );
 }

@@ -44,7 +44,7 @@ const itemVariants = {
     opacity: 1,
     x: 0,
     transition: {
-      delay: index * 0.05, // Stagger effect
+      delay: index * 0.05,
       duration: 0.2,
     },
   }),
@@ -120,7 +120,7 @@ export default function SidebarNav() {
                 className="mb-2 font-mono gap-1"
                 asChild
               >
-                <Link href={`/dashboard/${params.orgId}`}>
+                <Link href={`/dashboard/${params.teamId}`}>
                   <ChevronLeft className="w-4 h-4" />
                   Back
                 </Link>
