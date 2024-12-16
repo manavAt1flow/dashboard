@@ -63,7 +63,7 @@ importers:
         specifier: ^16.4.7
         version: 16.4.7
       drizzle-orm:
-        specifier: ^0.38.1
+        specifier: ^0.38.2
         version: 0.38.2(@types/pg@8.11.10)(@types/react@18.3.16)(pg@8.13.1)(postgres@3.4.5)(react@18.3.1)
       drizzle-zod:
         specifier: ^0.6.0
