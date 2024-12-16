@@ -7,9 +7,9 @@ interface TextSeparatorProps {
 export default function TextSeparator({ text }: TextSeparatorProps) {
   return (
     <div className="my-6 flex items-center gap-2">
-      <Separator className="flex-grow w-auto bg-fg" />
+      <Separator className="flex-grow w-auto bg-fg-300" />
       <span className="px-2 font-mono text-fg">{text}</span>
-      <Separator className="flex-grow w-auto bg-fg" />
+      <Separator className="flex-grow w-auto bg-fg-300" />
     </div>
   );
 }

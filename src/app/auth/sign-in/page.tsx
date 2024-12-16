@@ -4,7 +4,7 @@ import {
   AuthMessage,
 } from "@/components/auth/auth-form-message";
 import { OAuthProviders } from "@/components/auth/oauth-provider-buttons";
-import TextSeparator from "@/components/global/text-separator";
+import TextSeparator from "@/components/globals/text-separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +21,7 @@ export default async function Login(props: {
       <h1 className="text-2xl font-medium">Sign in</h1>
       <p className="text-sm text-fg-300 leading-6">
         Don't have an account?{" "}
-        <Link className="text-fg font-medium underline" href="/auth/sign-in">
+        <Link className="text-fg font-medium underline" href="/auth/sign-up">
           Sign up
         </Link>
       </p>

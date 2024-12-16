@@ -1,5 +1,5 @@
 import NavAuth from "./nav-auth";
-import { Logo } from "../global/logo";
+import { Logo } from "../globals/logo";
 
 export function Nav() {
   return (

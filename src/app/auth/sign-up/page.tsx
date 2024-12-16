@@ -9,7 +9,7 @@ import {
   AuthMessage,
 } from "@/components/auth/auth-form-message";
 import { Separator } from "@/components/ui/separator";
-import TextSeparator from "@/components/global/text-separator";
+import TextSeparator from "@/components/globals/text-separator";
 
 export default async function Signup(props: {
   searchParams: Promise<AuthMessage>;

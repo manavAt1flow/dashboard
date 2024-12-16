@@ -5,9 +5,9 @@ import { Button } from "../ui/button";
 
 export function OAuthProviders() {
   return (
-    <div className="flex flex-col gap-2 mt-8">
+    <div className="flex flex-col gap-2 mt-4">
       <Button
-        variant="outline"
+        variant="muted"
         onClick={() => signInWithOAuth("google")}
         className="flex items-center gap-2"
       >
@@ -33,7 +33,7 @@ export function OAuthProviders() {
       </Button>
 
       <Button
-        variant="outline"
+        variant="muted"
         onClick={() => signInWithOAuth("github")}
         className="flex items-center gap-2"
       >

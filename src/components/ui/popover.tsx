@@ -17,7 +17,14 @@ const PopoverContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
 >(
   (
-    { className, align = "center", sideOffset = 4, children, ...props },
+    {
+      className,
+      align = "center",
+      sideOffset = 10,
+      collisionPadding = 10,
+      children,
+      ...props
+    },
     ref
   ) => (
     <PopoverPortal>
@@ -25,6 +32,7 @@ const PopoverContent = React.forwardRef<
         ref={ref}
         align={align}
         sideOffset={sideOffset}
+        collisionPadding={collisionPadding}
         {...props}
       >
         <GradientBorder

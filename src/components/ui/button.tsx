@@ -1,26 +1,60 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  [
+    "inline-flex items-center justify-center whitespace-nowrap",
+    "font-mono uppercase tracking-wider text-sm",
+    "transition-colors duration-150",
+    "focus-visible:outline-none focus:ring-1 focus:ring-ring focus:ring-offset-0",
+    "disabled:pointer-events-none disabled:opacity-50",
+  ].join(" "),
   {
     variants: {
       variant: {
-        default: "bg-fg border border-bg text-bg hover:bg-fg-300 ",
-        accent: "bg-accent hover:bg-accent/90",
-        error: "bg-error text-error-fg hover:bg-error/90",
-        outline: "border border-border bg-bg",
-        link: "text-accent underline-offset-4 hover:underline",
+        default: [
+          "bg-fg text-bg",
+          "shadow-[0px_1px_0_0px]",
+          "hover:bg-fg-100",
+          "active:translate-y-[1px] active:shadow-none",
+        ].join(" "),
+        accent: [
+          "border-2 border-dashed bg-accent text-accent-fg",
+          "shadow-[0px_1px_0_0px] shadow-accent",
+          "hover:bg-accent/90",
+          "active:translate-y-[1px] active:shadow-none",
+        ].join(" "),
+        muted: [
+          "border-2 border-dashed bg-bg-200 text-fg",
+          "hover:bg-bg-200/90",
+          "active:translate-y-[1px] active:shadow-none",
+        ].join(" "),
+        error: [
+          "border-2 border-dashed bg-error text-error-fg",
+          "shadow-[0px_1px_0_0px] shadow-error",
+          "hover:bg-error/90",
+          "active:translate-y-[1px] active:shadow-none",
+        ].join(" "),
+        outline: [
+          "border-2 border-dashed bg-transparent",
+          "hover:bg-bg-300/80",
+          "active:translate-y-[1px] active:shadow-none",
+        ].join(" "),
+        link: [
+          "text-accent underline-offset-4",
+          "hover:underline hover:bg-transparent",
+          "shadow-none",
+        ].join(" "),
       },
       size: {
-        default: "h-9 px-5 py-3",
-        sm: "h-8 px-4",
-        lg: "h-10 px-8",
+        default: "h-10 px-4 py-2",
+        sm: "h-8 px-3",
+        lg: "h-12 px-8",
         icon: "h-10 w-10",
-        slate: "",
+        iconSm: "h-8 w-8",
+        slate: "h-auto px-0 py-0",
       },
     },
     defaultVariants: {

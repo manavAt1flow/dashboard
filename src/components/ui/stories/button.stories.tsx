@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "../button";
+import { Terminal, Trash2, Settings2 } from "lucide-react";
 
 const meta = {
   title: "UI/Button",
@@ -15,57 +16,80 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    children: "Dashboard",
-    variant: "default",
+    children: "Execute",
   },
 };
 
 export const Accent: Story = {
   args: {
-    children: "Button",
+    children: "Deploy",
     variant: "accent",
   },
 };
 
 export const Error: Story = {
   args: {
-    children: "Button",
+    children: "Delete",
     variant: "error",
   },
 };
 
 export const Outline: Story = {
   args: {
-    children: "Button",
+    children: "Cancel",
     variant: "outline",
   },
 };
 
 export const Link: Story = {
   args: {
-    children: "Button",
+    children: "View Docs",
     variant: "link",
-    size: "slate",
   },
 };
 
-export const Small: Story = {
-  args: {
-    children: "Small Button",
-    size: "sm",
-  },
+export const WithIcon: Story = {
+  render: () => (
+    <div className="flex gap-4">
+      <Button>
+        <Terminal className="mr-2 h-4 w-4" />
+        Run
+      </Button>
+      <Button variant="error">
+        <Trash2 className="mr-2 h-4 w-4" />
+        Remove
+      </Button>
+    </div>
+  ),
 };
 
-export const Large: Story = {
-  args: {
-    children: "Large Button",
-    size: "lg",
-  },
+export const IconOnly: Story = {
+  render: () => (
+    <div className="flex gap-4">
+      <Button size="icon" variant="outline">
+        <Settings2 className="h-4 w-4" />
+      </Button>
+      <Button size="iconSm" variant="outline">
+        <Terminal className="h-4 w-4" />
+      </Button>
+    </div>
+  ),
 };
 
-export const Icon: Story = {
-  args: {
-    children: "🔥",
-    size: "icon",
-  },
+export const Loading: Story = {
+  render: () => (
+    <Button disabled className="w-24">
+      [....]
+    </Button>
+  ),
+};
+
+export const Sizes: Story = {
+  render: () => (
+    <div className="flex items-center gap-4">
+      <Button size="sm">Small</Button>
+      <Button>Default</Button>
+      <Button size="lg">Large</Button>
+    </div>
+  ),
 };

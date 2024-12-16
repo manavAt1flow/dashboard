@@ -32,10 +32,10 @@ export default async function Layout({
         gradientDegrees={90}
       />
       <GradientBorder
-        direction="bg-gradient-to-bl"
-        gradientFrom="from-transparent"
-        gradientVia="via-fg-100 via-60%"
-        gradientTo="to-transparent"
+        direction="bg-gradient-to-b"
+        gradientFrom="from-bg-400"
+        gradientVia="via-bg-200"
+        gradientTo="to-bg-400"
         wrapperClassName="w-full max-w-96"
         className="p-6"
       >
