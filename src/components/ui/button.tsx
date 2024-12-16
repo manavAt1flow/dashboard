@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
   [
-    "inline-flex items-center justify-center whitespace-nowrap",
+    "inline-flex items-center gap-2 justify-center whitespace-nowrap",
     "font-mono uppercase tracking-wider text-sm",
     "transition-colors duration-150",
     "focus-visible:outline-none focus:ring-1 focus:ring-ring focus:ring-offset-0",
@@ -24,6 +24,11 @@ const buttonVariants = cva(
           "border-2 border-dashed bg-accent text-accent-fg",
           "shadow-[0px_1px_0_0px] shadow-accent",
           "hover:bg-accent/90",
+          "active:translate-y-[1px] active:shadow-none",
+        ].join(" "),
+        ghost: [
+          "bg-transparent",
+          "hover:bg-bg-200/90",
           "active:translate-y-[1px] active:shadow-none",
         ].join(" "),
         muted: [

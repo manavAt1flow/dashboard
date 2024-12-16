@@ -6,14 +6,13 @@ const withMDX = createMDX();
 const config = {
   reactStrictMode: true,
   experimental: {
-    typedRoutes: true,
     reactCompiler: true,
   },
   async rewrites() {
     return [
       {
-        source: "/:path*",
-        destination: "https://e2b.dev/:path*",
+        source: "/",
+        destination: "https://e2b.dev",
       },
     ];
   },
