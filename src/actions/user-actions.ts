@@ -3,7 +3,8 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { Database } from "@/types/supabase";
-import { User } from "@supabase/supabase-js";
+import { User, UserAttributes } from "@supabase/supabase-js";
+import checkAuthenticated from "./utils";
 
 interface ErrorResponse {
   type: "error";
@@ -21,41 +22,112 @@ interface GetUserResponse {
 }
 
 export async function getUser(): Promise<GetUserResponse | ErrorResponse> {
-  const supabase = await createClient();
+  try {
+    const { user } = await checkAuthenticated();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    if (!user) {
+      return {
+        type: "error",
+        data: {
+          message: "User not authenticated",
+        },
+      };
+    }
 
-  if (!user) {
+    const { data: accessToken, error } = await supabaseAdmin
+      .from("access_tokens")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+
+    if (error) {
+      return {
+        type: "error",
+        data: {
+          message: error.message,
+        },
+      };
+    }
+
+    return {
+      type: "success",
+      data: {
+        user,
+        accessToken,
+      },
+    };
+  } catch (error) {
+    console.error("get-user-action:", error);
+
+    if (error instanceof Error) {
+      return {
+        type: "error",
+        data: {
+          message: error.message,
+        },
+      };
+    }
+
     return {
       type: "error",
       data: {
-        message: "User not authenticated",
+        message: "An unknown error occurred",
       },
     };
   }
+}
 
-  const { data: accessToken, error } = await supabaseAdmin
-    .from("access_tokens")
-    .select("*")
-    .eq("user_id", user.id)
-    .single();
-
-  if (error) {
-    return {
-      type: "error",
-      data: {
-        message: error.message,
-      },
-    };
-  }
-
-  return {
-    type: "success",
-    data: {
-      user,
-      accessToken,
-    },
+interface UpdateUserResponse {
+  type: "success";
+  data: {
+    newUser: User;
   };
+}
+
+export async function updateUser(
+  data: UserAttributes
+): Promise<UpdateUserResponse | ErrorResponse> {
+  // TODO: validate data
+
+  try {
+    const { supabase } = await checkAuthenticated();
+
+    const { data: updateData, error } = await supabase.auth.updateUser({
+      data,
+    });
+
+    if (error) {
+      return {
+        type: "error",
+        data: {
+          message: error.message,
+        },
+      };
+    }
+
+    return {
+      type: "success",
+      data: {
+        newUser: updateData.user,
+      },
+    };
+  } catch (error) {
+    console.error("update-user-action:", error);
+
+    if (error instanceof Error) {
+      return {
+        type: "error",
+        data: {
+          message: error.message,
+        },
+      };
+    }
+
+    return {
+      type: "error",
+      data: {
+        message: "An unknown error occurred",
+      },
+    };
+  }
 }

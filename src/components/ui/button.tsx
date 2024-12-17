@@ -50,6 +50,7 @@ const buttonVariants = cva(
         link: [
           "text-accent underline-offset-4",
           "hover:underline hover:bg-transparent",
+          "focus:ring-0",
           "shadow-none",
         ].join(" "),
       },

@@ -129,32 +129,33 @@ export default function SidebarNav() {
           style={{ originX: direction === "deeper" ? 0 : 1 }}
         />
 
-        <div className="">
-          {level !== "main" && (
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 10 }}
-              transition={{ duration: 0.2 }}
+        {level !== "main" && (
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 10 }}
+            transition={{ duration: 0.2 }}
+            className="mb-2"
+          >
+            <Button
+              variant="link"
+              size="slate"
+              className="font-mono gap-1"
+              asChild
             >
-              <Button
-                variant="link"
-                size="slate"
-                className="mb-2 font-mono gap-1"
-                asChild
-              >
-                <Link href={`/dashboard/${params.teamId}`}>
-                  <ChevronLeft className="w-4 h-4" />
-                  Back
-                </Link>
-              </Button>
-            </motion.div>
-          )}
+              <Link href={`/dashboard/${params.teamId}`}>
+                <ChevronLeft className="w-4 h-4" />
+                Back
+              </Link>
+            </Button>
+          </motion.div>
+        )}
 
+        <div>
           {Object.entries(groupedNavLinks).map(([group, links]) => (
             <motion.div key={group} className="w-full mt-4 first:mt-0">
               {group && group !== "ungrouped" && (
-                <div className="text-xs text-muted-foreground font-mono mb-2 pl-2">
+                <div className="text-xs text-muted-foreground font-mono mb-2">
                   {group.charAt(0).toUpperCase() + group.slice(1)}
                 </div>
               )}

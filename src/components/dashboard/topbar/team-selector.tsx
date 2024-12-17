@@ -28,22 +28,24 @@ export default function TeamSelector() {
         <SelectValue placeholder="Select organization" />
       </SelectTrigger>
       <SelectContent>
-        <SelectGroup>
-          <SelectLabel>Personal</SelectLabel>
-          {defaultTeam && (
+        {defaultTeam && (
+          <SelectGroup>
+            <SelectLabel>Personal</SelectLabel>
             <SelectItem key={defaultTeam.id} value={defaultTeam.id}>
               {defaultTeam.name}
             </SelectItem>
-          )}
-        </SelectGroup>
-        <SelectGroup className="mt-2">
-          <SelectLabel>Organizations</SelectLabel>
-          {teams.map((team) => (
-            <SelectItem key={team.id} value={team.id}>
-              {team.name}
-            </SelectItem>
-          ))}
-        </SelectGroup>
+          </SelectGroup>
+        )}
+        {teams.length > 0 && (
+          <SelectGroup className="mt-2">
+            <SelectLabel>Organizations</SelectLabel>
+            {teams.map((team) => (
+              <SelectItem key={team.id} value={team.id}>
+                {team.name}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        )}
       </SelectContent>
     </Select>
   );
