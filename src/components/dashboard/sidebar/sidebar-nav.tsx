@@ -2,10 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { MAIN_SIDEBAR_LINKS, TEAM_SIDEBAR_LINKS } from "@/configs/constants";
+import { cn } from "@/lib/utils";
 import { ChevronLeft } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
-import { useParams, useSelectedLayoutSegments } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useSelectedLayoutSegments,
+} from "next/navigation";
 import { useMemo } from "react";
 
 const terminalFrameVariants = {
@@ -65,6 +70,7 @@ const scanlineVariants = {
 export default function SidebarNav() {
   const segments = useSelectedLayoutSegments();
   const params = useParams();
+  const pathname = usePathname();
 
   const level: "main" | "team" | "user" = useMemo(
     () =>
@@ -139,13 +145,17 @@ export default function SidebarNav() {
               className="w-full"
             >
               <Button
-                variant="ghost"
+                variant={
+                  pathname === item.href(params.teamId as string)
+                    ? "default"
+                    : "ghost"
+                }
                 size="sm"
                 className="w-full justify-start font-mono"
                 asChild
               >
                 <Link href={item.href(params.teamId as string)}>
-                  <span className="text-fg-300 mr-2">$</span>
+                  <span className="mr-2">$</span>
                   {/* <item.icon className="w-4 h-4 mr-2" /> */}
                   {item.label}
                 </Link>

@@ -9,19 +9,22 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { signOutAction } from "@/actions/auth-actions";
-import { useUser } from "@/hooks/use-user";
+import { Skeleton } from "../ui/skeleton";
+import { useUser } from "../providers/user-provider";
 
 export default function UserAvatar() {
-  const { data: user } = useUser();
+  const { data } = useUser();
+
+  if (!data) return <Skeleton className="w-8 h-8" />;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button size="iconSm" className="min-w-8" variant="muted">
           <Avatar className="w-full h-full">
-            <AvatarImage src={user?.user_metadata.avatar_url} />
+            <AvatarImage src={data.user?.user_metadata.avatar_url} />
             <AvatarFallback>
-              {user?.email?.charAt(0).toUpperCase() || "?"}
+              {data.user?.email?.charAt(0).toUpperCase() || "?"}
             </AvatarFallback>
           </Avatar>
         </Button>

@@ -1,8 +1,10 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { UserData, UserProvider } from "../providers/user-provider";
+import { TeamsData, TeamsProvider } from "../providers/teams-provider";
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
@@ -12,10 +14,31 @@ const queryClient = new QueryClient({
 
 interface ClientProvidersProps {
   children: React.ReactNode;
+  initialUserData?: UserData;
+  initialTeamsData?: TeamsData;
 }
 
-export default function ClientProviders({ children }: ClientProvidersProps) {
+/**
+ * ClientProviders handles the setup and initialization of client-side providers
+ * while supporting server-side rendered (SSR) data hydration.
+ *
+ * This component wraps the application with necessary providers:
+ * - QueryClientProvider: Manages React Query state and cache
+ * - UserProvider: Handles user authentication and data
+ * - TeamsProvider: Manages teams-related state
+ */
+export default function ClientProviders({
+  children,
+  initialUserData,
+  initialTeamsData,
+}: ClientProvidersProps) {
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <UserProvider initialUserData={initialUserData}>
+        <TeamsProvider initialTeamsData={initialTeamsData}>
+          {children}
+        </TeamsProvider>
+      </UserProvider>
+    </QueryClientProvider>
   );
 }
