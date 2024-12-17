@@ -1,7 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { MAIN_SIDEBAR_LINKS, TEAM_SIDEBAR_LINKS } from "@/configs/constants";
+import {
+  MAIN_SIDEBAR_LINKS,
+  SidebarLink,
+  SETTINGS_SIDEBAR_LINKS,
+} from "@/configs/sidebar-links";
 import { cn } from "@/lib/utils";
 import { ChevronLeft } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -67,24 +71,26 @@ const scanlineVariants = {
   },
 };
 
+type GroupedLinks = {
+  [key: string]: SidebarLink[];
+};
+
 export default function SidebarNav() {
   const segments = useSelectedLayoutSegments();
   const params = useParams();
   const pathname = usePathname();
 
-  const level: "main" | "team" | "user" = useMemo(
+  const level: "main" | "settings" = useMemo(
     () =>
       segments.includes("dashboard") && segments.includes("settings")
-        ? "team"
-        : segments.includes("settings")
-          ? "user"
-          : "main",
+        ? "settings"
+        : "main",
     [segments]
   );
 
-  const navLinks = useMemo(() => {
-    if (level === "main") return MAIN_SIDEBAR_LINKS;
-    if (level === "team") return TEAM_SIDEBAR_LINKS;
+  const navLinks = useMemo<SidebarLink[]>(() => {
+    if (level === "settings") return SETTINGS_SIDEBAR_LINKS;
+
     return MAIN_SIDEBAR_LINKS;
   }, [level]);
 
@@ -92,6 +98,17 @@ export default function SidebarNav() {
     () => (level === "main" ? "back" : "deeper"),
     [level]
   );
+
+  const groupedNavLinks = useMemo<GroupedLinks>(() => {
+    return navLinks.reduce((acc, link) => {
+      const group = link.group || "ungrouped"; // Default to "ungrouped" if no group is defined
+      if (!acc[group]) {
+        acc[group] = [];
+      }
+      acc[group].push(link);
+      return acc;
+    }, {} as GroupedLinks);
+  }, [navLinks]);
 
   return (
     <AnimatePresence mode="wait" custom={direction}>
@@ -112,7 +129,7 @@ export default function SidebarNav() {
           style={{ originX: direction === "deeper" ? 0 : 1 }}
         />
 
-        <div className="flex flex-col items-start gap-1">
+        <div className="">
           {level !== "main" && (
             <motion.div
               initial={{ opacity: 0, x: -10 }}
@@ -134,32 +151,41 @@ export default function SidebarNav() {
             </motion.div>
           )}
 
-          {navLinks.map((item, index) => (
-            <motion.div
-              key={item.label}
-              custom={index}
-              variants={itemVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="w-full"
-            >
-              <Button
-                variant={
-                  pathname === item.href(params.teamId as string)
-                    ? "default"
-                    : "ghost"
-                }
-                size="sm"
-                className="w-full justify-start font-mono"
-                asChild
-              >
-                <Link href={item.href(params.teamId as string)}>
-                  <span className="mr-2">$</span>
-                  {/* <item.icon className="w-4 h-4 mr-2" /> */}
-                  {item.label}
-                </Link>
-              </Button>
+          {Object.entries(groupedNavLinks).map(([group, links]) => (
+            <motion.div key={group} className="w-full mt-4 first:mt-0">
+              {group && group !== "ungrouped" && (
+                <div className="text-xs text-muted-foreground font-mono mb-2 pl-2">
+                  {group.charAt(0).toUpperCase() + group.slice(1)}
+                </div>
+              )}
+              {links.map((item, index) => (
+                <motion.div
+                  key={item.label}
+                  custom={index}
+                  variants={itemVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="w-full"
+                >
+                  <Button
+                    variant={
+                      pathname ===
+                      item.href({ teamId: params.teamId as string })
+                        ? "default"
+                        : "ghost"
+                    }
+                    size="sm"
+                    className="w-full justify-start font-mono"
+                    asChild
+                  >
+                    <Link href={item.href({ teamId: params.teamId as string })}>
+                      <span className="mr-2">$</span>
+                      {item.label}
+                    </Link>
+                  </Button>
+                </motion.div>
+              ))}
             </motion.div>
           ))}
         </div>
