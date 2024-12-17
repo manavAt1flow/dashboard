@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import ClientProviders from "@/components/globals/client-providers";
 import { getUser } from "@/actions/user-actions";
 import { getUserTeams } from "@/actions/team-actions";
+import { AUTH_URLS } from "@/configs/urls";
 
 export default async function Layout({
   children,
@@ -13,7 +14,7 @@ export default async function Layout({
   const { type, data } = await getUser();
 
   if (type === "error") {
-    return redirect("/auth/sign-in");
+    return redirect(AUTH_URLS.SIGN_IN);
   }
 
   const { type: teamsType, data: teamsData } = await getUserTeams();

@@ -6,6 +6,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AUTH_URLS } from "@/configs/urls";
 import Link from "next/link";
 
 export default async function ForgotPassword(props: {
@@ -18,7 +19,10 @@ export default async function ForgotPassword(props: {
       <h1 className="text-2xl font-medium">Reset Password</h1>
       <p className="text-sm text-fg-300 leading-6">
         Already have an account?{" "}
-        <Link className="text-fg font-medium underline" href="/sign-in">
+        <Link
+          className="text-fg font-medium underline"
+          href={AUTH_URLS.SIGN_IN}
+        >
           Sign in
         </Link>
       </p>

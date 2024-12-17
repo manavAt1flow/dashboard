@@ -1,3 +1,4 @@
+import { AUTH_URLS, PROTECTED_URLS } from "@/configs/urls";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -12,7 +13,7 @@ export const GET = async (req: NextRequest) => {
   } = await supabase.auth.getUser();
 
   if (error || !user) {
-    return redirect(`/auth/sign-in`);
+    return redirect(AUTH_URLS.SIGN_IN);
   }
 
   const { data: teamsData, error: teamsError } = await supabaseAdmin
@@ -26,8 +27,8 @@ export const GET = async (req: NextRequest) => {
     .single();
 
   if (teamsError || !teamsData?.teams) {
-    return redirect(`/auth/sign-in`);
+    return redirect(AUTH_URLS.SIGN_IN);
   }
 
-  return redirect(`/dashboard/${teamsData.teams.id}`);
+  return redirect(`${PROTECTED_URLS.DASHBOARD}/${teamsData.teams.id}`);
 };
