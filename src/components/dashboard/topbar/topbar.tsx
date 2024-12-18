@@ -1,6 +1,7 @@
 import UserAvatar from "@/components/auth/user-avatar";
 import { Button } from "@/components/ui/button";
 import TeamSelector from "./team-selector";
+import { HeartPulse } from "lucide-react";
 
 export default function Topbar() {
   return (
@@ -12,8 +13,15 @@ export default function Topbar() {
       </div>
 
       <div className="flex items-center gap-2 pr-2">
-        <Button size="sm">Upgrade</Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-8 border-contrast-2"
+        >
+          <HeartPulse className="w-4 h-4 text-fg-300" />
+        </Button>
         <UserAvatar />
+        <Button size="sm">Upgrade</Button>
       </div>
     </div>
   );

@@ -5,26 +5,42 @@ import ClientProviders from "@/components/globals/client-providers";
 import { getUser } from "@/actions/user-actions";
 import { getUserTeams } from "@/actions/team-actions";
 import { AUTH_URLS } from "@/configs/urls";
-import { Card } from "@/components/ui/card";
 import GridPattern from "@/components/ui/grid-pattern";
+import { cache } from "react";
+import { UserData } from "@/components/providers/user-provider";
+import { TeamsData } from "@/components/providers/teams-provider";
+
+const getCachedUser = cache(async () => {
+  const { type, data } = await getUser();
+  return { type, data };
+});
+
+const getCachedUserTeams = cache(async () => {
+  const { type, data } = await getUserTeams();
+  return { type, data };
+});
+
+// we use cached data for the user + user details and teams
 
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { type, data } = await getUser();
+  const { type, data } = await getCachedUser();
 
   if (type === "error") {
     return redirect(AUTH_URLS.SIGN_IN);
   }
 
-  const { type: teamsType, data: teamsData } = await getUserTeams();
+  const { type: teamsType, data: teamsData } = await getCachedUserTeams();
 
   return (
     <ClientProviders
-      initialUserData={data}
-      initialTeamsData={teamsType === "success" ? teamsData : undefined}
+      initialUserData={data as UserData}
+      initialTeamsData={
+        teamsType === "success" ? (teamsData as TeamsData) : undefined
+      }
     >
       <div className="flex flex-col h-[100dvh]">
         <Topbar />
