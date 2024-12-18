@@ -24,7 +24,7 @@ export default function UserAvatar() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="iconSm" className="min-w-8 border-fg-200" variant="muted">
+        <Button size="iconSm" className="min-w-8" variant="ghost">
           <Avatar className="w-full h-full">
             <AvatarImage src={data.user?.user_metadata.avatar_url} />
             <AvatarFallback>

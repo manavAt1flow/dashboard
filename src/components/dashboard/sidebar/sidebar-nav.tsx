@@ -155,8 +155,8 @@ export default function SidebarNav() {
           {Object.entries(groupedNavLinks).map(([group, links]) => (
             <motion.div key={group} className="w-full mt-4 first:mt-0">
               {group && group !== "ungrouped" && (
-                <div className="text-xs text-muted-foreground font-mono mb-2">
-                  {group.charAt(0).toUpperCase() + group.slice(1)}
+                <div className="text-xs text-fg-300 uppercase font-mono mb-2">
+                  [{group}]
                 </div>
               )}
               {links.map((item, index) => (
@@ -177,7 +177,7 @@ export default function SidebarNav() {
                         : "ghost"
                     }
                     size="sm"
-                    className="w-full justify-start font-mono"
+                    className="w-full justify-start font-mono capitalize"
                     asChild
                   >
                     <Link

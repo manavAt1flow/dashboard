@@ -2,7 +2,6 @@
 
 import { User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase/client";
 import { Database } from "@/types/supabase";
 
 // we use a provider here to pass the ssr user to the client
@@ -15,10 +14,12 @@ export interface UserData {
 
 interface UserContextType {
   data: UserData | null;
+  setData: React.Dispatch<React.SetStateAction<UserData | null>>;
 }
 
 const UserContext = createContext<UserContextType>({
   data: null,
+  setData: () => {},
 });
 
 interface UserProviderProps {
@@ -27,10 +28,12 @@ interface UserProviderProps {
 }
 
 export function UserProvider({ children, initialUserData }: UserProviderProps) {
-  const [data] = useState<UserData | null>(initialUserData || null);
+  const [data, setData] = useState<UserData | null>(initialUserData || null);
 
   return (
-    <UserContext.Provider value={{ data }}>{children}</UserContext.Provider>
+    <UserContext.Provider value={{ data, setData }}>
+      {children}
+    </UserContext.Provider>
   );
 }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useTeams } from "@/components/providers/teams-provider";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -10,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 
 export default function TeamSelector() {
@@ -27,7 +29,7 @@ export default function TeamSelector() {
       <SelectTrigger className="border-none p-0 w-auto">
         <SelectValue placeholder="Select organization" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="min-w-[16rem]">
         {defaultTeam && (
           <SelectGroup>
             <SelectLabel>Personal</SelectLabel>
@@ -46,6 +48,10 @@ export default function TeamSelector() {
             ))}
           </SelectGroup>
         )}
+        <Button size="sm" className="w-full mt-4">
+          <Plus className="w-4 h-4" />
+          New Organization
+        </Button>
       </SelectContent>
     </Select>
   );
