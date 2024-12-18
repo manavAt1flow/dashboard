@@ -6,16 +6,20 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { signOutAction } from "@/actions/auth-actions";
-import { Skeleton } from "../ui/skeleton";
 import { useUser } from "../providers/user-provider";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export default function UserAvatar() {
+  const { teamId } = useParams();
   const { data } = useUser();
 
-  if (!data) return <Skeleton className="w-8 h-8" />;
+  if (!data) return null;
 
   return (
     <DropdownMenu>
@@ -30,7 +34,17 @@ export default function UserAvatar() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => signOutAction()}>
+        <DropdownMenuLabel>General</DropdownMenuLabel>
+        <DropdownMenuItem asChild>
+          <Link href={`/dashboard/${teamId}/settings/account`}>Account</Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          className="text-error"
+          onClick={() => signOutAction()}
+        >
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

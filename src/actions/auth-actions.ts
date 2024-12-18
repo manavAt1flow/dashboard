@@ -33,14 +33,23 @@ export const signInWithOAuth = async (provider: Provider) => {
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
+  const confirmPassword = formData.get("confirmPassword")?.toString();
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
-  if (!email || !password) {
+  if (!email || !password || !confirmPassword) {
     return encodedRedirect(
       "error",
       AUTH_URLS.SIGN_UP,
-      "Email and password are required"
+      "Email and both passwords are required"
+    );
+  }
+
+  if (password !== confirmPassword) {
+    return encodedRedirect(
+      "error",
+      AUTH_URLS.SIGN_UP,
+      "Passwords do not match"
     );
   }
 

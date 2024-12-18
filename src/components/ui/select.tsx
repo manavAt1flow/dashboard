@@ -110,16 +110,24 @@ SelectContent.displayName = SelectPrimitive.Content.displayName;
 
 const SelectLabel = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.Label
-    ref={ref}
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label> & {
+    inset?: boolean;
+  }
+>(({ className, inset, ...props }, ref) => (
+  <span
     className={cn(
-      "py-1.5 pl-2 pr-2 text-xs text-fg-300 font-mono uppercase tracking-wider",
-      className
+      "inline-flex py-1.5 first:pt-0 last:pb-0 font-mono text-fg-300 items-center",
+      inset && "pl-8"
     )}
-    {...props}
-  />
+  >
+    [
+    <SelectPrimitive.Label
+      ref={ref}
+      className={cn("text-sm uppercase tracking-wider", className)}
+      {...props}
+    />
+    ]
+  </span>
 ));
 SelectLabel.displayName = SelectPrimitive.Label.displayName;
 

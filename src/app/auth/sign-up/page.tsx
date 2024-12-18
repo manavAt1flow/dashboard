@@ -30,17 +30,31 @@ export default async function Signup(props: {
 
       <TextSeparator text="or" />
 
-      <form className="flex flex-col gap-2 [&>input]:mb-3">
+      <form className="flex flex-col gap-2">
         <Label htmlFor="email">Email</Label>
-        <Input name="email" placeholder="you@example.com" required />
-        <Label htmlFor="password">Password</Label>
         <Input
-          type="password"
-          name="password"
-          placeholder="Your password"
-          minLength={6}
+          name="email"
+          placeholder="you@example.com"
           required
+          className="mb-3"
         />
+        <Label htmlFor="password">Password</Label>
+        <div className="space-y-3 mb-3">
+          <Input
+            type="password"
+            name="password"
+            placeholder="Your password"
+            minLength={6}
+            required
+          />
+          <Input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm password"
+            minLength={6}
+            required
+          />
+        </div>
         <Button formAction={signUpAction}>Sign up</Button>
       </form>
 
