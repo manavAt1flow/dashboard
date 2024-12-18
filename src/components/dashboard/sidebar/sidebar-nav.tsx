@@ -180,7 +180,10 @@ export default function SidebarNav() {
                     className="w-full justify-start font-mono"
                     asChild
                   >
-                    <Link href={item.href({ teamId: params.teamId as string })}>
+                    <Link
+                      prefetch
+                      href={item.href({ teamId: params.teamId as string })}
+                    >
                       <span className="mr-2">$</span>
                       {item.label}
                     </Link>
