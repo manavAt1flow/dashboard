@@ -22,24 +22,31 @@ const getCachedUserTeams = cache(async () => {
 
 // we use cached data for the user + user details and teams
 
+export const dynamic = "force-dynamic";
+export const revalidate = 60;
+export const fetchCache = "force-cache";
+
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { type, data } = await getCachedUser();
+  const [userResponse, teamsResponse] = await Promise.all([
+    getCachedUser(),
+    getCachedUserTeams(),
+  ]);
 
-  if (type === "error") {
+  if (userResponse.type === "error") {
     return redirect(AUTH_URLS.SIGN_IN);
   }
 
-  const { type: teamsType, data: teamsData } = await getCachedUserTeams();
-
   return (
     <ClientProviders
-      initialUserData={data as UserData}
+      initialUserData={userResponse.data as UserData}
       initialTeamsData={
-        teamsType === "success" ? (teamsData as TeamsData) : undefined
+        teamsResponse.type === "success"
+          ? (teamsResponse.data as TeamsData)
+          : undefined
       }
     >
       <div className="flex flex-col h-[100dvh]">
