@@ -8,4 +8,5 @@ export const AUTH_URLS = {
 
 export const PROTECTED_URLS = {
   DASHBOARD: "/dashboard",
+  ACCOUNT_SETTINGS: "/dashboard/account",
 };

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMetadata } from "@/components/providers/metadata-provider";
 import { useTeams } from "@/components/providers/teams-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,11 +13,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
-import { useState } from "react";
 
 export default function TeamSelector() {
   const { data } = useTeams();
-  const [selectedTeam, setSelectedTeam] = useState(data?.defaultTeamId);
+  const { lastTeamId, setLastTeamId } = useMetadata();
 
   if (!data) return null;
 
@@ -25,8 +25,8 @@ export default function TeamSelector() {
   const teams = data.teams.filter((team) => team.id !== defaultTeam?.id);
 
   return (
-    <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-      <SelectTrigger className="border-none p-0 w-auto">
+    <Select value={lastTeamId} onValueChange={setLastTeamId}>
+      <SelectTrigger className="w-auto border-none p-0">
         <SelectValue placeholder="Select organization" />
       </SelectTrigger>
       <SelectContent className="min-w-[16rem]">
@@ -48,8 +48,8 @@ export default function TeamSelector() {
             ))}
           </SelectGroup>
         )}
-        <Button size="sm" className="w-full mt-4">
-          <Plus className="w-4 h-4" />
+        <Button size="sm" className="mt-4 w-full">
+          <Plus className="h-4 w-4" />
           New Organization
         </Button>
       </SelectContent>

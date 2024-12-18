@@ -119,13 +119,25 @@
   }
 }
 
+.bottom-b-solid-contrast-1 {
+  border-bottom: 2px solid hsl(var(--contrast-1));
+}
+
+.bottom-b-solid-contrast-2 {
+  border-bottom: 2px solid hsl(var(--contrast-2));
+}
+
+.bottom-b-solid-accent {
+  border-bottom: 2px solid hsl(var(--accent));
+}
+
 @layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply antialiased bg-bg text-fg tracking-wide;
+    @apply bg-bg tracking-wide text-fg antialiased;
 
     text-rendering: optimizeLegibility;
     overscroll-behavior-y: none;
@@ -137,6 +149,6 @@
   h4,
   h5,
   h6 {
-    @apply font-mono uppercase font-light;
+    @apply font-mono font-light uppercase;
   }
 }

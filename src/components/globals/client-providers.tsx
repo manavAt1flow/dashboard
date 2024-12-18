@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserData, UserProvider } from "../providers/user-provider";
 import { TeamsData, TeamsProvider } from "../providers/teams-provider";
+import { MetadataProvider } from "../providers/metadata-provider";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,6 +27,7 @@ interface ClientProvidersProps {
  * - QueryClientProvider: Manages React Query state and cache
  * - UserProvider: Handles user authentication and data
  * - TeamsProvider: Manages teams-related state
+ * - MetadataProvider: Manages metadata-related state
  */
 export default function ClientProviders({
   children,
@@ -36,7 +38,9 @@ export default function ClientProviders({
     <QueryClientProvider client={queryClient}>
       <UserProvider initialUserData={initialUserData}>
         <TeamsProvider initialTeamsData={initialTeamsData}>
-          {children}
+          <MetadataProvider initialTeamId={initialTeamsData?.defaultTeamId}>
+            {children}
+          </MetadataProvider>
         </TeamsProvider>
       </UserProvider>
     </QueryClientProvider>

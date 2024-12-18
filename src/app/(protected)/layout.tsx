@@ -1,4 +1,3 @@
-import Sidebar from "@/components/dashboard/sidebar/sidebar";
 import Topbar from "@/components/dashboard/topbar/topbar";
 import { redirect } from "next/navigation";
 import ClientProviders from "@/components/globals/client-providers";
@@ -25,7 +24,7 @@ export default async function Layout({
         initialUserData={userResponse}
         initialTeamsData={teamsResponse}
       >
-        <div className="flex flex-col h-[100dvh]">
+        <div className="flex h-[100dvh] flex-col">
           <Topbar />
           {children}
         </div>

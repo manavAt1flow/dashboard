@@ -1,6 +1,7 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, AlertCircle, Info } from "lucide-react";
+import { motion } from "motion/react";
 
 export type AuthMessage =
   | { success: string }
@@ -15,7 +16,12 @@ export function AuthFormMessage({
   message: AuthMessage;
 }) {
   return (
-    <div className={cn("flex flex-col gap-2 w-full max-w-md", className)}>
+    <motion.div
+      className={cn("flex w-full max-w-md flex-col gap-2", className)}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+    >
       {"success" in message && (
         <Alert variant="contrast1" className="border-l-4">
           <CheckCircle2 className="h-4 w-4" />
@@ -34,6 +40,6 @@ export function AuthFormMessage({
           <AlertDescription>{message.message}</AlertDescription>
         </Alert>
       )}
-    </div>
+    </motion.div>
   );
 }

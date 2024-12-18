@@ -53,7 +53,7 @@ export const SETTINGS_SIDEBAR_LINKS: SidebarLink[] = [
 
   {
     label: "Account",
-    href: (args) => `/dashboard/${args.teamId}/settings/account`,
+    href: () => `/dashboard/account`,
     icon: User,
     group: "account",
   },

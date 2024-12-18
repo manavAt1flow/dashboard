@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import { createPreset } from "fumadocs-ui/tailwind-plugin";
+import plugin from "tailwindcss";
 
 const config = {
   darkMode: ["class"],
@@ -122,7 +123,22 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    /*     plugin(function ({ addComponents }) {
+      addComponents({
+        ".bottom-b-solid-contrast-1": {
+          borderBottom: "2px solid hsl(var(--contrast-1))",
+        },
+        ".bottom-b-solid-contrast-2": {
+          borderBottom: "2px solid hsl(var(--contrast-2))",
+        },
+        ".bottom-b-solid-accent": {
+          borderBottom: "2px solid hsl(var(--accent))",
+        },
+      });
+    }), */
+  ],
   presets: [
     // Matchs Fumadocs colors to our theme
     createPreset({

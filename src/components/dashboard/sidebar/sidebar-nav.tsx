@@ -1,12 +1,13 @@
 "use client";
 
+import { useMetadata } from "@/components/providers/metadata-provider";
 import { Button } from "@/components/ui/button";
 import {
   MAIN_SIDEBAR_LINKS,
   SidebarLink,
   SETTINGS_SIDEBAR_LINKS,
 } from "@/configs/sidebar-links";
-import { cn } from "@/lib/utils";
+import { STORAGE_KEYS } from "@/configs/storage-keys";
 import { ChevronLeft } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
@@ -15,7 +16,8 @@ import {
   usePathname,
   useSelectedLayoutSegments,
 } from "next/navigation";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { useLocalStorage } from "usehooks-ts";
 
 const terminalFrameVariants = {
   initial: (direction: "deeper" | "back") => ({
@@ -77,15 +79,16 @@ type GroupedLinks = {
 
 export default function SidebarNav() {
   const segments = useSelectedLayoutSegments();
-  const params = useParams();
   const pathname = usePathname();
+
+  const { lastTeamId } = useMetadata();
 
   const level: "main" | "settings" = useMemo(
     () =>
-      segments.includes("dashboard") && segments.includes("settings")
+      segments.includes("settings") || segments.includes("account")
         ? "settings"
         : "main",
-    [segments]
+    [segments],
   );
 
   const navLinks = useMemo<SidebarLink[]>(() => {
@@ -96,7 +99,7 @@ export default function SidebarNav() {
 
   const direction = useMemo(
     () => (level === "main" ? "back" : "deeper"),
-    [level]
+    [level],
   );
 
   const groupedNavLinks = useMemo<GroupedLinks>(() => {
@@ -125,7 +128,7 @@ export default function SidebarNav() {
           variants={scanlineVariants}
           initial="initial"
           animate="animate"
-          className="absolute inset-0 bg-accent/5 pointer-events-none"
+          className="pointer-events-none absolute inset-0 bg-accent/5"
           style={{ originX: direction === "deeper" ? 0 : 1 }}
         />
 
@@ -140,11 +143,11 @@ export default function SidebarNav() {
             <Button
               variant="link"
               size="slate"
-              className="font-mono gap-1"
+              className="gap-1 font-mono"
               asChild
             >
-              <Link href={`/dashboard/${params.teamId}`}>
-                <ChevronLeft className="w-4 h-4" />
+              <Link href={`/dashboard/${lastTeamId}`}>
+                <ChevronLeft className="h-4 w-4" />
                 Back
               </Link>
             </Button>
@@ -153,9 +156,9 @@ export default function SidebarNav() {
 
         <div>
           {Object.entries(groupedNavLinks).map(([group, links]) => (
-            <motion.div key={group} className="w-full mt-4 first:mt-0">
+            <motion.div key={group} className="mt-4 w-full first:mt-0">
               {group && group !== "ungrouped" && (
-                <div className="text-xs text-fg-300 uppercase font-mono mb-2">
+                <div className="mb-2 font-mono text-xs uppercase text-fg-300">
                   [{group}]
                 </div>
               )}
@@ -171,8 +174,7 @@ export default function SidebarNav() {
                 >
                   <Button
                     variant={
-                      pathname ===
-                      item.href({ teamId: params.teamId as string })
+                      pathname === item.href({ teamId: lastTeamId })
                         ? "default"
                         : "ghost"
                     }
@@ -180,10 +182,7 @@ export default function SidebarNav() {
                     className="w-full justify-start font-mono capitalize"
                     asChild
                   >
-                    <Link
-                      prefetch
-                      href={item.href({ teamId: params.teamId as string })}
-                    >
+                    <Link prefetch href={item.href({ teamId: lastTeamId })}>
                       <span className="mr-2">$</span>
                       {item.label}
                     </Link>

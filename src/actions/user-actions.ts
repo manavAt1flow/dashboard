@@ -7,6 +7,7 @@ import { User, UserAttributes } from "@supabase/supabase-js";
 import checkAuthenticated from "./utils";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
+import { AUTH_URLS, PROTECTED_URLS } from "@/configs/urls";
 
 interface GetUserResponse {
   user: User;
@@ -42,12 +43,15 @@ const UpdateUserSchema = z.object({
   name: z.string().min(1).optional(),
 });
 
+export type UpdateUserSchemaType = z.infer<typeof UpdateUserSchema>;
+
 interface UpdateUserResponse {
   newUser: User;
 }
 
 export async function updateUserAction(
-  data: z.infer<typeof UpdateUserSchema>
+  data: UpdateUserSchemaType,
+  emailRedirectBaseUrl?: string,
 ): Promise<UpdateUserResponse> {
   const parsedData = UpdateUserSchema.safeParse(data);
 
@@ -58,16 +62,21 @@ export async function updateUserAction(
 
   const { supabase } = await checkAuthenticated();
 
-  const { data: updateData, error } = await supabase.auth.updateUser({
-    email: data.email,
-    password: data.password,
-    data: {
-      name: data.name,
+  const { data: updateData, error } = await supabase.auth.updateUser(
+    {
+      email: data.email,
+      password: data.password,
+      data: {
+        name: data.name,
+      },
     },
-  });
+    {
+      emailRedirectTo: `${emailRedirectBaseUrl}/api/auth/email-callback`,
+    },
+  );
 
   if (error) {
-    throw new Error(error.message);
+    throw error;
   }
 
   return {
