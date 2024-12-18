@@ -14,6 +14,7 @@ import { signOutAction } from "@/actions/auth-actions";
 import { useUser } from "../providers/user-provider";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { PROTECTED_URLS } from "@/configs/urls";
 
 export default function UserAvatar() {
   const { teamId } = useParams();
@@ -25,7 +26,7 @@ export default function UserAvatar() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button size="iconSm" className="min-w-8" variant="ghost">
-          <Avatar className="w-full h-full">
+          <Avatar className="h-full w-full">
             <AvatarImage src={data.user?.user_metadata.avatar_url} />
             <AvatarFallback>
               {data.user?.email?.charAt(0).toUpperCase() || "?"}
@@ -36,7 +37,7 @@ export default function UserAvatar() {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>General</DropdownMenuLabel>
         <DropdownMenuItem asChild>
-          <Link href={`/dashboard/${teamId}/settings/account`}>Account</Link>
+          <Link href={PROTECTED_URLS.ACCOUNT_SETTINGS}>Account</Link>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
