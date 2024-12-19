@@ -33,15 +33,6 @@ export default async function Layout({
   } catch (error) {
     console.error("(protected)/layout.tsx:", error);
 
-    // TODO: replace with proper error codes that can be configured somewhere
-
-    if (
-      error instanceof Error &&
-      ["User not found", "User not authenticated"].includes(error.message)
-    ) {
-      return redirect(AUTH_URLS.SIGN_IN);
-    }
-
     throw error;
   }
 }

@@ -6,6 +6,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Provider } from "@supabase/supabase-js";
 import { AUTH_URLS, PROTECTED_URLS } from "@/configs/urls";
+import checkAuthenticated from "./utils";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const signInWithOAuth = async (provider: Provider) => {
   const supabase = await createClient();

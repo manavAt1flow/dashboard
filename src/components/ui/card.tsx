@@ -1,21 +1,24 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "relative bg-bg text-fg",
-      "border-2 border-dashed",
-      "shadow-[0px_2px_0_0px] shadow-fg",
-      className
-    )}
-    {...props}
-  />
-));
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  hideUnderline?: boolean;
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, hideUnderline = false, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        "relative bg-bg text-fg",
+        "border-2 border-dashed",
+        { "[border-bottom:2px_solid_hsla(var(--fg))]": !hideUnderline },
+        className,
+      )}
+      {...props}
+    />
+  ),
+);
 Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<
@@ -39,7 +42,7 @@ const CardTitle = React.forwardRef<
     className={cn(
       "font-mono uppercase tracking-wider",
       "text-lg font-medium leading-none",
-      className
+      className,
     )}
     {...props}
   />
@@ -78,8 +81,8 @@ const CardFooter = React.forwardRef<
     ref={ref}
     className={cn(
       "flex items-center p-6 pt-0",
-      "border-t-2 border-dashed mt-6",
-      className
+      "mt-6 border-t-2 border-dashed",
+      className,
     )}
     {...props}
   />

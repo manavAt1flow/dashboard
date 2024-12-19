@@ -4,6 +4,8 @@ import { Body } from "./layout.client";
 import "@/app/_fonts/fonts";
 
 import "@/styles/globals.css";
+import { ToastProvider } from "@/components/ui/toast";
+import { Toaster } from "@/components/ui/toaster";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -31,7 +33,10 @@ export default function RootLayout({
             disableTransitionOnChange: true,
           }}
         >
-          {children}
+          <ToastProvider>
+            {children}
+            <Toaster />
+          </ToastProvider>
           {/*           <main className="min-h-screen flex flex-col items-center">
             <div className="flex-1 w-full flex flex-col gap-20 items-center">
               <Nav />

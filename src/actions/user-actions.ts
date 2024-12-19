@@ -6,6 +6,8 @@ import { User } from "@supabase/supabase-js";
 import checkAuthenticated from "./utils";
 import { z } from "zod";
 import { headers } from "next/headers";
+import { encodedRedirect } from "@/lib/utils";
+import { PROTECTED_URLS } from "@/configs/urls";
 
 interface GetUserResponse {
   user: User;
@@ -82,3 +84,27 @@ export async function updateUserAction(
     newUser: updateData.user,
   };
 }
+
+interface DeleteAccountResponse {
+  deleted: boolean;
+}
+
+export const deleteAccountAction = async (): Promise<DeleteAccountResponse> => {
+  try {
+    const { user } = await checkAuthenticated();
+
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(user.id);
+
+    if (error) {
+      throw error;
+    }
+
+    return {
+      deleted: true,
+    };
+  } catch (e) {
+    console.error("delete-account-action:", e);
+
+    throw new Error("Failed to delete account");
+  }
+};

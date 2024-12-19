@@ -17,7 +17,6 @@ const buttonVariants = cva(
       variant: {
         default: [
           "bg-fg text-bg",
-          "shadow-[0px_1px_0_0px]",
           "hover:bg-fg-100",
           "active:translate-y-[1px] active:shadow-none",
         ].join(" "),
@@ -38,8 +37,7 @@ const buttonVariants = cva(
           "active:translate-y-[1px] active:shadow-none",
         ].join(" "),
         error: [
-          "border-2 border-dashed bg-error text-error-fg",
-          "shadow-[0px_1px_0_0px] shadow-error",
+          "bg-error text-error-fg",
           "hover:bg-error/90",
           "active:translate-y-[1px] active:shadow-none",
         ].join(" "),
@@ -68,7 +66,7 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 export interface ButtonProps
@@ -81,7 +79,7 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     { className, variant, size, asChild = false, loading = false, ...props },
-    ref
+    ref,
   ) => {
     const Comp = asChild ? Slot : "button";
     return (
@@ -94,7 +92,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {loading ? <Loader variant="compute" /> : props.children}
       </Comp>
     );
-  }
+  },
 );
 Button.displayName = "Button";
 

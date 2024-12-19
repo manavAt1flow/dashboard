@@ -1,3 +1,4 @@
+import { AUTH_URLS, PROTECTED_URLS } from "@/configs/urls";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -18,17 +19,17 @@ export const updateSession = async (request: NextRequest) => {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           response = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            response.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   // This will refresh session if expired - required for Server Components
@@ -36,12 +37,17 @@ export const updateSession = async (request: NextRequest) => {
   const user = await supabase.auth.getUser();
 
   // protected routes
-  if (request.nextUrl.pathname.startsWith("/dashboard") && user.error) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+  if (
+    request.nextUrl.pathname.startsWith(PROTECTED_URLS.DASHBOARD) &&
+    user.error
+  ) {
+    return NextResponse.redirect(new URL(AUTH_URLS.SIGN_IN, request.url));
   }
 
   if (request.nextUrl.pathname === "/" && !user.error) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(
+      new URL(PROTECTED_URLS.DASHBOARD, request.url),
+    );
   }
 
   return response;

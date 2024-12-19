@@ -1,6 +1,6 @@
 "use client";
 
-import { updateUserAction } from "@/actions/user-actions";
+import { deleteAccountAction, updateUserAction } from "@/actions/user-actions";
 import {
   AuthFormMessage,
   AuthMessage,
@@ -19,16 +19,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { forgotPasswordAction } from "@/actions/auth-actions";
-import { cn } from "@/lib/utils";
+import { forgotPasswordAction, signOutAction } from "@/actions/auth-actions";
 import { AnimatePresence } from "motion/react";
+import { AlertDialog } from "@/components/globals/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AccountPage() {
   const { data, setData } = useUser();
   const searchParams = useSearchParams();
 
-  const router = useRouter();
+  const { toast } = useToast();
 
+  // mutation handlers
   const { mutate: mutateName, isPending: isPendingName } = useMutation({
     mutationKey: ["updateUserName"],
     mutationFn: (name: string) => updateUserAction({ name }),
@@ -53,19 +56,42 @@ export default function AccountPage() {
     },
   });
 
+  const { mutate: mutateDeleteAccount, isPending: isPendingDeleteAccount } =
+    useMutation({
+      mutationKey: ["deleteAccount"],
+      mutationFn: deleteAccountAction,
+      onSuccess: () => {
+        setDeleteConfirmDialogOpen(false);
+
+        toast({
+          title: "Account deleted",
+          description: "You have been signed out",
+        });
+
+        signOutAction();
+      },
+      onError: (error) => {
+        setDeleteMessage({ error: error.message });
+      },
+    });
+
+  // states
   const [name, setName] = useState<string>(
     data?.user?.user_metadata?.name || "",
   );
-  const [nameMessage, setNameMessage] = useState<AuthMessage | null>(null);
-
   const [email, setEmail] = useState(
     searchParams.get("new_email") || data?.user?.email || "",
   );
-  const [emailMessage, setEmailMessage] = useState<AuthMessage | null>(null);
 
+  const [deleteConfirmDialogOpen, setDeleteConfirmDialogOpen] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<string>("");
+
+  const [nameMessage, setNameMessage] = useState<AuthMessage | null>(null);
+  const [emailMessage, setEmailMessage] = useState<AuthMessage | null>(null);
   const [passwordMessage, setPasswordMessage] = useState<AuthMessage | null>(
     null,
   );
+  const [deleteMessage, setDeleteMessage] = useState<AuthMessage | null>(null);
 
   // email redirect message / state handler
   useEffect(() => {
@@ -145,7 +171,7 @@ export default function AccountPage() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold">Account</h1>
-      <Card className="shadow-none">
+      <Card hideUnderline>
         <CardHeader>
           <CardTitle>Your Name</CardTitle>
           <CardDescription>
@@ -160,8 +186,6 @@ export default function AccountPage() {
             onChange={(e) => setName(e.target.value)}
             hasChanges={name !== data.user?.user_metadata?.name}
             onSave={() => {
-              setNameMessage(null);
-
               if (!z.string().min(1).safeParse(name).success) {
                 setNameMessage({ error: "Name cannot be empty" });
                 return;
@@ -180,7 +204,7 @@ export default function AccountPage() {
         </CardContent>
       </Card>
 
-      <Card className="shadow-none">
+      <Card hideUnderline>
         <CardHeader>
           <CardTitle>Your Email</CardTitle>
           <CardDescription>
@@ -195,8 +219,6 @@ export default function AccountPage() {
             onChange={(e) => setEmail(e.target.value)}
             hasChanges={email !== data.user?.email}
             onSave={() => {
-              setEmailMessage(null);
-
               if (!z.string().email().safeParse(email).success) {
                 setEmailMessage({ error: "Invalid email" });
                 return;
@@ -215,44 +237,90 @@ export default function AccountPage() {
         </CardContent>
       </Card>
 
-      {data.user?.app_metadata?.providers?.includes("email") && (
-        <Card>
-          <CardHeader
-            className={cn(
-              "flex flex-row items-center justify-between space-y-0",
-              !passwordMessage && "pb-6",
-            )}
-          >
-            <div className="flex flex-col gap-2">
+      <div className="flex gap-6">
+        {data.user?.app_metadata?.providers?.includes("email") && (
+          <Card className="w-full">
+            <CardHeader>
               <CardTitle>Your Password</CardTitle>
               <CardDescription>
                 Change your account password used to sign in.
               </CardDescription>
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => {
-                if (!data.user?.email) return;
+            </CardHeader>
 
-                const formData = new FormData();
-                formData.set("email", data.user.email);
-                formData.set("callbackUrl", "/dashboard/account");
+            <CardContent>
+              <Button
+                variant="muted"
+                onClick={() => {
+                  if (!data.user?.email) return;
 
-                forgotPasswordAction(formData);
-              }}
-            >
-              Reset Password
-            </Button>
+                  const formData = new FormData();
+                  formData.set("email", data.user.email);
+                  formData.set("callbackUrl", "/dashboard/account");
+
+                  forgotPasswordAction(formData);
+                }}
+              >
+                Reset Password
+              </Button>
+              <AnimatePresence initial={false} mode="wait">
+                {passwordMessage && (
+                  <AuthFormMessage message={passwordMessage} />
+                )}
+              </AnimatePresence>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card className="w-full [border-bottom:2px_solid_hsl(var(--error))]">
+          <CardHeader>
+            <CardTitle>Danger Zone</CardTitle>
+            <CardDescription>
+              Delete your account and all associated data.
+            </CardDescription>
           </CardHeader>
-          <AnimatePresence initial={false} mode="wait">
-            {passwordMessage && (
-              <CardContent>
-                <AuthFormMessage message={passwordMessage} />
-              </CardContent>
-            )}
-          </AnimatePresence>
+
+          <CardContent>
+            <AlertDialog
+              trigger={<Button variant="error">Delete Account</Button>}
+              title="Delete Account"
+              description={
+                <>
+                  Are you sure you want to delete your account?
+                  <br />
+                  This action is <span className="text-fg">irreversible</span>.
+                </>
+              }
+              confirm="Delete Account"
+              cancel="Cancel"
+              onConfirm={() => {
+                mutateDeleteAccount();
+              }}
+              confirmProps={{
+                disabled: deleteConfirmation !== "delete my account",
+                loading: isPendingDeleteAccount,
+              }}
+              open={deleteConfirmDialogOpen}
+              onOpenChange={setDeleteConfirmDialogOpen}
+            >
+              <div className="flex flex-col gap-3">
+                <p className="text-fg-300">
+                  To confirm, please enter{" "}
+                  <span className="text-fg">delete my account</span> into the
+                  text field below.
+                </p>
+                <Input
+                  placeholder="delete my account"
+                  value={deleteConfirmation}
+                  onChange={(e) => setDeleteConfirmation(e.target.value)}
+                />
+              </div>
+            </AlertDialog>
+            <AnimatePresence initial={false} mode="wait">
+              {passwordMessage && <AuthFormMessage message={passwordMessage} />}
+            </AnimatePresence>
+          </CardContent>
         </Card>
-      )}
+      </div>
     </div>
   );
 }
