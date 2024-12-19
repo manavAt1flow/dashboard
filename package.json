@@ -16,7 +16,8 @@
     "<-- helpers --->": "",
     "shad": "pnpm dlx shadcn@latest",
     "prebuild": "tsx scripts/check-env.ts",
-    "postinstall": "fumadocs-mdx"
+    "postinstall": "fumadocs-mdx",
+    "generate-billing-types": "openapi-typescript ./specs/billing-openapi.yml -o ./src/lib/api/billing.d.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

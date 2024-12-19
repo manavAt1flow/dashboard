@@ -26,7 +26,7 @@ export default function TeamSelector() {
 
   return (
     <Select value={lastTeamId} onValueChange={setLastTeamId}>
-      <SelectTrigger className="w-auto border-none p-0">
+      <SelectTrigger className="w-auto border-none p-0 normal-case">
         <SelectValue placeholder="Select organization" />
       </SelectTrigger>
       <SelectContent className="min-w-[16rem]">

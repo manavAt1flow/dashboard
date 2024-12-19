@@ -8,6 +8,8 @@ export const serverSchema = z.object({
 export const clientSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+  NEXT_PUBLIC_API_URL: z.string().url(),
+  NEXT_PUBLIC_BILLING_API_URL: z.string().url(),
 });
 
 /**
@@ -15,7 +17,7 @@ export const clientSchema = z.object({
  * a simple validation of the environment variables we need.
  */
 export const formatErrors = (
-  errors: z.ZodFormattedError<Map<string, string>, string>
+  errors: z.ZodFormattedError<Map<string, string>, string>,
 ) =>
   Object.entries(errors)
     .map(([name, value]) => {

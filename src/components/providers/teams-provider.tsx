@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState } from "react";
 import { Database } from "@/types/supabase";
+import React from "react";
 
 type Team = Database["public"]["Tables"]["teams"]["Row"];
 
@@ -12,12 +13,12 @@ export interface TeamsData {
 
 interface TeamsContextType {
   data: TeamsData | null;
-  setTeams: (teams: TeamsData | null) => void;
+  setData: React.Dispatch<React.SetStateAction<TeamsData | null>>;
 }
 
 const TeamsContext = createContext<TeamsContextType>({
   data: null,
-  setTeams: () => {},
+  setData: () => {},
 });
 
 interface TeamsProviderProps {
@@ -29,12 +30,12 @@ export function TeamsProvider({
   children,
   initialTeamsData,
 }: TeamsProviderProps) {
-  const [teams, setTeams] = useState<TeamsData | null>(
-    initialTeamsData || null
+  const [teamsData, setTeamsData] = useState<TeamsData | null>(
+    initialTeamsData || null,
   );
 
   return (
-    <TeamsContext.Provider value={{ data: teams, setTeams }}>
+    <TeamsContext.Provider value={{ data: teamsData, setData: setTeamsData }}>
       {children}
     </TeamsContext.Provider>
   );

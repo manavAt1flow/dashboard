@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,6 @@ import { useToast } from "@/hooks/use-toast";
 export default function AccountPage() {
   const { data, setData } = useUser();
   const searchParams = useSearchParams();
-
   const { toast } = useToast();
 
   // mutation handlers
@@ -165,6 +164,16 @@ export default function AccountPage() {
 
     return () => clearTimeout(timeout);
   }, [passwordMessage]);
+
+  useEffect(() => {
+    if (!deleteMessage) return;
+
+    const timeout = setTimeout(() => {
+      setDeleteMessage(null);
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, [deleteMessage]);
 
   if (!data) return null;
 
@@ -316,7 +325,7 @@ export default function AccountPage() {
               </div>
             </AlertDialog>
             <AnimatePresence initial={false} mode="wait">
-              {passwordMessage && <AuthFormMessage message={passwordMessage} />}
+              {deleteMessage && <AuthFormMessage message={deleteMessage} />}
             </AnimatePresence>
           </CardContent>
         </Card>

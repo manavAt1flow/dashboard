@@ -3,11 +3,9 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { Database } from "@/types/supabase";
 import { User } from "@supabase/supabase-js";
-import checkAuthenticated from "./utils";
+import { checkAuthenticated } from "./utils";
 import { z } from "zod";
 import { headers } from "next/headers";
-import { encodedRedirect } from "@/lib/utils";
-import { PROTECTED_URLS } from "@/configs/urls";
 
 interface GetUserResponse {
   user: User;

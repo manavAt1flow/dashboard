@@ -5,6 +5,9 @@ import { cn } from "@/lib/utils";
 import { CheckCircle2, AlertCircle, Info } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
+// TODO: this type is used in more places than just authentication
+// -> should probably be renamed / moved to a more appropriate location
+
 export type AuthMessage =
   | { success?: string }
   | { error?: string }
