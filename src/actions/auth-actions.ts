@@ -41,7 +41,7 @@ export const signUpAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       AUTH_URLS.SIGN_UP,
-      "Email and both passwords are required"
+      "Email and both passwords are required",
     );
   }
 
@@ -49,7 +49,7 @@ export const signUpAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       AUTH_URLS.SIGN_UP,
-      "Passwords do not match"
+      "Passwords do not match",
     );
   }
 
@@ -68,7 +68,7 @@ export const signUpAction = async (formData: FormData) => {
     return encodedRedirect(
       "success",
       AUTH_URLS.SIGN_UP,
-      "Thanks for signing up! Please check your email for a verification link."
+      "Thanks for signing up! Please check your email for a verification link.",
     );
   }
 };
@@ -100,7 +100,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       AUTH_URLS.FORGOT_PASSWORD,
-      "Email is required"
+      "Email is required",
     );
   }
 
@@ -113,18 +113,19 @@ export const forgotPasswordAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       AUTH_URLS.FORGOT_PASSWORD,
-      "Could not reset password"
+      "Could not reset password",
     );
-  }
-
-  if (callbackUrl) {
-    return redirect(callbackUrl);
   }
 
   return encodedRedirect(
     "success",
-    AUTH_URLS.FORGOT_PASSWORD,
-    "Check your email for a link to reset your password."
+    callbackUrl || AUTH_URLS.FORGOT_PASSWORD,
+    "Check your email for a link to reset your password.",
+    // we add a type for the case that this is called from the account page
+    // -> account page needs to know what message type to display
+    {
+      type: "reset_password",
+    },
   );
 };
 
@@ -138,7 +139,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       AUTH_URLS.RESET_PASSWORD,
-      "Password and confirm password are required"
+      "Password and confirm password are required",
     );
   }
 
@@ -146,7 +147,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       AUTH_URLS.RESET_PASSWORD,
-      "Passwords do not match"
+      "Passwords do not match",
     );
   }
 
@@ -158,7 +159,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       AUTH_URLS.RESET_PASSWORD,
-      "Password update failed"
+      "Password update failed",
     );
   }
 

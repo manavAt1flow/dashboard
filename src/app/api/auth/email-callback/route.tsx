@@ -10,14 +10,17 @@ export async function GET(request: Request) {
   const next = "/dashboard/account";
 
   if (!code && !message) {
-    encodedRedirect("error", next, "Invalid email verification link");
+    encodedRedirect("error", next, "Invalid email verification link", {
+      type: "update_email",
+    });
   }
 
   if (message) {
-    redirect(`${next}?message=${message}`);
+    redirect(`${next}?message=${message}&type=update_email`);
   }
 
   encodedRedirect("success", next, "Email changed successfully", {
     new_email: newEmail || "",
+    type: "update_email",
   });
 }

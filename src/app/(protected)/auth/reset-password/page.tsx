@@ -13,8 +13,8 @@ export default async function ResetPassword(props: {
   const searchParams = await props.searchParams;
 
   return (
-    <div>
-      <form className="flex w-full max-w-md flex-col gap-2 p-4 [&>input]:mb-4">
+    <div className="mx-auto w-full max-w-md p-4 pt-24">
+      <form className="flex w-full flex-col gap-2 [&>input]:mb-4">
         <div>
           <h1 className="text-2xl font-medium">Reset password</h1>
           <p className="text-foreground/60 mb-4 text-sm">

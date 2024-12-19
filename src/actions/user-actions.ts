@@ -5,6 +5,7 @@ import { Database } from "@/types/supabase";
 import { User } from "@supabase/supabase-js";
 import checkAuthenticated from "./utils";
 import { z } from "zod";
+import { headers } from "next/headers";
 
 interface GetUserResponse {
   user: User;
@@ -48,7 +49,6 @@ interface UpdateUserResponse {
 
 export async function updateUserAction(
   data: UpdateUserSchemaType,
-  emailRedirectBaseUrl?: string,
 ): Promise<UpdateUserResponse> {
   const parsedData = UpdateUserSchema.safeParse(data);
 
@@ -59,6 +59,8 @@ export async function updateUserAction(
 
   const { supabase } = await checkAuthenticated();
 
+  const origin = (await headers()).get("origin");
+
   const { data: updateData, error } = await supabase.auth.updateUser(
     {
       email: data.email,
@@ -68,7 +70,7 @@ export async function updateUserAction(
       },
     },
     {
-      emailRedirectTo: `${emailRedirectBaseUrl}/api/auth/email-callback?new_email=${data.email}`,
+      emailRedirectTo: `${origin}/api/auth/email-callback?new_email=${data.email}`,
     },
   );
 

@@ -20,6 +20,8 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { forgotPasswordAction } from "@/actions/auth-actions";
+import { cn } from "@/lib/utils";
+import { AnimatePresence } from "motion/react";
 
 export default function AccountPage() {
   const { data, setData } = useUser();
@@ -41,8 +43,7 @@ export default function AccountPage() {
 
   const { mutate: mutateEmail, isPending: isPendingEmail } = useMutation({
     mutationKey: ["updateUserEmail"],
-    mutationFn: (email: string) =>
-      updateUserAction({ email }, document.location.origin),
+    mutationFn: (email: string) => updateUserAction({ email }),
     onSuccess: (result) => {
       setData((state) => ({ ...state!, user: result.newUser }));
       setEmailMessage({ success: "Check your email for a verification link" });
@@ -66,25 +67,45 @@ export default function AccountPage() {
     null,
   );
 
-  // email redirect message handler
+  // email redirect message / state handler
   useEffect(() => {
-    if (!searchParams.has("success") && !searchParams.has("error")) return;
+    if (
+      !searchParams.has("success") &&
+      !searchParams.has("error") &&
+      !searchParams.has("type")
+    )
+      return;
 
-    if (searchParams.has("success")) {
-      if (searchParams.has("new_email")) {
-        setData((state) => ({
-          ...state!,
-          user: { ...state!.user!, email: searchParams.get("new_email")! },
-        }));
+    if (searchParams.get("type") === "update_email") {
+      if (searchParams.has("success")) {
+        if (searchParams.has("new_email")) {
+          // we update the user state with the new email if things went well
+          // -> user object will be refetched from server on page reload
+
+          setData((state) => ({
+            ...state!,
+            user: { ...state!.user!, email: searchParams.get("new_email")! },
+          }));
+        }
+
+        setEmailMessage({
+          success: decodeURIComponent(searchParams.get("success")!),
+        });
+      } else {
+        setEmailMessage({
+          error: decodeURIComponent(searchParams.get("error")!),
+        });
       }
-
-      setEmailMessage({
-        success: decodeURIComponent(searchParams.get("success") || ""),
-      });
-    } else if (searchParams.has("error")) {
-      setEmailMessage({
-        error: decodeURIComponent(searchParams.get("error") || ""),
-      });
+    } else if (searchParams.get("type") === "reset_password") {
+      setPasswordMessage(
+        searchParams.has("success")
+          ? {
+              success: decodeURIComponent(searchParams.get("success")!),
+            }
+          : {
+              error: decodeURIComponent(searchParams.get("error")!),
+            },
+      );
     }
   }, [searchParams]);
 
@@ -151,9 +172,11 @@ export default function AccountPage() {
             isLoading={isPendingName}
           />
 
-          {nameMessage && (
-            <AuthFormMessage message={nameMessage} className="mt-4" />
-          )}
+          <AnimatePresence initial={false} mode="wait">
+            {nameMessage && (
+              <AuthFormMessage message={nameMessage} className="mt-4" />
+            )}
+          </AnimatePresence>
         </CardContent>
       </Card>
 
@@ -184,16 +207,23 @@ export default function AccountPage() {
             isLoading={isPendingEmail}
           />
 
-          {emailMessage && (
-            <AuthFormMessage message={emailMessage} className="mt-4" />
-          )}
+          <AnimatePresence initial={false} mode="wait">
+            {emailMessage && (
+              <AuthFormMessage message={emailMessage} className="mt-4" />
+            )}
+          </AnimatePresence>
         </CardContent>
       </Card>
 
       {data.user?.app_metadata?.providers?.includes("email") && (
-        <Card className="shadow-none">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            <div>
+        <Card>
+          <CardHeader
+            className={cn(
+              "flex flex-row items-center justify-between space-y-0",
+              !passwordMessage && "pb-6",
+            )}
+          >
+            <div className="flex flex-col gap-2">
               <CardTitle>Your Password</CardTitle>
               <CardDescription>
                 Change your account password used to sign in.
@@ -202,12 +232,25 @@ export default function AccountPage() {
             <Button
               variant="outline"
               onClick={() => {
-                forgotPasswordAction(new FormData());
+                if (!data.user?.email) return;
+
+                const formData = new FormData();
+                formData.set("email", data.user.email);
+                formData.set("callbackUrl", "/dashboard/account");
+
+                forgotPasswordAction(formData);
               }}
             >
               Reset Password
             </Button>
           </CardHeader>
+          <AnimatePresence initial={false} mode="wait">
+            {passwordMessage && (
+              <CardContent>
+                <AuthFormMessage message={passwordMessage} />
+              </CardContent>
+            )}
+          </AnimatePresence>
         </Card>
       )}
     </div>
