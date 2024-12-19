@@ -7,7 +7,6 @@ import {
 } from "@/components/auth/auth-form-message";
 import ChangeDataInput from "@/components/globals/change-data-input";
 import { useUser } from "@/components/providers/user-provider";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -16,15 +15,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useMutation } from "@tanstack/react-query";
-import { AlertCircle } from "lucide-react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { forgotPasswordAction } from "@/actions/auth-actions";
 
 export default function AccountPage() {
   const { data, setData } = useUser();
-  const { teamId } = useParams();
   const searchParams = useSearchParams();
+
+  const router = useRouter();
 
   const { mutate: mutateName, isPending: isPendingName } = useMutation({
     mutationKey: ["updateUserName"],
@@ -56,18 +57,34 @@ export default function AccountPage() {
   );
   const [nameMessage, setNameMessage] = useState<AuthMessage | null>(null);
 
-  const [email, setEmail] = useState(data?.user?.email || "");
+  const [email, setEmail] = useState(
+    searchParams.get("new_email") || data?.user?.email || "",
+  );
   const [emailMessage, setEmailMessage] = useState<AuthMessage | null>(null);
+
+  const [passwordMessage, setPasswordMessage] = useState<AuthMessage | null>(
+    null,
+  );
 
   // email redirect message handler
   useEffect(() => {
-    const error = searchParams.get("error");
-    const message = searchParams.get("message");
+    if (!searchParams.has("success") && !searchParams.has("error")) return;
 
-    if (error) {
-      setEmailMessage({ error: decodeURIComponent(error) });
-    } else if (message) {
-      setEmailMessage({ message: decodeURIComponent(message) });
+    if (searchParams.has("success")) {
+      if (searchParams.has("new_email")) {
+        setData((state) => ({
+          ...state!,
+          user: { ...state!.user!, email: searchParams.get("new_email")! },
+        }));
+      }
+
+      setEmailMessage({
+        success: decodeURIComponent(searchParams.get("success") || ""),
+      });
+    } else if (searchParams.has("error")) {
+      setEmailMessage({
+        error: decodeURIComponent(searchParams.get("error") || ""),
+      });
     }
   }, [searchParams]);
 
@@ -91,6 +108,16 @@ export default function AccountPage() {
 
     return () => clearTimeout(timeout);
   }, [emailMessage]);
+
+  useEffect(() => {
+    if (!passwordMessage) return;
+
+    const timeout = setTimeout(() => {
+      setPasswordMessage(null);
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, [passwordMessage]);
 
   if (!data) return null;
 
@@ -130,7 +157,7 @@ export default function AccountPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="shadow-none">
         <CardHeader>
           <CardTitle>Your Email</CardTitle>
           <CardDescription>
@@ -162,6 +189,27 @@ export default function AccountPage() {
           )}
         </CardContent>
       </Card>
+
+      {data.user?.app_metadata?.providers?.includes("email") && (
+        <Card className="shadow-none">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <div>
+              <CardTitle>Your Password</CardTitle>
+              <CardDescription>
+                Change your account password used to sign in.
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => {
+                forgotPasswordAction(new FormData());
+              }}
+            >
+              Reset Password
+            </Button>
+          </CardHeader>
+        </Card>
+      )}
     </div>
   );
 }

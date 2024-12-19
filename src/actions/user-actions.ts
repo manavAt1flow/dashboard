@@ -1,13 +1,10 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
 import { Database } from "@/types/supabase";
-import { User, UserAttributes } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js";
 import checkAuthenticated from "./utils";
-import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
-import { AUTH_URLS, PROTECTED_URLS } from "@/configs/urls";
 
 interface GetUserResponse {
   user: User;
@@ -71,7 +68,7 @@ export async function updateUserAction(
       },
     },
     {
-      emailRedirectTo: `${emailRedirectBaseUrl}/api/auth/email-callback`,
+      emailRedirectTo: `${emailRedirectBaseUrl}/api/auth/email-callback?new_email=${data.email}`,
     },
   );
 
