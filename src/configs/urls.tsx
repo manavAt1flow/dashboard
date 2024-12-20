@@ -9,4 +9,7 @@ export const AUTH_URLS = {
 export const PROTECTED_URLS = {
   DASHBOARD: "/dashboard",
   ACCOUNT_SETTINGS: "/dashboard/account",
+  NEW_TEAM: "/dashboard/teams/new",
+  TEAMS: "/dashboard/teams",
+  TEAM: (teamId: string) => `/dashboard/${teamId}`,
 };

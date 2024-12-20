@@ -186,3 +186,52 @@ export async function getTeamMembersAction(
       relation: data.find((userTeam) => userTeam.user_id === user.id)!,
     }));
 }
+
+export async function removeTeamMemberAction(teamId: string, userId: string) {
+  const { user } = await checkAuthenticated();
+
+  const isAuthorized = await checkUserTeamAuthorization(user.id, teamId);
+
+  if (!isAuthorized) {
+    throw new Error("User is not authorized to remove team members");
+  }
+
+  const { data: teamMemberData, error: teamMemberError } = await supabaseAdmin
+    .from("users_teams")
+    .select("*")
+    .eq("team_id", teamId)
+    .eq("user_id", userId);
+
+  if (teamMemberError || !teamMemberData || teamMemberData.length === 0) {
+    throw new Error("User is not a member of this team");
+  }
+
+  const teamMember = teamMemberData[0];
+
+  if (teamMember.user_id !== user.id && teamMember.is_default) {
+    throw new Error("Cannot remove a default team member");
+  }
+
+  const { count, error: countError } = await supabaseAdmin
+    .from("users_teams")
+    .select("*", { count: "exact", head: true })
+    .eq("team_id", teamId);
+
+  if (countError) {
+    throw new Error(countError.message);
+  }
+
+  if (count === 1) {
+    throw new Error("Cannot remove the last team member");
+  }
+
+  const { error: removeError } = await supabaseAdmin
+    .from("users_teams")
+    .delete()
+    .eq("team_id", teamId)
+    .eq("user_id", userId);
+
+  if (removeError) {
+    throw new Error(removeError.message);
+  }
+}

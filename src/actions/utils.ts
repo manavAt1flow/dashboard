@@ -68,6 +68,8 @@ export async function getTeamApiKey(userId: string, teamId: string) {
   return teamApiKeyData.api_key;
 }
 
+// TODO: we should probably add some team permission system here
+
 /*
  *  This function checks if a user is authorized to access a team.
  *  If the user is not authorized, it returns false.

@@ -1,6 +1,11 @@
 "use client";
 
-import { getTeamMembersAction } from "@/actions/team-actions";
+import {
+  getTeamMembersAction,
+  removeTeamMemberAction,
+} from "@/actions/team-actions";
+import { AlertDialog } from "@/components/globals/alert-dialog";
+import { useTeams } from "@/components/providers/teams-provider";
 import { useUser } from "@/components/providers/user-provider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -13,24 +18,80 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { QUERY_KEYS } from "@/configs/query-keys";
-import { useQuery } from "@tanstack/react-query";
+import { PROTECTED_URLS } from "@/configs/urls";
+import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { produce } from "immer";
 
 interface MemberTableProps {
   teamId: string;
 }
 
 export default function MemberTable({ teamId }: MemberTableProps) {
+  const { setData } = useTeams();
   const { data: userData } = useUser();
+  const { toast } = useToast();
+  const router = useRouter();
+
+  // states
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
 
   const {
     data: members,
     isLoading,
     error,
+    refetch,
   } = useQuery({
     queryKey: QUERY_KEYS.TEAM_MEMBERS(teamId),
     queryFn: () => getTeamMembersAction(teamId),
     enabled: !!teamId,
   });
+
+  const { mutate: mutateRemoveMember, isPending: isMutatingRemoveMember } =
+    useMutation({
+      mutationFn: async (userId: string) => {
+        await removeTeamMemberAction(teamId, userId);
+
+        return userId;
+      },
+      onSuccess: (removedUserId) => {
+        if (removedUserId === userData?.user?.id) {
+          router.push(PROTECTED_URLS.DASHBOARD);
+
+          setTimeout(() => {
+            setData(
+              produce((draft) => {
+                draft!.teams = draft!.teams.filter(
+                  (team) => team.id !== teamId,
+                );
+              }),
+            );
+          }, 1000);
+
+          return toast({
+            title: "You have left the team",
+          });
+        }
+
+        refetch();
+        toast({
+          title: "Member removed",
+          description: "The member has been removed from the team",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Could not remove member",
+          description: error.message,
+          variant: "error",
+        });
+      },
+      onSettled: () => {
+        setRemoveDialogOpen(false);
+      },
+    });
 
   // TODO: test alert variants in ui
 
@@ -76,18 +137,45 @@ export default function MemberTable({ teamId }: MemberTableProps) {
                     ? "( You )"
                     : (members.find(
                         (m) => m.user.id === member.relation.added_by,
-                      )?.user.name ?? "")}
+                      )?.user.name ?? "( Root )")}
                 </TableCell>
                 <TableCell className="flex justify-end gap-2">
-                  {userData?.user?.id === member.user.id ? (
-                    <Button variant="muted" size="sm">
-                      <span className="text-xs"> Leave Team</span>
-                    </Button>
-                  ) : (
-                    <Button variant="error" size="iconSm">
-                      <span className="text-xs">X</span>
-                    </Button>
-                  )}
+                  {!member.relation.is_default &&
+                    (userData?.user?.id === member.user.id ? (
+                      <AlertDialog
+                        title="Leave Team"
+                        description="Are you sure you want to leave this team?"
+                        confirm="Leave"
+                        onConfirm={() => mutateRemoveMember(member.user.id)}
+                        confirmProps={{
+                          loading: isMutatingRemoveMember,
+                        }}
+                        trigger={
+                          <Button variant="muted" size="sm" className="text-xs">
+                            Leave Team
+                          </Button>
+                        }
+                        open={removeDialogOpen}
+                        onOpenChange={setRemoveDialogOpen}
+                      />
+                    ) : (
+                      <AlertDialog
+                        title="Remove Member"
+                        description="Are you sure you want to remove this member from the team?"
+                        confirm="Remove"
+                        onConfirm={() => mutateRemoveMember(member.user.id)}
+                        confirmProps={{
+                          loading: isMutatingRemoveMember,
+                        }}
+                        trigger={
+                          <Button variant="error" size="iconSm">
+                            <span className="text-xs">X</span>
+                          </Button>
+                        }
+                        open={removeDialogOpen}
+                        onOpenChange={setRemoveDialogOpen}
+                      />
+                    ))}
                 </TableCell>
               </TableRow>
             ))}

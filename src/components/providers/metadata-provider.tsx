@@ -1,8 +1,13 @@
 "use client";
 
-import { STORAGE_KEYS } from "@/configs/storage-keys";
-import { createContext, useContext, ReactNode } from "react";
-import { useLocalStorage } from "usehooks-ts";
+import { useParams } from "next/navigation";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 
 type MetadataContextType = {
   lastTeamId: string | undefined;
@@ -26,14 +31,23 @@ type MetadataProviderProps = {
   initialTeamId?: string;
 };
 
+/*
+ * This provider serves misc. metadata that is used throughout the app.
+ * lastTeamId is used to recover to the last team the user was one, if its not reflected in the url anymore.
+ */
 export function MetadataProvider({
   children,
   initialTeamId,
 }: MetadataProviderProps) {
-  const [lastTeamId, setLastTeamId] = useLocalStorage(
-    STORAGE_KEYS.LAST_TEAM_ID,
-    initialTeamId,
-  );
+  const params = useParams();
+
+  const [lastTeamId, setLastTeamId] = useState(initialTeamId);
+
+  useEffect(() => {
+    if (params.teamId) {
+      setLastTeamId(params.teamId as string);
+    }
+  }, [params.teamId]);
 
   return (
     <MetadataContext.Provider value={{ lastTeamId, setLastTeamId }}>

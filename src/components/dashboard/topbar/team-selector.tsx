@@ -12,11 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PROTECTED_URLS } from "@/configs/urls";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function TeamSelector() {
   const { data } = useTeams();
-  const { lastTeamId, setLastTeamId } = useMetadata();
+  const { lastTeamId } = useMetadata();
+  const router = useRouter();
 
   if (!data) return null;
 
@@ -25,7 +28,10 @@ export default function TeamSelector() {
   const teams = data.teams.filter((team) => team.id !== defaultTeam?.id);
 
   return (
-    <Select value={lastTeamId} onValueChange={setLastTeamId}>
+    <Select
+      value={lastTeamId}
+      onValueChange={(value) => router.push(PROTECTED_URLS.TEAM(value))}
+    >
       <SelectTrigger className="w-auto border-none p-0 normal-case">
         <SelectValue placeholder="Select organization" />
       </SelectTrigger>

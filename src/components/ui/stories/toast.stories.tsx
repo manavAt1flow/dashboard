@@ -8,7 +8,6 @@ import {
   ToastProvider,
   ToastViewport,
 } from "../toast";
-import { Button } from "../button";
 
 const meta = {
   title: "UI/Toast",
@@ -47,7 +46,7 @@ export const Default: Story = {
 
 export const Destructive: Story = {
   render: () => (
-    <Toast variant="destructive">
+    <Toast variant="error">
       <div className="grid gap-1">
         <ToastTitle>Error</ToastTitle>
         <ToastDescription>Something went wrong.</ToastDescription>
