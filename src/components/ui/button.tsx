@@ -32,7 +32,7 @@ const buttonVariants = cva(
           "active:translate-y-[1px] active:shadow-none",
         ].join(" "),
         muted: [
-          "border-2 border-dashed bg-bg-200 text-fg",
+          "border border-border-200 border-dashed bg-bg-200 text-fg",
           "hover:bg-bg-200/90",
           "active:translate-y-[1px] active:shadow-none",
         ].join(" "),
@@ -42,14 +42,14 @@ const buttonVariants = cva(
           "active:translate-y-[1px] active:shadow-none",
         ].join(" "),
         outline: [
-          "border-2 border-dashed bg-transparent",
+          "border border-border bg-transparent",
           "hover:bg-bg-300/80",
           "active:translate-y-[1px] active:shadow-none",
         ].join(" "),
         link: [
           "text-accent underline-offset-4",
           "hover:underline hover:bg-transparent",
-          "focus:ring-0",
+          "focus:ring-0 focus:underline",
           "shadow-none",
         ].join(" "),
       },

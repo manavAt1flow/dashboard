@@ -7,7 +7,6 @@ import {
   SidebarLink,
   SETTINGS_SIDEBAR_LINKS,
 } from "@/configs/sidebar-links";
-import { STORAGE_KEYS } from "@/configs/storage-keys";
 import { ChevronLeft } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
@@ -16,8 +15,7 @@ import {
   usePathname,
   useSelectedLayoutSegments,
 } from "next/navigation";
-import { useEffect, useMemo } from "react";
-import { useLocalStorage } from "usehooks-ts";
+import { useMemo } from "react";
 
 const terminalFrameVariants = {
   initial: (direction: "deeper" | "back") => ({
@@ -122,16 +120,8 @@ export default function SidebarNav() {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="relative border-2 border-dashed p-4"
+        className="relative h-full p-4"
       >
-        <motion.div
-          variants={scanlineVariants}
-          initial="initial"
-          animate="animate"
-          className="pointer-events-none absolute inset-0 bg-accent/5"
-          style={{ originX: direction === "deeper" ? 0 : 1 }}
-        />
-
         {level !== "main" && (
           <motion.div
             initial={{ opacity: 0, x: -10 }}
@@ -156,9 +146,12 @@ export default function SidebarNav() {
 
         <div>
           {Object.entries(groupedNavLinks).map(([group, links]) => (
-            <motion.div key={group} className="mt-4 w-full first:mt-0">
+            <motion.div
+              key={group}
+              className="mt-6 flex w-full flex-col first:mt-0"
+            >
               {group && group !== "ungrouped" && (
-                <div className="mb-2 font-mono text-xs uppercase text-fg-300">
+                <div className="mb-3 font-mono text-xs uppercase text-fg-300">
                   [{group}]
                 </div>
               )}

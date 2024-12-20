@@ -12,7 +12,7 @@ const Table = React.forwardRef<
       className={cn(
         "w-full caption-bottom",
         "font-mono text-sm",
-        "border-2 border-dashed",
+        "border border-dashed",
         className,
       )}
       {...props}
@@ -28,7 +28,7 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      "border-b-2 border-dashed border-fg-300/20",
+      "border-b border-dashed border-fg-300/20",
       "bg-bg-300/50",
       className,
     )}
@@ -60,7 +60,7 @@ const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      "border-t-2 border-dashed border-fg-300/20",
+      "border-t border-dashed border-fg-300/20",
       "bg-bg-300/50 font-mono",
       "[&>tr]:last:border-b-0",
       className,
@@ -78,7 +78,7 @@ const TableRow = React.forwardRef<
     ref={ref}
     className={cn(
       "transition-colors",
-      "hover:bg-bg-300/50",
+      "hover:bg-bg-100/80",
       "data-[state=selected]:bg-bg-300",
       className,
     )}
@@ -96,7 +96,7 @@ const TableHead = React.forwardRef<
     className={cn(
       "h-10 px-4 text-left align-middle",
       "font-mono uppercase tracking-wider",
-      "text-fg-300",
+      "font-medium text-fg-300",
       "[&:has([role=checkbox])]:pr-0",
       className,
     )}
@@ -119,7 +119,7 @@ const TableCell = React.forwardRef<
     ref={ref}
     className={cn(
       "p-4 align-middle",
-      "font-mono",
+      "font-sans",
       "[&:has([role=checkbox])]:pr-0",
       className,
     )}

@@ -25,6 +25,7 @@ import { AlertDialog } from "@/components/globals/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import DashboardPageTitle from "@/components/globals/dashboard-page-title";
 
 export default function AccountPage() {
   const { data, setData } = useUser();
@@ -180,7 +181,7 @@ export default function AccountPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Account</h1>
+      <DashboardPageTitle>Account</DashboardPageTitle>
 
       <div className="grid grid-cols-12 gap-6">
         <Card hideUnderline className={cn("col-span-full")}>
@@ -280,11 +281,7 @@ export default function AccountPage() {
           </CardContent>
         </Card>
 
-        <Card
-          className={cn(
-            "col-span-6 h-min [border-bottom:2px_solid_hsl(var(--error))]",
-          )}
-        >
+        <Card className={cn("col-span-6 h-min")}>
           <CardHeader>
             <CardTitle>Danger Zone</CardTitle>
             <CardDescription>

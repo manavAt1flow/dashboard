@@ -11,6 +11,7 @@ import {
 import MemberTable from "@/components/dashboard/team/member-table";
 import ChangeDataInput from "@/components/globals/change-data-input";
 import { queryClient } from "@/components/globals/client-providers";
+import DashboardPageTitle from "@/components/globals/dashboard-page-title";
 import { useMetadata } from "@/components/providers/metadata-provider";
 import { useTeams } from "@/components/providers/teams-provider";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { QUERY_KEYS } from "@/configs/query-keys";
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence } from "motion/react";
@@ -109,7 +111,7 @@ export default function OrganizationSettings() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Organization Settings</h1>
+      <DashboardPageTitle>General</DashboardPageTitle>
       <Card hideUnderline>
         <CardHeader>
           <CardTitle>Organization Name</CardTitle>
@@ -148,7 +150,7 @@ export default function OrganizationSettings() {
           <CardTitle>Members</CardTitle>
           <CardDescription>Manage your organization members.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-10">
           <AnimatePresence mode="wait" initial={false}>
             {addMemberMessage && (
               <AuthFormMessage className="mb-4" message={addMemberMessage} />
@@ -168,17 +170,60 @@ export default function OrganizationSettings() {
             }}
             className="mb-6 flex w-1/2 gap-2"
           >
-            <Input
-              placeholder="xyz@acme.com"
-              value={addMemberEmail}
-              onChange={(e) => setAddMemberEmail(e.target.value)}
-            />
-            <Button loading={isMutatingAddMember} type="submit">
+            <div className="relative w-full">
+              <Label
+                className="absolute bottom-[115%] left-1 text-xs text-fg-300"
+                htmlFor="addMemberEmail"
+              >
+                E-Mail
+              </Label>
+              <Input
+                placeholder="member@acme.com"
+                name="addMemberEmail"
+                value={addMemberEmail}
+                onChange={(e) => setAddMemberEmail(e.target.value)}
+              />
+            </div>
+            <Button
+              loading={isMutatingAddMember}
+              type="submit"
+              disabled={addMemberEmail.length === 0}
+            >
               Add Member
             </Button>
           </form>
 
           <MemberTable teamId={selectedTeam?.id ?? ""} />
+        </CardContent>
+      </Card>
+
+      <Card className="[border-bottom:1px_solid_hsl(var(--error))]">
+        <CardHeader>
+          <CardTitle>Danger Zone</CardTitle>
+          <CardDescription>
+            Actions here can't be undone. Please proceed with caution.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <div className="flex items-center justify-between p-4">
+            <div className="flex flex-col gap-1">
+              <h4 className="font-medium">Leave Organization</h4>
+              <p className="font-sans text-sm text-fg-500">
+                Remove yourself from this organization
+              </p>
+            </div>
+            <Button variant="muted">Leave Organization</Button>
+          </div>
+
+          <div className="flex items-center justify-between p-4">
+            <div className="flex flex-col gap-1">
+              <h4 className="font-medium text-fg">Delete Organization</h4>
+              <p className="font-sans text-sm text-fg-500">
+                Permanently delete this organization and all of its data
+              </p>
+            </div>
+            <Button variant="error">Delete Organization</Button>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -10,7 +10,7 @@ export const mono = IBM_Plex_Mono({
 export const sans = IBM_Plex_Sans({
   subsets: ["latin"],
   variable: "--font-ibm-plex-sans",
-  weight: ["400", "700"],
+  weight: ["200", "300", "400", "500", "600", "700"],
 });
 
 export const aeonik = localFont({

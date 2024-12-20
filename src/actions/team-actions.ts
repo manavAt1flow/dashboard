@@ -138,6 +138,7 @@ type GetTeamMembersResponse = {
     id: string;
     email: string;
     name?: string;
+    avatar_url?: string;
   };
   relation: Database["public"]["Tables"]["users_teams"]["Row"];
 }[];
@@ -182,6 +183,7 @@ export async function getTeamMembersAction(
         // email should be defined based on our login methods
         email: user.email!,
         name: user.user_metadata?.name,
+        avatar_url: user.user_metadata?.avatar_url,
       },
       relation: data.find((userTeam) => userTeam.user_id === user.id)!,
     }));

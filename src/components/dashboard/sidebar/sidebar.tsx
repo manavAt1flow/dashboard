@@ -3,9 +3,9 @@ import SidebarNav from "./sidebar-nav";
 
 export default async function Sidebar() {
   return (
-    <div className="flex flex-col gap-3 w-56 pb-4 pl-4">
+    <aside className="flex w-56 flex-col gap-3 pb-4 pl-4">
       <SidebarSearch className="w-full" />
       <SidebarNav />
-    </div>
+    </aside>
   );
 }

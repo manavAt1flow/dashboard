@@ -24,6 +24,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { produce } from "immer";
+import { Loader } from "@/components/ui/loader";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface MemberTableProps {
   teamId: string;
@@ -98,9 +100,10 @@ export default function MemberTable({ teamId }: MemberTableProps) {
   return (
     <div className="w-full">
       {isLoading && (
-        <Alert>
-          <AlertDescription>Loading members...</AlertDescription>
-        </Alert>
+        <div className="flex items-center gap-3 p-6">
+          Loading members
+          <Loader variant="line" />
+        </div>
       )}
 
       {error && (
@@ -118,9 +121,10 @@ export default function MemberTable({ teamId }: MemberTableProps) {
       )}
 
       {!isLoading && !error && members && members.length > 0 && (
-        <Table>
+        <Table className="animate-in fade-in">
           <TableHeader>
             <TableRow>
+              <th></th>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Added By</TableHead>
@@ -130,18 +134,49 @@ export default function MemberTable({ teamId }: MemberTableProps) {
           <TableBody>
             {members.map((member) => (
               <TableRow key={member.user.id}>
-                <TableCell>{member.user.name ?? "Anonymous"}</TableCell>
-                <TableCell>{member.user.email}</TableCell>
                 <TableCell>
+                  <Avatar className="size-8">
+                    <AvatarImage src={member.user?.avatar_url} />
+                    <AvatarFallback>
+                      {member.user?.email?.charAt(0).toUpperCase() || "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                </TableCell>
+                <TableCell>
+                  {member.user.id === userData?.user?.id
+                    ? "You"
+                    : (member.user.name ?? "Anonymous")}
+                </TableCell>
+                <TableCell>{member.user.email}</TableCell>
+                <TableCell className="text-fg-300">
                   {member.relation.added_by === userData?.user?.id
-                    ? "( You )"
+                    ? "You"
                     : (members.find(
                         (m) => m.user.id === member.relation.added_by,
-                      )?.user.name ?? "( Root )")}
+                      )?.user.name ?? "")}
                 </TableCell>
-                <TableCell className="flex justify-end gap-2">
-                  {!member.relation.is_default &&
-                    (userData?.user?.id === member.user.id ? (
+                <TableCell className="text-end">
+                  {
+                    !member.relation.is_default &&
+                      userData?.user?.id !== member.user.id && (
+                        <AlertDialog
+                          title="Remove Member"
+                          description="Are you sure you want to remove this member from the team?"
+                          confirm="Remove"
+                          onConfirm={() => mutateRemoveMember(member.user.id)}
+                          confirmProps={{
+                            loading: isMutatingRemoveMember,
+                          }}
+                          trigger={
+                            <Button variant="muted" size="iconSm">
+                              <span className="text-xs">X</span>
+                            </Button>
+                          }
+                          open={removeDialogOpen}
+                          onOpenChange={setRemoveDialogOpen}
+                        />
+                      )
+                    /*                     (userData?.user?.id === member.user.id ? (
                       <AlertDialog
                         title="Leave Team"
                         description="Are you sure you want to leave this team?"
@@ -159,23 +194,8 @@ export default function MemberTable({ teamId }: MemberTableProps) {
                         onOpenChange={setRemoveDialogOpen}
                       />
                     ) : (
-                      <AlertDialog
-                        title="Remove Member"
-                        description="Are you sure you want to remove this member from the team?"
-                        confirm="Remove"
-                        onConfirm={() => mutateRemoveMember(member.user.id)}
-                        confirmProps={{
-                          loading: isMutatingRemoveMember,
-                        }}
-                        trigger={
-                          <Button variant="error" size="iconSm">
-                            <span className="text-xs">X</span>
-                          </Button>
-                        }
-                        open={removeDialogOpen}
-                        onOpenChange={setRemoveDialogOpen}
-                      />
-                    ))}
+                       */
+                  }
                 </TableCell>
               </TableRow>
             ))}
