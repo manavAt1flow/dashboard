@@ -16,6 +16,7 @@ export type SidebarLink = {
   href: (args: SidebarLinkArgs) => string;
   icon: React.ComponentType;
   group?: string;
+  goesDeeper?: boolean;
 };
 
 export const MAIN_SIDEBAR_LINKS: SidebarLink[] = [
@@ -31,13 +32,14 @@ export const MAIN_SIDEBAR_LINKS: SidebarLink[] = [
   },
   {
     label: "Templates",
-    href: (args) => `/dashboard/${args.teamId}/sandboxes`,
+    href: (args) => `/dashboard/${args.teamId}/templates`,
     icon: LucideSheet,
   },
   {
     label: "Settings",
     icon: Settings,
     href: (args) => `/dashboard/${args.teamId}/settings/general`,
+    goesDeeper: true,
   },
 ];
 

@@ -7,7 +7,14 @@ import {
   SidebarLink,
   SETTINGS_SIDEBAR_LINKS,
 } from "@/configs/sidebar-links";
-import { ChevronLeft } from "lucide-react";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowBigRight,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  MoveRight,
+} from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import {
@@ -148,10 +155,10 @@ export default function SidebarNav() {
           {Object.entries(groupedNavLinks).map(([group, links]) => (
             <motion.div
               key={group}
-              className="mt-6 flex w-full flex-col first:mt-0"
+              className="mt-6 flex w-full flex-col gap-1 first:mt-0"
             >
               {group && group !== "ungrouped" && (
-                <div className="mb-3 font-mono text-xs uppercase text-fg-300">
+                <div className="mb-2 font-mono text-xs uppercase text-fg-300">
                   [{group}]
                 </div>
               )}
@@ -178,6 +185,9 @@ export default function SidebarNav() {
                     <Link prefetch href={item.href({ teamId: lastTeamId })}>
                       <span className="mr-2">$</span>
                       {item.label}
+                      {item.goesDeeper && (
+                        <ChevronRight className="ml-auto h-4 w-4" />
+                      )}
                     </Link>
                   </Button>
                 </motion.div>

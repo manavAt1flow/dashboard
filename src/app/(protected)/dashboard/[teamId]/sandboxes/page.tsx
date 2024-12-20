@@ -1,9 +1,9 @@
 import DashboardPageTitle from "@/components/globals/dashboard-page-title";
 
-export default function Page() {
+export default async function Page() {
   return (
     <>
-      <DashboardPageTitle>Home</DashboardPageTitle>
+      <DashboardPageTitle>Sandboxes</DashboardPageTitle>
     </>
   );
 }

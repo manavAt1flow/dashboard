@@ -97,8 +97,7 @@ export default function OrganizationSettings() {
       },
     });
 
-  // message handler
-
+  // message timeouts
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (addMemberMessage) {
@@ -108,6 +107,16 @@ export default function OrganizationSettings() {
 
     return () => clearTimeout(timeout);
   }, [addMemberMessage]);
+
+  useEffect(() => {
+    if (!teamNameMessage) return;
+
+    const timeout = setTimeout(() => {
+      setTeamNameMessage(null);
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, [teamNameMessage]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -151,12 +160,6 @@ export default function OrganizationSettings() {
           <CardDescription>Manage your organization members.</CardDescription>
         </CardHeader>
         <CardContent className="pt-10">
-          <AnimatePresence mode="wait" initial={false}>
-            {addMemberMessage && (
-              <AuthFormMessage className="mb-4" message={addMemberMessage} />
-            )}
-          </AnimatePresence>
-
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -192,6 +195,12 @@ export default function OrganizationSettings() {
               Add Member
             </Button>
           </form>
+
+          <AnimatePresence mode="wait" initial={false}>
+            {addMemberMessage && (
+              <AuthFormMessage className="mb-6" message={addMemberMessage} />
+            )}
+          </AnimatePresence>
 
           <MemberTable teamId={selectedTeam?.id ?? ""} />
         </CardContent>
