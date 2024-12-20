@@ -10,7 +10,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     <div
       ref={ref}
       className={cn(
-        "relative bg-bg text-fg",
+        "relative bg-bg-200 text-fg",
         "border-2 border-dashed",
         { "[border-bottom:2px_solid_hsla(var(--fg))]": !hideUnderline },
         className,

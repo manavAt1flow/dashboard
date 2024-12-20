@@ -1,3 +1,4 @@
+import { createClient } from "@/lib/supabase/server";
 import { encodedRedirect } from "@/lib/utils";
 import { redirect } from "next/navigation";
 
@@ -17,6 +18,15 @@ export async function GET(request: Request) {
 
   if (message) {
     redirect(`${next}?message=${message}&type=update_email`);
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.exchangeCodeForSession(code!);
+
+  if (error) {
+    encodedRedirect("error", next, "Failed to update email", {
+      type: "update_email",
+    });
   }
 
   encodedRedirect("success", next, "Email changed successfully", {
