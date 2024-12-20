@@ -23,7 +23,7 @@ export default async function Login(props: {
         Don&apos;t have an account?{" "}
         <Link
           className="font-medium text-fg underline"
-          href={AUTH_URLS.SIGN_IN}
+          href={AUTH_URLS.SIGN_UP}
         >
           Sign up
         </Link>

@@ -24,6 +24,7 @@ import { AnimatePresence } from "motion/react";
 import { AlertDialog } from "@/components/globals/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 export default function AccountPage() {
   const { data, setData } = useUser();
@@ -180,107 +181,110 @@ export default function AccountPage() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold">Account</h1>
-      <Card hideUnderline>
-        <CardHeader>
-          <CardTitle>Your Name</CardTitle>
-          <CardDescription>
-            Change your name to display on your invoices and receipts.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3">
-          <ChangeDataInput
-            placeholder="Name"
-            className="w-[17rem]"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            hasChanges={name !== data.user?.user_metadata?.name}
-            onSave={() => {
-              if (!z.string().min(1).safeParse(name).success) {
-                setNameMessage({ error: "Name cannot be empty" });
-                return;
-              }
 
-              mutateName(name);
-            }}
-            isLoading={isPendingName}
-          />
+      <div className="grid grid-cols-12 gap-6">
+        <Card hideUnderline className={cn("col-span-full")}>
+          <CardHeader>
+            <CardTitle>Your Name</CardTitle>
+            <CardDescription>
+              Will be visible to your team members.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            <ChangeDataInput
+              placeholder="Name"
+              className="w-[17rem]"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              hasChanges={name !== data.user?.user_metadata?.name}
+              onSave={() => {
+                if (!z.string().min(1).safeParse(name).success) {
+                  setNameMessage({ error: "Name cannot be empty" });
+                  return;
+                }
 
-          <AnimatePresence initial={false} mode="wait">
-            {nameMessage && (
-              <AuthFormMessage message={nameMessage} className="mt-4" />
-            )}
-          </AnimatePresence>
-        </CardContent>
-      </Card>
+                mutateName(name);
+              }}
+              isLoading={isPendingName}
+            />
 
-      <Card hideUnderline>
-        <CardHeader>
-          <CardTitle>Your Email</CardTitle>
-          <CardDescription>
-            Change your email to receive notifications and updates.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3">
-          <ChangeDataInput
-            placeholder="Email"
-            className="w-[25rem]"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            hasChanges={email !== data.user?.email}
-            onSave={() => {
-              if (!z.string().email().safeParse(email).success) {
-                setEmailMessage({ error: "Invalid email" });
-                return;
-              }
+            <AnimatePresence initial={false} mode="wait">
+              {nameMessage && (
+                <AuthFormMessage message={nameMessage} className="mt-4" />
+              )}
+            </AnimatePresence>
+          </CardContent>
+        </Card>
 
-              mutateEmail(email);
-            }}
-            isLoading={isPendingEmail}
-          />
+        <Card hideUnderline className={cn("col-span-full")}>
+          <CardHeader>
+            <CardTitle>Your Email</CardTitle>
+            <CardDescription>
+              Change your email to receive notifications and updates.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            <ChangeDataInput
+              placeholder="Email"
+              className="w-[25rem]"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              hasChanges={email !== data.user?.email}
+              onSave={() => {
+                if (!z.string().email().safeParse(email).success) {
+                  setEmailMessage({ error: "Invalid email" });
+                  return;
+                }
 
-          <AnimatePresence initial={false} mode="wait">
-            {emailMessage && (
-              <AuthFormMessage message={emailMessage} className="mt-4" />
-            )}
-          </AnimatePresence>
-        </CardContent>
-      </Card>
+                mutateEmail(email);
+              }}
+              isLoading={isPendingEmail}
+            />
 
-      <div className="flex gap-6">
-        {data.user?.app_metadata?.providers?.includes("email") && (
-          <Card className="w-full">
-            <CardHeader>
-              <CardTitle>Your Password</CardTitle>
-              <CardDescription>
-                Change your account password used to sign in.
-              </CardDescription>
-            </CardHeader>
+            <AnimatePresence initial={false} mode="wait">
+              {emailMessage && (
+                <AuthFormMessage message={emailMessage} className="mt-4" />
+              )}
+            </AnimatePresence>
+          </CardContent>
+        </Card>
 
-            <CardContent>
-              <Button
-                variant="muted"
-                onClick={() => {
-                  if (!data.user?.email) return;
+        <Card className={cn("col-span-6")}>
+          <CardHeader>
+            <CardTitle>Your Password</CardTitle>
+            <CardDescription>
+              Change your account password used to sign in.
+            </CardDescription>
+          </CardHeader>
 
-                  const formData = new FormData();
-                  formData.set("email", data.user.email);
-                  formData.set("callbackUrl", "/dashboard/account");
+          <CardContent>
+            <Button
+              variant="muted"
+              onClick={() => {
+                if (!data.user?.email) return;
 
-                  forgotPasswordAction(formData);
-                }}
-              >
-                Reset Password
-              </Button>
-              <AnimatePresence initial={false} mode="wait">
-                {passwordMessage && (
-                  <AuthFormMessage message={passwordMessage} />
-                )}
-              </AnimatePresence>
-            </CardContent>
-          </Card>
-        )}
+                const formData = new FormData();
+                formData.set("email", data.user.email);
+                formData.set("callbackUrl", "/dashboard/account");
 
-        <Card className="w-full [border-bottom:2px_solid_hsl(var(--error))]">
+                forgotPasswordAction(formData);
+              }}
+            >
+              Change Password
+            </Button>
+            <AnimatePresence initial={false} mode="wait">
+              {passwordMessage && (
+                <AuthFormMessage className="mt-4" message={passwordMessage} />
+              )}
+            </AnimatePresence>
+          </CardContent>
+        </Card>
+
+        <Card
+          className={cn(
+            "col-span-6 h-min [border-bottom:2px_solid_hsl(var(--error))]",
+          )}
+        >
           <CardHeader>
             <CardTitle>Danger Zone</CardTitle>
             <CardDescription>
