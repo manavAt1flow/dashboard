@@ -16,6 +16,7 @@ const GetApiKeysSchema = z.object({
 });
 
 interface ObscuredApiKey {
+  id: string;
   name: string;
   maskedKey: string;
   createdBy: string | null;
@@ -64,6 +65,7 @@ export const getTeamApiKeysAction = async ({
       }
 
       resultApiKeys.push({
+        id: apiKey.id,
         name: apiKey.name,
         maskedKey: maskApiKey(apiKey),
         createdAt: apiKey.created_at,
@@ -143,6 +145,51 @@ export const createApiKeyAction = async ({
     };
   } catch (e) {
     console.error("create-api-key-action:", e);
+    throw e;
+  }
+};
+
+// Delete API Key
+
+const DeleteApiKeySchema = z.object({
+  teamId: z.string({ required_error: "Team ID is required" }).uuid(),
+  apiKeyId: z.string({ required_error: "API Key ID is required" }).uuid(),
+});
+
+interface DeleteApiKeyResponse {
+  success: boolean;
+}
+
+export const deleteApiKeyAction = async ({
+  teamId,
+  apiKeyId,
+}: z.infer<typeof DeleteApiKeySchema>): Promise<DeleteApiKeyResponse> => {
+  try {
+    DeleteApiKeySchema.parse({
+      teamId,
+      apiKeyId,
+    });
+
+    const { user } = await checkAuthenticated();
+
+    const isAuthorized = await checkUserTeamAuthorization(user.id, teamId);
+
+    if (!isAuthorized)
+      throw new Error("Not authorized to delete team api keys");
+
+    const { error } = await supabaseAdmin
+      .from("team_api_keys")
+      .delete()
+      .eq("team_id", teamId)
+      .eq("id", apiKeyId);
+
+    if (error) throw error;
+
+    return {
+      success: true,
+    };
+  } catch (e) {
+    console.error("delete-api-key-action:", e);
     throw e;
   }
 };

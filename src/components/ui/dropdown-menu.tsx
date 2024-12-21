@@ -47,8 +47,8 @@ const DropdownMenuSubContent = React.forwardRef<
     ref={ref}
     className={cn(
       "z-50 min-w-[8rem] overflow-hidden",
-      "border-2 border-dashed bg-bg p-1",
-      "text-fg shadow-[0px_2px_0_0px] shadow-contrast-1",
+      "border border-dashed bg-bg p-1",
+      "text-fg [border-bottom:1px_solid_border-hsl(var(--contrast-1))]",
       "data-[state=open]:animate-in data-[state=closed]:animate-out",
       "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -75,8 +75,8 @@ const DropdownMenuContent = React.forwardRef<
       collisionPadding={collisionPadding}
       className={cn(
         "z-50 min-w-[10rem] overflow-hidden",
-        "border-2 border-dashed bg-bg p-3",
-        "text-fg shadow-[0px_2px_0_0px] shadow-contrast-1",
+        "border border-dashed bg-bg p-1",
+        "text-fg [border-bottom:1px_solid_border-hsl(var(--contrast-1))]",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -201,7 +201,7 @@ const DropdownMenuSeparator = React.forwardRef<
   <DropdownMenuPrimitive.Separator
     ref={ref}
     className={cn(
-      "-mx-1 my-2 border-t-2 border-dashed border-fg-300/20",
+      "-mx-1 my-2 border-t border-dashed border-fg-300/20",
       className,
     )}
     {...props}

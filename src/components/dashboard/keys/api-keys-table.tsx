@@ -1,7 +1,17 @@
 "use client";
 
-import { getTeamApiKeysAction } from "@/actions/key-actions";
+import {
+  deleteApiKeyAction,
+  getTeamApiKeysAction,
+} from "@/actions/key-actions";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Loader } from "@/components/ui/loader";
 import {
   Table,
@@ -12,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { QUERY_KEYS } from "@/configs/query-keys";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { MoreHorizontal } from "lucide-react";
 import { FC } from "react";
 
@@ -22,21 +32,33 @@ interface ApiKeysTableProps {
 
 const ApiKeysTable: FC<ApiKeysTableProps> = ({ teamId }) => {
   // queries
-  const { data: keysData, isLoading } = useQuery({
+  const {
+    data: keysData,
+    refetch: refetchKeys,
+    isLoading: isLoadingKeys,
+  } = useQuery({
     queryKey: QUERY_KEYS.TEAM_API_KEYS(teamId),
     queryFn: () => getTeamApiKeysAction({ teamId }),
   });
 
+  // mutations
+  const { mutate: deleteKey, isPending: isDeletingKey } = useMutation({
+    mutationFn: (apiKeyId: string) => deleteApiKeyAction({ teamId, apiKeyId }),
+    onSuccess: () => {
+      refetchKeys();
+    },
+  });
+
   return (
     <div className="w-full">
-      {isLoading && (
+      {isLoadingKeys && (
         <div className="flex items-center gap-3 px-6 py-4">
           Loading Keys
           <Loader variant="progress" />
         </div>
       )}
 
-      {!isLoading && keysData && (
+      {!isLoadingKeys && keysData && (
         <Table className="animate-in fade-in">
           <TableHeader>
             <TableRow>
@@ -47,6 +69,18 @@ const ApiKeysTable: FC<ApiKeysTableProps> = ({ teamId }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
+            {keysData.apiKeys.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={4}>
+                  <Alert>
+                    <AlertTitle>No API Keys</AlertTitle>
+                    <AlertDescription>
+                      No API keys found for this team.
+                    </AlertDescription>
+                  </Alert>
+                </TableCell>
+              </TableRow>
+            )}
             {keysData.apiKeys.map((key, index) => (
               <TableRow key={`${key.name}-${index}`}>
                 <TableCell className="flex flex-col gap-1">
@@ -64,9 +98,26 @@ const ApiKeysTable: FC<ApiKeysTableProps> = ({ teamId }) => {
                     : "-"}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="muted" size="sm" className="text-xs">
-                    <MoreHorizontal className="size-4" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="muted"
+                        size="sm"
+                        loading={isDeletingKey}
+                        className="text-xs"
+                      >
+                        <MoreHorizontal className="size-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem
+                        className="text-error"
+                        onClick={() => deleteKey(key.id)}
+                      >
+                        X Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))}
