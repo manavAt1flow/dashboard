@@ -137,6 +137,10 @@
     @apply border-border;
   }
 
+  *::selection {
+    background-color: hsl(var(--accent) / 0.3);
+  }
+
   body {
     @apply bg-bg tracking-wide text-fg antialiased;
 
