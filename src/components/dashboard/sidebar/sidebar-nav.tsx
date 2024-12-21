@@ -7,21 +7,10 @@ import {
   SidebarLink,
   SETTINGS_SIDEBAR_LINKS,
 } from "@/configs/sidebar-links";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import {
-  ArrowBigRight,
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  MoveRight,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
-import {
-  useParams,
-  usePathname,
-  useSelectedLayoutSegments,
-} from "next/navigation";
+import { usePathname, useSelectedLayoutSegments } from "next/navigation";
 import { useMemo } from "react";
 
 const terminalFrameVariants = {

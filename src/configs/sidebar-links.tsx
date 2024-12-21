@@ -1,6 +1,7 @@
 import {
   Blocks,
   HomeIcon,
+  Key,
   LucideSheet,
   Settings,
   User,
@@ -48,6 +49,12 @@ export const SETTINGS_SIDEBAR_LINKS: SidebarLink[] = [
     label: "General",
     href: (args) => `/dashboard/${args.teamId}/settings/general`,
     icon: Users,
+    group: "organization",
+  },
+  {
+    label: "API Keys",
+    href: (args) => `/dashboard/${args.teamId}/settings/keys`,
+    icon: Key,
     group: "organization",
   },
 

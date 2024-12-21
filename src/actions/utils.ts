@@ -1,8 +1,8 @@
-"use server";
+import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { supabase } from "@/lib/supabase/client";
 import { createClient } from "@/lib/supabase/server";
+import { Database } from "@/types/supabase";
 
 /*
  *  This function checks if the user is authenticated and returns the user and the supabase client.
@@ -93,4 +93,21 @@ export async function checkUserTeamAuthorization(
   }
 
   return !!userTeamsRelationData;
+}
+
+/*
+ *  This function masks an API key by showing only the first and last 4 characters,
+ *  replacing the middle characters with dots (•).
+ *  Returns the masked API key string.
+ */
+export function maskApiKey(
+  apiKey: Database["public"]["Tables"]["team_api_keys"]["Row"],
+) {
+  const firstFour = apiKey.api_key.slice(0, 4);
+  const lastFour = apiKey.api_key.slice(-4);
+  const stars = Array.from({ length: apiKey.api_key.length - 8 })
+    .map(() => "•")
+    .join("");
+
+  return `${firstFour}${stars}${lastFour}`;
 }
