@@ -28,28 +28,22 @@ const terminalFrameVariants = {
   initial: (direction: "deeper" | "back") => ({
     x: direction === "deeper" ? 30 : -30,
     opacity: 0,
-    clipPath:
-      direction === "deeper" ? "inset(0 100% 0 0)" : "inset(0 0 0 100%)",
+    transition: {
+      duration: 0.1,
+    },
   }),
   animate: {
     x: 0,
     opacity: 1,
-    clipPath: "inset(0 0 0 0)",
     transition: {
-      x: { type: "spring", stiffness: 400, damping: 25 },
-      opacity: { duration: 0.1 },
-      clipPath: { duration: 0.15, ease: "easeOut" },
+      duration: 0.1,
     },
   },
   exit: (direction: "deeper" | "back") => ({
     x: direction === "deeper" ? -30 : 30,
     opacity: 0,
-    clipPath:
-      direction === "deeper" ? "inset(0 0 0 100%)" : "inset(0 100% 0 0)",
     transition: {
-      x: { type: "spring", stiffness: 400, damping: 25 },
-      opacity: { duration: 0.1 },
-      clipPath: { duration: 0.15, ease: "easeOut" },
+      duration: 0.1,
     },
   }),
 };
@@ -65,17 +59,6 @@ const itemVariants = {
     },
   }),
   exit: { opacity: 0, x: 10 },
-};
-
-const scanlineVariants = {
-  initial: { scaleX: 0 },
-  animate: {
-    scaleX: 1,
-    transition: {
-      duration: 0.3,
-      ease: "linear",
-    },
-  },
 };
 
 type GroupedLinks = {
@@ -131,10 +114,10 @@ export default function SidebarNav() {
       >
         {level !== "main" && (
           <motion.div
-            initial={{ opacity: 0, x: -10 }}
+            initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 10 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{ duration: 0.3 }}
             className="mb-2"
           >
             <Button
@@ -153,7 +136,7 @@ export default function SidebarNav() {
 
         <div>
           {Object.entries(groupedNavLinks).map(([group, links]) => (
-            <motion.div
+            <div
               key={group}
               className="mt-6 flex w-full flex-col gap-1 first:mt-0"
             >
@@ -192,7 +175,7 @@ export default function SidebarNav() {
                   </Button>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           ))}
         </div>
       </motion.div>
