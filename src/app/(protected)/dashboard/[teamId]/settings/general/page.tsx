@@ -9,11 +9,13 @@ import {
   AuthMessage,
 } from "@/components/auth/auth-form-message";
 import MemberTable from "@/components/dashboard/team/member-table";
+import { AlertDialog } from "@/components/globals/alert-dialog";
 import ChangeDataInput from "@/components/globals/change-data-input";
 import { queryClient } from "@/components/globals/client-providers";
 import DashboardPageTitle from "@/components/globals/dashboard-page-title";
 import { useMetadata } from "@/components/providers/metadata-provider";
 import { useTeams } from "@/components/providers/teams-provider";
+import { useUser } from "@/components/providers/user-provider";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,7 +32,7 @@ import { AnimatePresence } from "motion/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
-export default function OrganizationSettings() {
+export default function GeneralPage() {
   const { lastTeamId } = useMetadata();
   const { data: teamsData, setData: setTeamsData } = useTeams();
 
@@ -221,7 +223,28 @@ export default function OrganizationSettings() {
                 Remove yourself from this organization
               </p>
             </div>
-            <Button variant="muted">Leave Organization</Button>
+
+            <AlertDialog
+              title="Leave Team"
+              description="Are you sure you want to leave this team?"
+              confirm="Leave"
+              onConfirm={() => {}}
+              confirmProps={
+                {
+                  /*                 loading: isMutatingRemoveMember, */
+                }
+              }
+              trigger={
+                <Button
+                  variant="muted"
+                  disabled={teamsData?.defaultTeamId === selectedTeam?.id}
+                >
+                  Leave Organization
+                </Button>
+              }
+              /*               open={removeDialogOpen}
+              onOpenChange={setRemoveDialogOpen} */
+            />
           </div>
 
           <div className="flex items-center justify-between p-4">

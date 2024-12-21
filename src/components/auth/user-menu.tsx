@@ -13,11 +13,10 @@ import {
 import { signOutAction } from "@/actions/auth-actions";
 import { useUser } from "../providers/user-provider";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { PROTECTED_URLS } from "@/configs/urls";
+import UserDetailsTile from "./user-details-tile";
 
-export default function UserAvatar() {
-  const { teamId } = useParams();
+export default function UserMenu() {
   const { data } = useUser();
 
   if (!data) return null;
@@ -34,10 +33,11 @@ export default function UserAvatar() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>General</DropdownMenuLabel>
-        <DropdownMenuItem asChild>
-          <Link href={PROTECTED_URLS.ACCOUNT_SETTINGS}>Account</Link>
+      <DropdownMenuContent align="end" className="w-[15rem]">
+        <DropdownMenuItem asChild className="p-1">
+          <Link href={PROTECTED_URLS.ACCOUNT_SETTINGS}>
+            <UserDetailsTile />
+          </Link>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />

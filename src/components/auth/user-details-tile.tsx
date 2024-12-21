@@ -1,0 +1,27 @@
+import { ChevronRight } from "lucide-react";
+import { useUser } from "../providers/user-provider";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+
+export default function UserDetailsTile() {
+  const { data } = useUser();
+
+  if (!data) return null;
+
+  return (
+    <div className="relative flex items-center gap-2 overflow-hidden">
+      <Avatar className="size-9">
+        <AvatarImage src={data.user?.user_metadata.avatar_url} />
+        <AvatarFallback>
+          {data.user?.email?.charAt(0).toUpperCase() || "?"}
+        </AvatarFallback>
+      </Avatar>
+      <div className="flex w-full max-w-full flex-col truncate normal-case">
+        <div className="truncate text-fg-200">
+          {data.user?.user_metadata?.name}
+        </div>
+        <div className="truncate font-sans text-fg-300">{data.user?.email}</div>
+      </div>
+      <ChevronRight className="absolute right-0 top-0 size-4 -rotate-45 text-accent" />
+    </div>
+  );
+}

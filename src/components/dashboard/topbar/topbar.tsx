@@ -1,11 +1,11 @@
 "use client";
 
-import UserAvatar from "@/components/auth/user-avatar";
 import { Button } from "@/components/ui/button";
 import TeamSelector from "./team-selector";
 import { HeartPulse } from "lucide-react";
 import { ThemeSwitcher } from "@/components/globals/theme-switcher";
 import dynamic from "next/dynamic";
+import UserMenu from "@/components/auth/user-menu";
 
 const Logo = dynamic(() => import("@/components/globals/logo-without-text"), {
   ssr: false,
@@ -25,7 +25,7 @@ export default function Topbar() {
             <HeartPulse className="h-4 w-4 text-fg-300" />
           </Button>
           <ThemeSwitcher />
-          <UserAvatar />
+          <UserMenu />
           <Button size="sm">Upgrade</Button>
         </div>
       </nav>

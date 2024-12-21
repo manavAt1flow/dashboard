@@ -14,7 +14,7 @@ interface ChangeDataInputProps
 const ChangeDataInput = forwardRef<HTMLInputElement, ChangeDataInputProps>(
   (
     { className, hasChanges = false, isLoading = false, onSave, ...props },
-    ref
+    ref,
   ) => {
     return (
       <form
@@ -28,7 +28,7 @@ const ChangeDataInput = forwardRef<HTMLInputElement, ChangeDataInputProps>(
         {hasChanges && (
           <Button
             size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6"
+            className="absolute right-2 top-1/2 size-6 -translate-y-1/2"
             type="submit"
             loading={isLoading}
           >
@@ -37,7 +37,7 @@ const ChangeDataInput = forwardRef<HTMLInputElement, ChangeDataInputProps>(
         )}
       </form>
     );
-  }
+  },
 );
 
 ChangeDataInput.displayName = "ChangeDataInput";
