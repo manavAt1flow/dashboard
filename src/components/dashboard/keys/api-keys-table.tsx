@@ -1,7 +1,6 @@
 "use client";
 
 import { getTeamApiKeysAction } from "@/actions/key-actions";
-import { queryClient } from "@/components/globals/client-providers";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/ui/loader";
 import {
@@ -25,7 +24,7 @@ const ApiKeysTable: FC<ApiKeysTableProps> = ({ teamId }) => {
   // queries
   const { data: keysData, isLoading } = useQuery({
     queryKey: QUERY_KEYS.TEAM_API_KEYS(teamId),
-    queryFn: () => getTeamApiKeysAction(teamId),
+    queryFn: () => getTeamApiKeysAction({ teamId }),
   });
 
   return (
@@ -33,7 +32,7 @@ const ApiKeysTable: FC<ApiKeysTableProps> = ({ teamId }) => {
       {isLoading && (
         <div className="flex items-center gap-3 px-6 py-4">
           Loading Keys
-          <Loader variant="line" />
+          <Loader variant="progress" />
         </div>
       )}
 
@@ -41,25 +40,27 @@ const ApiKeysTable: FC<ApiKeysTableProps> = ({ teamId }) => {
         <Table className="animate-in fade-in">
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
               <TableHead>Key</TableHead>
-              <TableHead>Created At</TableHead>
+              <TableHead className="text-right">Created By</TableHead>
+              <TableHead className="text-right">Created At</TableHead>
               <th></th>
             </TableRow>
           </TableHeader>
           <TableBody>
             {keysData.apiKeys.map((key, index) => (
               <TableRow key={`${key.name}-${index}`}>
-                <TableCell>{key.name}</TableCell>
-                <TableCell className="font-mono text-xs">
-                  {key.masked_key}
+                <TableCell className="flex flex-col gap-1">
+                  {key.name}
+                  <span className="pl-1 font-mono text-fg-500">
+                    {key.maskedKey}
+                  </span>
                 </TableCell>
-                {/* <TableCell className="max-w-36 overflow-hidden truncate text-fg-500">
-                  <span className="max-w-full truncate"></span>
-                  </TableCell> */}
-                <TableCell className="text-center text-fg-300">
-                  {key.created_at
-                    ? new Date(key.created_at).toLocaleDateString()
+                <TableCell className="max-w-36 overflow-hidden truncate text-right text-fg-500">
+                  <span className="max-w-full truncate">{key.createdBy}</span>
+                </TableCell>
+                <TableCell className="text-right text-fg-300">
+                  {key.createdAt
+                    ? new Date(key.createdAt).toLocaleDateString()
                     : "-"}
                 </TableCell>
                 <TableCell className="text-right">

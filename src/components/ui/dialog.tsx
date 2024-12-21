@@ -66,7 +66,7 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col space-y-1.5 border-b-2 border-dashed border-fg-300/20 pb-4",
+      "flex flex-col space-y-1.5 border-b border-dashed border-fg-300/20 pb-4",
       className,
     )}
     {...props}
@@ -81,7 +81,7 @@ const DialogFooter = ({
   <div
     className={cn(
       "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-4",
-      "mt-4 border-t-2 border-dashed border-fg-300/20 pt-4",
+      "mt-4 border-t border-dashed border-fg-300/20 pt-4",
       className,
     )}
     {...props}

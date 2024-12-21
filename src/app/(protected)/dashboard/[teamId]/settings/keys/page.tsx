@@ -1,8 +1,10 @@
 "use client";
 
 import ApiKeysTable from "@/components/dashboard/keys/api-keys-table";
+import CreateApiKeyDialog from "@/components/dashboard/keys/create-api-key-dialog";
 import DashboardPageTitle from "@/components/globals/dashboard-page-title";
 import { useMetadata } from "@/components/providers/metadata-provider";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -19,7 +21,7 @@ export default function KeysPage() {
       <DashboardPageTitle>API Keys</DashboardPageTitle>
 
       {lastTeamId && (
-        <Card hideUnderline>
+        <Card hideUnderline className="relative">
           <CardHeader>
             <CardTitle>Manage Organization Keys</CardTitle>
             <CardDescription>
@@ -28,6 +30,9 @@ export default function KeysPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <CreateApiKeyDialog teamId={lastTeamId}>
+              <Button className="absolute right-6 top-6">CREATE KEY</Button>
+            </CreateApiKeyDialog>
             <ApiKeysTable teamId={lastTeamId} />
           </CardContent>
         </Card>

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { supabase } from "@/lib/supabase/client";
 import { createClient } from "@/lib/supabase/server";
 import { Database } from "@/types/supabase";
 
@@ -103,11 +104,9 @@ export async function checkUserTeamAuthorization(
 export function maskApiKey(
   apiKey: Database["public"]["Tables"]["team_api_keys"]["Row"],
 ) {
-  const firstFour = apiKey.api_key.slice(0, 4);
+  const firstFour = apiKey.api_key.slice(0, 6);
   const lastFour = apiKey.api_key.slice(-4);
-  const stars = Array.from({ length: apiKey.api_key.length - 8 })
-    .map(() => "•")
-    .join("");
+  const dots = "...";
 
-  return `${firstFour}${stars}${lastFour}`;
+  return `${firstFour}${dots}${lastFour}`;
 }
