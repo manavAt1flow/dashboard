@@ -42,7 +42,7 @@ const DialogContent = React.forwardRef<
         "fixed left-[50%] top-[50%] z-50",
         "w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
         "border border-dashed bg-bg p-6",
-        "font-mono text-fg",
+        "text-fg",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -113,7 +113,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn("mt-2 font-mono text-sm text-fg-300", className)}
+    className={cn("mt-2 text-fg-500", className)}
     {...props}
   />
 ));

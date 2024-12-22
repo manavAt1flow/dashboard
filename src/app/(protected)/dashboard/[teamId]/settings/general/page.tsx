@@ -4,10 +4,7 @@ import {
   addTeamMemberAction,
   updateTeamNameAction,
 } from "@/actions/team-actions";
-import {
-  AuthFormMessage,
-  AuthMessage,
-} from "@/components/auth/auth-form-message";
+import { AuthFormMessage } from "@/components/auth/auth-form-message";
 import MemberTable from "@/components/dashboard/team/member-table";
 import { AlertDialog } from "@/components/globals/alert-dialog";
 import ChangeDataInput from "@/components/globals/change-data-input";
@@ -15,7 +12,6 @@ import { queryClient } from "@/components/globals/client-providers";
 import DashboardPageTitle from "@/components/globals/dashboard-page-title";
 import { useMetadata } from "@/components/providers/metadata-provider";
 import { useTeams } from "@/components/providers/teams-provider";
-import { useUser } from "@/components/providers/user-provider";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { QUERY_KEYS } from "@/configs/query-keys";
+import { useTimeoutMessage } from "@/hooks/use-timeout-message";
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence } from "motion/react";
 import { useEffect, useState } from "react";
@@ -40,14 +37,10 @@ export default function GeneralPage() {
 
   // states
   const [teamName, setTeamName] = useState(selectedTeam?.name ?? "");
-  const [teamNameMessage, setTeamNameMessage] = useState<AuthMessage | null>(
-    null,
-  );
+  const [teamNameMessage, setTeamNameMessage] = useTimeoutMessage();
 
   const [addMemberEmail, setAddMemberEmail] = useState("");
-  const [addMemberMessage, setAddMemberMessage] = useState<AuthMessage | null>(
-    null,
-  );
+  const [addMemberMessage, setAddMemberMessage] = useTimeoutMessage();
 
   // mutations
   const { mutate: mutateTeamName, isPending: isMutatingTeamName } = useMutation(

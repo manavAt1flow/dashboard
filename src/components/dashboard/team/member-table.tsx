@@ -98,110 +98,98 @@ export default function MemberTable({ teamId }: MemberTableProps) {
   // TODO: test alert variants in ui
 
   return (
-    <div className="w-full">
-      {isLoading && (
-        <div className="flex items-center gap-3 p-6">
-          Loading members
-          <Loader variant="line" />
-        </div>
-      )}
+    <Table className="w-full animate-in fade-in">
+      <TableHeader>
+        <TableRow>
+          <th></th>
+          <TableHead>Name</TableHead>
+          <TableHead>Email</TableHead>
+          <TableHead>Added By</TableHead>
+          <TableHead className="text-right">Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {isLoading && (
+          <TableRow>
+            <TableCell colSpan={5} className="text-center">
+              <div className="flex items-center gap-3">
+                Loading members
+                <Loader variant="line" />
+              </div>
+            </TableCell>
+          </TableRow>
+        )}
 
-      {error && (
-        <Alert variant="error">
-          <AlertDescription>
-            Error loading members: {error?.message}
-          </AlertDescription>
-        </Alert>
-      )}
+        {!isLoading && !error && !members?.length && (
+          <TableRow>
+            <TableCell colSpan={5} className="text-center">
+              <Alert variant="contrast1">
+                <AlertDescription>No members found</AlertDescription>
+              </Alert>
+            </TableCell>
+          </TableRow>
+        )}
 
-      {!isLoading && !error && !members?.length && (
-        <Alert variant="contrast1">
-          <AlertDescription>No members found</AlertDescription>
-        </Alert>
-      )}
+        {error && (
+          <TableRow>
+            <TableCell colSpan={5} className="text-center">
+              <Alert variant="error">
+                <AlertDescription>
+                  Error loading members: {error?.message}
+                </AlertDescription>
+              </Alert>
+            </TableCell>
+          </TableRow>
+        )}
 
-      {!isLoading && !error && members && members.length > 0 && (
-        <Table className="animate-in fade-in">
-          <TableHeader>
-            <TableRow>
-              <th></th>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Added By</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+        {!isLoading &&
+          members &&
+          members.map((member) => (
+            <TableRow key={member.user.id}>
+              <TableCell>
+                <Avatar className="size-8">
+                  <AvatarImage src={member.user?.avatar_url} />
+                  <AvatarFallback>
+                    {member.user?.email?.charAt(0).toUpperCase() || "?"}
+                  </AvatarFallback>
+                </Avatar>
+              </TableCell>
+              <TableCell>
+                {member.user.id === userData?.user?.id
+                  ? "You"
+                  : (member.user.name ?? "Anonymous")}
+              </TableCell>
+              <TableCell>{member.user.email}</TableCell>
+              <TableCell className="text-fg-300">
+                {member.relation.added_by === userData?.user?.id
+                  ? "You"
+                  : (members.find((m) => m.user.id === member.relation.added_by)
+                      ?.user.name ?? "")}
+              </TableCell>
+              <TableCell className="text-end">
+                {!member.relation.is_default &&
+                  userData?.user?.id !== member.user.id && (
+                    <AlertDialog
+                      title="Remove Member"
+                      description="Are you sure you want to remove this member from the team?"
+                      confirm="Remove"
+                      onConfirm={() => mutateRemoveMember(member.user.id)}
+                      confirmProps={{
+                        loading: isMutatingRemoveMember,
+                      }}
+                      trigger={
+                        <Button variant="muted" size="iconSm">
+                          <span className="text-xs">X</span>
+                        </Button>
+                      }
+                      open={removeDialogOpen}
+                      onOpenChange={setRemoveDialogOpen}
+                    />
+                  )}
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {members.map((member) => (
-              <TableRow key={member.user.id}>
-                <TableCell>
-                  <Avatar className="size-8">
-                    <AvatarImage src={member.user?.avatar_url} />
-                    <AvatarFallback>
-                      {member.user?.email?.charAt(0).toUpperCase() || "?"}
-                    </AvatarFallback>
-                  </Avatar>
-                </TableCell>
-                <TableCell>
-                  {member.user.id === userData?.user?.id
-                    ? "You"
-                    : (member.user.name ?? "Anonymous")}
-                </TableCell>
-                <TableCell>{member.user.email}</TableCell>
-                <TableCell className="text-fg-300">
-                  {member.relation.added_by === userData?.user?.id
-                    ? "You"
-                    : (members.find(
-                        (m) => m.user.id === member.relation.added_by,
-                      )?.user.name ?? "")}
-                </TableCell>
-                <TableCell className="text-end">
-                  {
-                    !member.relation.is_default &&
-                      userData?.user?.id !== member.user.id && (
-                        <AlertDialog
-                          title="Remove Member"
-                          description="Are you sure you want to remove this member from the team?"
-                          confirm="Remove"
-                          onConfirm={() => mutateRemoveMember(member.user.id)}
-                          confirmProps={{
-                            loading: isMutatingRemoveMember,
-                          }}
-                          trigger={
-                            <Button variant="muted" size="iconSm">
-                              <span className="text-xs">X</span>
-                            </Button>
-                          }
-                          open={removeDialogOpen}
-                          onOpenChange={setRemoveDialogOpen}
-                        />
-                      )
-                    /*                     (userData?.user?.id === member.user.id ? (
-                      <AlertDialog
-                        title="Leave Team"
-                        description="Are you sure you want to leave this team?"
-                        confirm="Leave"
-                        onConfirm={() => mutateRemoveMember(member.user.id)}
-                        confirmProps={{
-                          loading: isMutatingRemoveMember,
-                        }}
-                        trigger={
-                          <Button variant="muted" size="sm" className="text-xs">
-                            Leave Team
-                          </Button>
-                        }
-                        open={removeDialogOpen}
-                        onOpenChange={setRemoveDialogOpen}
-                      />
-                    ) : (
-                       */
-                  }
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
-    </div>
+          ))}
+      </TableBody>
+    </Table>
   );
 }

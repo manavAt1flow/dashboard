@@ -28,7 +28,7 @@ export function AuthFormMessage({
       exit={{ opacity: 0, y: 10 }}
     >
       {"success" in message && (
-        <Alert variant="contrast1" className="border-l-4">
+        <Alert variant="contrast1">
           <CheckCircle2 className="h-4 w-4" />
           <AlertDescription>
             {decodeURIComponent(message.success!)}
@@ -36,7 +36,7 @@ export function AuthFormMessage({
         </Alert>
       )}
       {"error" in message && (
-        <Alert variant="error" className="border-l-4">
+        <Alert variant="error">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             {decodeURIComponent(message.error!)}
@@ -44,7 +44,7 @@ export function AuthFormMessage({
         </Alert>
       )}
       {"message" in message && (
-        <Alert variant="contrast2" className="border-l-4">
+        <Alert variant="contrast2">
           <Info className="h-4 w-4" />
           <AlertDescription>
             {decodeURIComponent(message.message!)}

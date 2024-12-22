@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import DashboardPageTitle from "@/components/globals/dashboard-page-title";
+import { useTimeoutMessage } from "@/hooks/use-timeout-message";
 
 export default function AccountPage() {
   const { data, setData } = useUser();
@@ -87,12 +88,11 @@ export default function AccountPage() {
   const [deleteConfirmDialogOpen, setDeleteConfirmDialogOpen] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<string>("");
 
-  const [nameMessage, setNameMessage] = useState<AuthMessage | null>(null);
-  const [emailMessage, setEmailMessage] = useState<AuthMessage | null>(null);
-  const [passwordMessage, setPasswordMessage] = useState<AuthMessage | null>(
-    null,
-  );
-  const [deleteMessage, setDeleteMessage] = useState<AuthMessage | null>(null);
+  // timeout messages
+  const [nameMessage, setNameMessage] = useTimeoutMessage();
+  const [emailMessage, setEmailMessage] = useTimeoutMessage();
+  const [passwordMessage, setPasswordMessage] = useTimeoutMessage();
+  const [deleteMessage, setDeleteMessage] = useTimeoutMessage();
 
   // email redirect message / state handler
   useEffect(() => {
@@ -135,47 +135,6 @@ export default function AccountPage() {
       );
     }
   }, [searchParams]);
-
-  // timeouts to clear messages after 5 seconds
-  useEffect(() => {
-    if (!nameMessage) return;
-
-    const timeout = setTimeout(() => {
-      setNameMessage(null);
-    }, 5000);
-
-    return () => clearTimeout(timeout);
-  }, [nameMessage]);
-
-  useEffect(() => {
-    if (!emailMessage) return;
-
-    const timeout = setTimeout(() => {
-      setEmailMessage(null);
-    }, 5000);
-
-    return () => clearTimeout(timeout);
-  }, [emailMessage]);
-
-  useEffect(() => {
-    if (!passwordMessage) return;
-
-    const timeout = setTimeout(() => {
-      setPasswordMessage(null);
-    }, 5000);
-
-    return () => clearTimeout(timeout);
-  }, [passwordMessage]);
-
-  useEffect(() => {
-    if (!deleteMessage) return;
-
-    const timeout = setTimeout(() => {
-      setDeleteMessage(null);
-    }, 5000);
-
-    return () => clearTimeout(timeout);
-  }, [deleteMessage]);
 
   if (!data) return null;
 
@@ -314,9 +273,9 @@ export default function AccountPage() {
             >
               <div className="flex flex-col gap-3">
                 <p className="text-fg-300">
-                  To confirm, please enter{" "}
+                  Please enter{" "}
                   <span className="text-fg">delete my account</span> into the
-                  text field below.
+                  text field below to confirm.
                 </p>
                 <Input
                   placeholder="delete my account"
