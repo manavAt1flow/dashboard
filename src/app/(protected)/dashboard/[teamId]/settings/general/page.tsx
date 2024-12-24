@@ -8,7 +8,6 @@ import { AuthFormMessage } from "@/components/auth/auth-form-message";
 import MemberTable from "@/components/dashboard/team/member-table";
 import { AlertDialog } from "@/components/globals/alert-dialog";
 import ChangeDataInput from "@/components/globals/change-data-input";
-import { queryClient } from "@/components/globals/client-providers";
 import DashboardPageTitle from "@/components/globals/dashboard-page-title";
 import { useMetadata } from "@/components/providers/metadata-provider";
 import { useTeams } from "@/components/providers/teams-provider";
@@ -24,12 +23,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { QUERY_KEYS } from "@/configs/query-keys";
 import { useTimeoutMessage } from "@/hooks/use-timeout-message";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence } from "motion/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
 export default function GeneralPage() {
+  const queryClient = useQueryClient();
+
   const { lastTeamId } = useMetadata();
   const { data: teamsData, setData: setTeamsData } = useTeams();
 

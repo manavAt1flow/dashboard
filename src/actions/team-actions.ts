@@ -10,6 +10,7 @@ import {
 } from "./utils";
 import { z } from "zod";
 import { headers } from "next/headers";
+import { User } from "@supabase/supabase-js";
 
 interface GetUserTeamsResponse {
   teams: Database["public"]["Tables"]["teams"]["Row"][];
@@ -133,13 +134,17 @@ export async function addTeamMemberAction(teamId: string, email: string) {
   }
 }
 
-type GetTeamMembersResponse = {
-  user: {
-    id: string;
-    email: string;
-    name?: string;
-    avatar_url?: string;
+function memberDTO(user: User) {
+  return {
+    id: user.id,
+    email: user.email!,
+    name: user.user_metadata?.name,
+    avatar_url: user.user_metadata?.avatar_url,
   };
+}
+
+type GetTeamMembersResponse = {
+  user: ReturnType<typeof memberDTO>;
   relation: Database["public"]["Tables"]["users_teams"]["Row"];
 }[];
 
@@ -178,13 +183,7 @@ export async function getTeamMembersAction(
   return userResponses
     .filter((user) => user !== null)
     .map((user) => ({
-      user: {
-        id: user.id,
-        // email should be defined based on our login methods
-        email: user.email!,
-        name: user.user_metadata?.name,
-        avatar_url: user.user_metadata?.avatar_url,
-      },
+      user: memberDTO(user),
       relation: data.find((userTeam) => userTeam.user_id === user.id)!,
     }));
 }

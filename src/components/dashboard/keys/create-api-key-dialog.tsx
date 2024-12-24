@@ -1,5 +1,4 @@
 import { createApiKeyAction } from "@/actions/key-actions";
-import { queryClient } from "@/components/globals/client-providers";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { QUERY_KEYS } from "@/configs/query-keys";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FC, ReactNode, useState } from "react";
 
 import CopyButton from "@/components/globals/copy-button";
@@ -29,6 +28,8 @@ const CreateApiKeyDialog: FC<CreateApiKeyDialogProps> = ({
   teamId,
   children,
 }) => {
+  const queryClient = useQueryClient();
+
   const [keyName, setKeyName] = useState("");
 
   // mutations
