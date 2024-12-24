@@ -154,7 +154,7 @@ export default function SidebarNav() {
                     className="w-full justify-start font-mono capitalize"
                     asChild
                   >
-                    <Link prefetch href={item.href({ teamId: lastTeamId })}>
+                    <Link href={item.href({ teamId: lastTeamId })}>
                       <span className="mr-2">$</span>
                       {item.label}
                       {item.goesDeeper && (

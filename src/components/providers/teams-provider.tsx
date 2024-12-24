@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { Database } from "@/types/supabase";
 import React from "react";
 
@@ -33,6 +33,10 @@ export function TeamsProvider({
   const [teamsData, setTeamsData] = useState<TeamsData | null>(
     initialTeamsData || null,
   );
+
+  useEffect(() => {
+    setTeamsData(initialTeamsData || null);
+  }, [initialTeamsData]);
 
   return (
     <TeamsContext.Provider value={{ data: teamsData, setData: setTeamsData }}>

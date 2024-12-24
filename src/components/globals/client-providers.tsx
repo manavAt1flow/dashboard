@@ -4,14 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserData, UserProvider } from "../providers/user-provider";
 import { TeamsData, TeamsProvider } from "../providers/teams-provider";
 import { MetadataProvider } from "../providers/metadata-provider";
-
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+import { useState } from "react";
 
 interface ClientProvidersProps {
   children: React.ReactNode;
@@ -34,6 +27,8 @@ export default function ClientProviders({
   initialUserData,
   initialTeamsData,
 }: ClientProvidersProps) {
+  const [queryClient] = useState(() => new QueryClient());
+
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider initialUserData={initialUserData}>

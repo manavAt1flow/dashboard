@@ -30,6 +30,10 @@ interface UserProviderProps {
 export function UserProvider({ children, initialUserData }: UserProviderProps) {
   const [data, setData] = useState<UserData | null>(initialUserData || null);
 
+  useEffect(() => {
+    setData(initialUserData || null);
+  }, [initialUserData]);
+
   return (
     <UserContext.Provider value={{ data, setData }}>
       {children}

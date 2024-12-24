@@ -1,10 +1,7 @@
 "use client";
 
 import { deleteAccountAction, updateUserAction } from "@/actions/user-actions";
-import {
-  AuthFormMessage,
-  AuthMessage,
-} from "@/components/auth/auth-form-message";
+import { AuthFormMessage } from "@/components/auth/auth-form-message";
 import ChangeDataInput from "@/components/globals/change-data-input";
 import { useUser } from "@/components/providers/user-provider";
 import {
@@ -38,7 +35,6 @@ export default function AccountPage() {
     mutationKey: ["updateUserName"],
     mutationFn: (name: string) => updateUserAction({ name }),
     onSuccess: (result) => {
-      setData((state) => ({ ...state!, user: result.newUser }));
       setNameMessage({ success: "Name updated successfully" });
     },
     onError: (error) => {
@@ -50,7 +46,6 @@ export default function AccountPage() {
     mutationKey: ["updateUserEmail"],
     mutationFn: (email: string) => updateUserAction({ email }),
     onSuccess: (result) => {
-      setData((state) => ({ ...state!, user: result.newUser }));
       setEmailMessage({ success: "Check your email for a verification link" });
     },
     onError: (error) => {
