@@ -1,4 +1,5 @@
 import {
+  BarChart,
   Blocks,
   HomeIcon,
   Key,
@@ -55,6 +56,12 @@ export const SETTINGS_SIDEBAR_LINKS: SidebarLink[] = [
     label: "API Keys",
     href: (args) => `/dashboard/${args.teamId}/settings/keys`,
     icon: Key,
+    group: "organization",
+  },
+  {
+    label: "Usage",
+    href: (args) => `/dashboard/${args.teamId}/settings/usage`,
+    icon: BarChart,
     group: "organization",
   },
 

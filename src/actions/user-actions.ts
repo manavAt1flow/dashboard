@@ -6,7 +6,6 @@ import { User } from "@supabase/supabase-js";
 import { checkAuthenticated } from "./utils";
 import { z } from "zod";
 import { headers } from "next/headers";
-import { revalidatePath } from "next/cache";
 
 interface GetUserResponse {
   user: User;
@@ -14,8 +13,6 @@ interface GetUserResponse {
 }
 
 export async function getUserAction(): Promise<GetUserResponse> {
-  console.log("called get-user-action");
-
   const { user } = await checkAuthenticated();
 
   if (!user) {

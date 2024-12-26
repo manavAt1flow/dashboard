@@ -37,6 +37,7 @@ export async function getTeamApiKey(userId: string, teamId: string) {
       .single();
 
   if (userTeamsRelationError) {
+    console.error(userTeamsRelationError);
     throw new Error(
       `Failed to fetch user teams relation (user: ${userId}, team: ${teamId})`,
     );
@@ -51,22 +52,22 @@ export async function getTeamApiKey(userId: string, teamId: string) {
   const { data: teamApiKeyData, error: teamApiKeyError } = await supabaseAdmin
     .from("team_api_keys")
     .select("*")
-    .eq("team_id", teamId)
-    .single();
+    .eq("team_id", teamId);
 
   if (teamApiKeyError) {
+    console.error(teamApiKeyError);
     throw new Error(
       `Failed to fetch team API key for team (user: ${userId}, team: ${teamId})`,
     );
   }
 
-  if (!teamApiKeyData) {
+  if (!teamApiKeyData || teamApiKeyData.length === 0) {
     throw new Error(
       `No team API key found for team (user: ${userId}, team: ${teamId})`,
     );
   }
 
-  return teamApiKeyData.api_key;
+  return teamApiKeyData[0].api_key;
 }
 
 // TODO: we should probably add some team permission system here

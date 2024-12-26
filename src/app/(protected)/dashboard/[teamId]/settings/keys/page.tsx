@@ -2,7 +2,7 @@
 
 import ApiKeysTable from "@/components/dashboard/keys/api-keys-table";
 import CreateApiKeyDialog from "@/components/dashboard/keys/create-api-key-dialog";
-import DashboardPageTitle from "@/components/globals/dashboard-page-title";
+import { DashboardPageHeader } from "@/components/globals/dashboard-page-header";
 import { useMetadata } from "@/components/providers/metadata-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +18,7 @@ export default function KeysPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <DashboardPageTitle>API Keys</DashboardPageTitle>
+      <DashboardPageHeader title="API Keys" />
 
       {lastTeamId && (
         <Card hideUnderline className="relative">

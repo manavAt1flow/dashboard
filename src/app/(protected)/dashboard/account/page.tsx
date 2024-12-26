@@ -22,7 +22,7 @@ import { AlertDialog } from "@/components/globals/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import DashboardPageTitle from "@/components/globals/dashboard-page-title";
+import { DashboardPageHeader } from "@/components/globals/dashboard-page-header";
 import { useTimeoutMessage } from "@/hooks/use-timeout-message";
 
 export default function AccountPage() {
@@ -135,7 +135,7 @@ export default function AccountPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <DashboardPageTitle>Account</DashboardPageTitle>
+      <DashboardPageHeader title="Account" />
 
       <div className="grid grid-cols-12 gap-6">
         <Card hideUnderline className={cn("col-span-full")}>

@@ -8,7 +8,7 @@ import { AuthFormMessage } from "@/components/auth/auth-form-message";
 import MemberTable from "@/components/dashboard/team/member-table";
 import { AlertDialog } from "@/components/globals/alert-dialog";
 import ChangeDataInput from "@/components/globals/change-data-input";
-import DashboardPageTitle from "@/components/globals/dashboard-page-title";
+import { DashboardPageHeader } from "@/components/globals/dashboard-page-header";
 import { useMetadata } from "@/components/providers/metadata-provider";
 import { useTeams } from "@/components/providers/teams-provider";
 import { Button } from "@/components/ui/button";
@@ -116,7 +116,7 @@ export default function GeneralPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <DashboardPageTitle>General</DashboardPageTitle>
+      <DashboardPageHeader title="General" />
       <Card hideUnderline>
         <CardHeader>
           <CardTitle>Organization Name</CardTitle>

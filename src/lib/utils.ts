@@ -1,7 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
 
 /**
  * Redirects to a specified path with an encoded message as a query parameter.

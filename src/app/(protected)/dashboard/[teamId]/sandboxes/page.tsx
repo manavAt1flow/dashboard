@@ -1,9 +1,9 @@
-import DashboardPageTitle from "@/components/globals/dashboard-page-title";
+import { DashboardPageHeader } from "@/components/globals/dashboard-page-header";
 
 export default async function Page() {
   return (
     <>
-      <DashboardPageTitle>Sandboxes</DashboardPageTitle>
+      <DashboardPageHeader title="Sandboxes" />
     </>
   );
 }
