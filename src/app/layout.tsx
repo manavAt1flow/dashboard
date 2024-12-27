@@ -6,10 +6,10 @@ import "@/app/_fonts/fonts";
 import "@/styles/globals.css";
 import { ToastProvider } from "@/components/ui/toast";
 import { Toaster } from "@/components/ui/toaster";
-import { getBaseUrl } from "@/lib/utils";
+import { BASE_URL } from "@/configs/urls";
 
 export const metadata = {
-  metadataBase: new URL(getBaseUrl()),
+  metadataBase: new URL(BASE_URL),
   title: "Next.js and Supabase Starter Kit",
   description: "The fastest way to build apps with Next.js and Supabase",
 };

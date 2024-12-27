@@ -1,7 +1,7 @@
 import Sidebar from "@/components/dashboard/sidebar/sidebar";
 import Topbar from "@/components/dashboard/topbar/topbar";
 import ClientProviders from "@/components/globals/client-providers";
-import { getBaseUrl } from "@/lib/utils";
+import { BASE_URL } from "@/configs/urls";
 import { InitResponse } from "@/types/dashboard";
 import { cookies } from "next/headers";
 
@@ -11,7 +11,7 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   try {
-    const res = await fetch(`${getBaseUrl()}/api/dashboard/init`, {
+    const res = await fetch(`${BASE_URL}/api/dashboard/init`, {
       method: "GET",
       headers: {
         Cookie: (await cookies()).toString(),
