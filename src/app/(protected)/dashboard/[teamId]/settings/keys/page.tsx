@@ -14,13 +14,13 @@ import {
 } from "@/components/ui/card";
 
 export default function KeysPage() {
-  const { lastTeamId } = useMetadata();
+  const { selectedTeamId } = useMetadata();
 
   return (
     <div className="flex flex-col gap-6">
       <DashboardPageHeader title="API Keys" />
 
-      {lastTeamId && (
+      {selectedTeamId && (
         <Card hideUnderline className="relative">
           <CardHeader>
             <CardTitle>Manage Organization Keys</CardTitle>
@@ -30,10 +30,10 @@ export default function KeysPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <CreateApiKeyDialog teamId={lastTeamId}>
+            <CreateApiKeyDialog teamId={selectedTeamId}>
               <Button className="absolute right-6 top-6">CREATE KEY</Button>
             </CreateApiKeyDialog>
-            <ApiKeysTable teamId={lastTeamId} />
+            <ApiKeysTable teamId={selectedTeamId} />
           </CardContent>
         </Card>
       )}

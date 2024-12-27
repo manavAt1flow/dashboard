@@ -1,6 +1,7 @@
 import { Database } from "@/types/supabase";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 
 export const createClient = async () => {
   const cookieStore = await cookies();
@@ -28,3 +29,23 @@ export const createClient = async () => {
     },
   );
 };
+
+export const createRouteClient = (request: NextRequest) =>
+  createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
+          );
+          // This can be ignored if you have middleware refreshing
+          // user sessions.
+        },
+      },
+    },
+  );

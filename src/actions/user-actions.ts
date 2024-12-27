@@ -5,7 +5,7 @@ import { Database } from "@/types/supabase";
 import { User } from "@supabase/supabase-js";
 import { checkAuthenticated } from "./utils";
 import { z } from "zod";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 interface GetUserResponse {
   user: User;

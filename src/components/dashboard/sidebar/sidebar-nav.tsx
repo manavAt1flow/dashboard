@@ -58,7 +58,7 @@ export default function SidebarNav() {
   const segments = useSelectedLayoutSegments();
   const pathname = usePathname();
 
-  const { lastTeamId } = useMetadata();
+  const { selectedTeamId } = useMetadata();
 
   const level: "main" | "settings" = useMemo(
     () =>
@@ -115,7 +115,7 @@ export default function SidebarNav() {
               className="gap-1 font-mono"
               asChild
             >
-              <Link href={`/dashboard/${lastTeamId}`}>
+              <Link prefetch href={`/dashboard/${selectedTeamId}`}>
                 <ChevronLeft className="h-4 w-4" />
                 Back
               </Link>
@@ -146,7 +146,7 @@ export default function SidebarNav() {
                 >
                   <Button
                     variant={
-                      pathname === item.href({ teamId: lastTeamId })
+                      pathname === item.href({ teamId: selectedTeamId })
                         ? "default"
                         : "ghost"
                     }
@@ -154,7 +154,7 @@ export default function SidebarNav() {
                     className="w-full justify-start font-mono capitalize"
                     asChild
                   >
-                    <Link href={item.href({ teamId: lastTeamId })}>
+                    <Link prefetch href={item.href({ teamId: selectedTeamId })}>
                       <span className="mr-2">$</span>
                       {item.label}
                       {item.goesDeeper && (

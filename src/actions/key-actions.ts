@@ -124,8 +124,6 @@ export const createApiKeyAction = async ({
 
     const apiKeyValue = generateTeamApiKey();
 
-    console.log("apiKeyValue:", apiKeyValue);
-
     const { error } = await supabaseAdmin
       .from("team_api_keys")
       .insert({

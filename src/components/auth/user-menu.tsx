@@ -17,18 +17,18 @@ import { PROTECTED_URLS } from "@/configs/urls";
 import UserDetailsTile from "./user-details-tile";
 
 export default function UserMenu() {
-  const { data } = useUser();
+  const { user } = useUser();
 
-  if (!data) return null;
+  if (!user) return null;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button size="iconSm" className="min-w-8" variant="ghost">
           <Avatar className="h-full w-full">
-            <AvatarImage src={data.user?.user_metadata.avatar_url} />
+            <AvatarImage src={user.user_metadata.avatar_url} />
             <AvatarFallback>
-              {data.user?.email?.charAt(0).toUpperCase() || "?"}
+              {user.email?.charAt(0).toUpperCase() || "?"}
             </AvatarFallback>
           </Avatar>
         </Button>

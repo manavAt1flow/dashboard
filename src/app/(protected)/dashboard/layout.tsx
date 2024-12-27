@@ -1,10 +1,9 @@
 import Sidebar from "@/components/dashboard/sidebar/sidebar";
 import Topbar from "@/components/dashboard/topbar/topbar";
 import ClientProviders from "@/components/globals/client-providers";
-import { getUserAction } from "@/actions/user-actions";
-import { getUserTeamsAction } from "@/actions/team-actions";
-
-export const revalidate = false;
+import { getBaseUrl } from "@/lib/utils";
+import { InitResponse } from "@/types/dashboard";
+import { cookies } from "next/headers";
 
 export default async function Layout({
   children,
@@ -12,16 +11,18 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   try {
-    const [userResponse, teamsResponse] = await Promise.all([
-      getUserAction(),
-      getUserTeamsAction(),
-    ]);
+    const res = await fetch(`${getBaseUrl()}/api/dashboard/init`, {
+      method: "GET",
+      headers: {
+        Cookie: (await cookies()).toString(),
+      },
+      cache: "force-cache",
+    });
+
+    const data: InitResponse = await res.json();
 
     return (
-      <ClientProviders
-        initialUserData={userResponse}
-        initialTeamsData={teamsResponse}
-      >
+      <ClientProviders initialData={data}>
         <div className="flex h-[100dvh] flex-col">
           <Topbar />
           <main className="flex h-full gap-2 overflow-hidden">

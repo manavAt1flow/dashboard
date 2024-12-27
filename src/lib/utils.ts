@@ -29,3 +29,9 @@ export function encodedRedirect(
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export function getBaseUrl() {
+  return process.env.NEXT_PUBLIC_VERCEL_URL
+    ? process.env.NEXT_PUBLIC_VERCEL_URL
+    : "http://localhost:3000";
+}

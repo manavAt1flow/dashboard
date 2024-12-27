@@ -17,19 +17,21 @@ import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function TeamSelector() {
-  const { data } = useTeams();
-  const { lastTeamId } = useMetadata();
+  const { teams: teamsData } = useTeams();
+  const { selectedTeamId } = useMetadata();
   const router = useRouter();
 
-  if (!data) return null;
+  if (!teamsData) return null;
 
-  const defaultTeam = data.teams.find((team) => team.id === data.defaultTeamId);
+  const defaultTeam = teamsData.find(
+    (team) => team.id === teamsData.find((team) => team.is_default)?.id,
+  );
 
-  const teams = data.teams.filter((team) => team.id !== defaultTeam?.id);
+  const teams = teamsData.filter((team) => team.id !== defaultTeam?.id);
 
   return (
     <Select
-      value={lastTeamId}
+      value={selectedTeamId}
       onValueChange={(value) => router.push(PROTECTED_URLS.TEAM(value))}
     >
       <SelectTrigger className="w-auto border-none p-0 normal-case">

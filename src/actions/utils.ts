@@ -1,13 +1,15 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { supabase } from "@/lib/supabase/client";
 import { createClient } from "@/lib/supabase/server";
 import { Database } from "@/types/supabase";
+import { UnauthenticatedError } from "@/types/errors";
 
 /*
  *  This function checks if the user is authenticated and returns the user and the supabase client.
  *  If the user is not authenticated, it throws an error.
+ *
+ *  @params request - an optional NextRequest object to create a supabase client for route handlers
  */
 export async function checkAuthenticated() {
   const supabase = await createClient();
@@ -17,7 +19,7 @@ export async function checkAuthenticated() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("User not authenticated");
+    throw UnauthenticatedError();
   }
 
   return { user, supabase };

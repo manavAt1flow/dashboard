@@ -31,10 +31,10 @@ import { z } from "zod";
 export default function GeneralPage() {
   const queryClient = useQueryClient();
 
-  const { lastTeamId } = useMetadata();
-  const { data: teamsData, setData: setTeamsData } = useTeams();
+  const { selectedTeamId } = useMetadata();
+  const { teams, setTeams } = useTeams();
 
-  const selectedTeam = teamsData?.teams.find((team) => team.id === lastTeamId);
+  const selectedTeam = teams?.find((team) => team.id === selectedTeamId);
 
   // states
   const [teamName, setTeamName] = useState(selectedTeam?.name ?? "");
@@ -53,13 +53,8 @@ export default function GeneralPage() {
         return await updateTeamNameAction(selectedTeam.id, name);
       },
       onSuccess: (result) => {
-        setTeamsData((prev) => {
-          return {
-            ...prev!,
-            teams: prev!.teams.map((team) =>
-              team.id === result.id ? result : team,
-            ),
-          };
+        setTeams((prev) => {
+          return prev!.map((team) => (team.id === result.id ? result : team));
         });
 
         setTeamNameMessage({ success: "Team name updated" });
@@ -231,7 +226,9 @@ export default function GeneralPage() {
               trigger={
                 <Button
                   variant="muted"
-                  disabled={teamsData?.defaultTeamId === selectedTeam?.id}
+                  disabled={
+                    teams?.find((t) => t.is_default)?.id === selectedTeam?.id
+                  }
                 >
                   Leave Organization
                 </Button>

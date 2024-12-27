@@ -8,10 +8,11 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useTeams } from "./teams-provider";
 
 type MetadataContextType = {
-  lastTeamId: string | undefined;
-  setLastTeamId: (teamId: string) => void;
+  selectedTeamId: string | undefined;
+  setSelectedTeamId: (teamId?: string) => void;
 };
 
 const MetadataContext = createContext<MetadataContextType | undefined>(
@@ -31,26 +32,33 @@ type MetadataProviderProps = {
   initialTeamId?: string;
 };
 
-/*
- * This provider serves misc. metadata that is used throughout the app.
- * lastTeamId is used to recover to the last team the user was one, if its not reflected in the url anymore.
- */
 export function MetadataProvider({
   children,
   initialTeamId,
 }: MetadataProviderProps) {
+  const { teams } = useTeams();
+  const [selectedTeamId, setSelectedTeamId] = useState(initialTeamId);
   const params = useParams();
 
-  const [lastTeamId, setLastTeamId] = useState(initialTeamId);
+  const selectTeamId = async (teamId?: string) => {
+    if (teamId && !teams?.find((team) => team.id === teamId)) {
+      return;
+    }
+
+    setSelectedTeamId(teamId);
+  };
 
   useEffect(() => {
-    if (params.teamId) {
-      setLastTeamId(params.teamId as string);
-    }
-  }, [params.teamId]);
+    if (!params.teamId || !teams?.find((team) => team.id === params.teamId))
+      return;
+
+    selectTeamId(params.teamId as string);
+  }, [params]);
 
   return (
-    <MetadataContext.Provider value={{ lastTeamId, setLastTeamId }}>
+    <MetadataContext.Provider
+      value={{ selectedTeamId, setSelectedTeamId: selectTeamId }}
+    >
       {children}
     </MetadataContext.Provider>
   );

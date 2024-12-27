@@ -2,40 +2,34 @@
 
 import { User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState } from "react";
-import { Database } from "@/types/supabase";
 
 // we use a provider here to pass the ssr user to the client
 // --> avoids prop drilling and flash of unauthenticated content
 
-export interface UserData {
-  user: User | null;
-  accessToken: Database["public"]["Tables"]["access_tokens"]["Row"] | null;
-}
-
 interface UserContextType {
-  data: UserData | null;
-  setData: React.Dispatch<React.SetStateAction<UserData | null>>;
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const UserContext = createContext<UserContextType>({
-  data: null,
-  setData: () => {},
+  user: null,
+  setUser: () => {},
 });
 
 interface UserProviderProps {
   children: React.ReactNode;
-  initialUserData?: UserData | null;
+  initialUser?: User | null;
 }
 
-export function UserProvider({ children, initialUserData }: UserProviderProps) {
-  const [data, setData] = useState<UserData | null>(initialUserData || null);
+export function UserProvider({ children, initialUser }: UserProviderProps) {
+  const [user, setUser] = useState<User | null>(initialUser || null);
 
   useEffect(() => {
-    setData(initialUserData || null);
-  }, [initialUserData]);
+    setUser(initialUser || null);
+  }, [initialUser]);
 
   return (
-    <UserContext.Provider value={{ data, setData }}>
+    <UserContext.Provider value={{ user, setUser }}>
       {children}
     </UserContext.Provider>
   );

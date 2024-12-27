@@ -26,7 +26,7 @@ import { DashboardPageHeader } from "@/components/globals/dashboard-page-header"
 import { useTimeoutMessage } from "@/hooks/use-timeout-message";
 
 export default function AccountPage() {
-  const { data, setData } = useUser();
+  const { user, setUser } = useUser();
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
@@ -73,11 +73,9 @@ export default function AccountPage() {
     });
 
   // states
-  const [name, setName] = useState<string>(
-    data?.user?.user_metadata?.name || "",
-  );
+  const [name, setName] = useState<string>(user?.user_metadata?.name || "");
   const [email, setEmail] = useState(
-    searchParams.get("new_email") || data?.user?.email || "",
+    searchParams.get("new_email") || user?.email || "",
   );
 
   const [deleteConfirmDialogOpen, setDeleteConfirmDialogOpen] = useState(false);
@@ -104,9 +102,9 @@ export default function AccountPage() {
           // we update the user state with the new email if things went well
           // -> user object will be refetched from server on page reload
 
-          setData((state) => ({
+          setUser((state) => ({
             ...state!,
-            user: { ...state!.user!, email: searchParams.get("new_email")! },
+            email: searchParams.get("new_email")!,
           }));
         }
 
@@ -131,7 +129,7 @@ export default function AccountPage() {
     }
   }, [searchParams]);
 
-  if (!data) return null;
+  if (!user) return null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -151,7 +149,7 @@ export default function AccountPage() {
               className="w-[17rem]"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              hasChanges={name !== data.user?.user_metadata?.name}
+              hasChanges={name !== user?.user_metadata?.name}
               onSave={() => {
                 if (!z.string().min(1).safeParse(name).success) {
                   setNameMessage({ error: "Name cannot be empty" });
@@ -184,7 +182,7 @@ export default function AccountPage() {
               className="w-[25rem]"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              hasChanges={email !== data.user?.email}
+              hasChanges={email !== user?.email}
               onSave={() => {
                 if (!z.string().email().safeParse(email).success) {
                   setEmailMessage({ error: "Invalid email" });
@@ -216,10 +214,10 @@ export default function AccountPage() {
             <Button
               variant="muted"
               onClick={() => {
-                if (!data.user?.email) return;
+                if (!user?.email) return;
 
                 const formData = new FormData();
-                formData.set("email", data.user.email);
+                formData.set("email", user.email);
                 formData.set("callbackUrl", "/dashboard/account");
 
                 forgotPasswordAction(formData);

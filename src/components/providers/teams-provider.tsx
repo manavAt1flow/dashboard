@@ -3,43 +3,34 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Database } from "@/types/supabase";
 import React from "react";
-
-type Team = Database["public"]["Tables"]["teams"]["Row"];
-
-export interface TeamsData {
-  teams: Team[];
-  defaultTeamId: string;
-}
+import { TeamWithDefault } from "@/types/dashboard";
 
 interface TeamsContextType {
-  data: TeamsData | null;
-  setData: React.Dispatch<React.SetStateAction<TeamsData | null>>;
+  teams: TeamWithDefault[] | null;
+  setTeams: React.Dispatch<React.SetStateAction<TeamWithDefault[] | null>>;
 }
 
 const TeamsContext = createContext<TeamsContextType>({
-  data: null,
-  setData: () => {},
+  teams: null,
+  setTeams: () => {},
 });
 
 interface TeamsProviderProps {
   children: React.ReactNode;
-  initialTeamsData?: TeamsData | null;
+  initialTeams?: TeamWithDefault[] | null;
 }
 
-export function TeamsProvider({
-  children,
-  initialTeamsData,
-}: TeamsProviderProps) {
-  const [teamsData, setTeamsData] = useState<TeamsData | null>(
-    initialTeamsData || null,
+export function TeamsProvider({ children, initialTeams }: TeamsProviderProps) {
+  const [teams, setTeams] = useState<TeamWithDefault[] | null>(
+    initialTeams || null,
   );
 
   useEffect(() => {
-    setTeamsData(initialTeamsData || null);
-  }, [initialTeamsData]);
+    setTeams(initialTeams || null);
+  }, [initialTeams]);
 
   return (
-    <TeamsContext.Provider value={{ data: teamsData, setData: setTeamsData }}>
+    <TeamsContext.Provider value={{ teams, setTeams }}>
       {children}
     </TeamsContext.Provider>
   );

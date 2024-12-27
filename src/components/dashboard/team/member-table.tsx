@@ -32,8 +32,8 @@ interface MemberTableProps {
 }
 
 export default function MemberTable({ teamId }: MemberTableProps) {
-  const { setData } = useTeams();
-  const { data: userData } = useUser();
+  const { teams, setTeams } = useTeams();
+  const { user } = useUser();
   const { toast } = useToast();
   const router = useRouter();
 
@@ -59,15 +59,13 @@ export default function MemberTable({ teamId }: MemberTableProps) {
         return userId;
       },
       onSuccess: (removedUserId) => {
-        if (removedUserId === userData?.user?.id) {
+        if (removedUserId === user?.id) {
           router.push(PROTECTED_URLS.DASHBOARD);
 
           setTimeout(() => {
-            setData(
+            setTeams(
               produce((draft) => {
-                draft!.teams = draft!.teams.filter(
-                  (team) => team.id !== teamId,
-                );
+                draft = draft!.filter((team) => team.id !== teamId);
               }),
             );
           }, 1000);
@@ -155,37 +153,36 @@ export default function MemberTable({ teamId }: MemberTableProps) {
                 </Avatar>
               </TableCell>
               <TableCell>
-                {member.user.id === userData?.user?.id
+                {member.user.id === user?.id
                   ? "You"
                   : (member.user.name ?? "Anonymous")}
               </TableCell>
               <TableCell>{member.user.email}</TableCell>
               <TableCell className="text-fg-300">
-                {member.relation.added_by === userData?.user?.id
+                {member.relation.added_by === user?.id
                   ? "You"
                   : (members.find((m) => m.user.id === member.relation.added_by)
                       ?.user.name ?? "")}
               </TableCell>
               <TableCell className="text-end">
-                {!member.relation.is_default &&
-                  userData?.user?.id !== member.user.id && (
-                    <AlertDialog
-                      title="Remove Member"
-                      description="Are you sure you want to remove this member from the team?"
-                      confirm="Remove"
-                      onConfirm={() => mutateRemoveMember(member.user.id)}
-                      confirmProps={{
-                        loading: isMutatingRemoveMember,
-                      }}
-                      trigger={
-                        <Button variant="muted" size="iconSm">
-                          <span className="text-xs">X</span>
-                        </Button>
-                      }
-                      open={removeDialogOpen}
-                      onOpenChange={setRemoveDialogOpen}
-                    />
-                  )}
+                {!member.relation.is_default && user?.id !== member.user.id && (
+                  <AlertDialog
+                    title="Remove Member"
+                    description="Are you sure you want to remove this member from the team?"
+                    confirm="Remove"
+                    onConfirm={() => mutateRemoveMember(member.user.id)}
+                    confirmProps={{
+                      loading: isMutatingRemoveMember,
+                    }}
+                    trigger={
+                      <Button variant="muted" size="iconSm">
+                        <span className="text-xs">X</span>
+                      </Button>
+                    }
+                    open={removeDialogOpen}
+                    onOpenChange={setRemoveDialogOpen}
+                  />
+                )}
               </TableCell>
             </TableRow>
           ))}
