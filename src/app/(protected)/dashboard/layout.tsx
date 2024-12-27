@@ -16,6 +16,11 @@ export default async function Layout({
       headers: {
         cookie: (await headers()).get("cookie") || "",
       },
+      credentials: "include",
+      next: {
+        tags: ["dashboard-init"],
+        revalidate: 60,
+      },
       cache: "force-cache",
     });
 

@@ -4,6 +4,7 @@ import { E2BError } from "@/types/errors";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { InitResponse } from "@/types/dashboard";
 import { Database } from "@/types/supabase";
+import { revalidateTag } from "next/cache";
 
 function transformTeamsData(
   data: (Database["public"]["Tables"]["users_teams"]["Row"] & {
