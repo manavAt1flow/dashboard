@@ -1,9 +1,53 @@
+import { checkAuthenticated } from "@/actions/utils";
 import Sidebar from "@/components/dashboard/sidebar/sidebar";
 import Topbar from "@/components/dashboard/topbar/topbar";
 import ClientProviders from "@/components/globals/client-providers";
-import { BASE_URL } from "@/configs/urls";
+import { PROTECTED_URLS } from "@/configs/urls";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { InitResponse } from "@/types/dashboard";
-import { headers } from "next/headers";
+import { Database } from "@/types/supabase";
+import { redirect } from "next/navigation";
+
+function transformTeamsData(
+  data: (Database["public"]["Tables"]["users_teams"]["Row"] & {
+    teams: Database["public"]["Tables"]["teams"]["Row"];
+  })[],
+): InitResponse["teams"] {
+  return data.map((userTeam) => {
+    const team = userTeam.teams;
+    return { ...team, is_default: userTeam.is_default };
+  });
+}
+
+/*
+ * Gets the initial data for protected dashboard routes.
+ *
+ * @user: The user object.
+ * @teams: The teams the user is a member of + if it's the default team.
+ */
+async function getInitialData(): Promise<InitResponse> {
+  const { user } = await checkAuthenticated();
+
+  const { data: usersTeamsData, error } = await supabaseAdmin
+    .from("users_teams")
+    .select("*, teams (*)")
+    .eq("user_id", user.id);
+
+  if (error) {
+    throw error;
+  }
+
+  if (!usersTeamsData || usersTeamsData.length === 0) {
+    redirect(PROTECTED_URLS.DASHBOARD);
+  }
+
+  return {
+    user,
+    teams: transformTeamsData(usersTeamsData),
+  };
+}
+
+export const fetchCache = "force-cache";
 
 export default async function Layout({
   children,
@@ -11,25 +55,7 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   try {
-    const res = await fetch(`${BASE_URL}/api/dashboard/init`, {
-      method: "GET",
-      headers: {
-        cookie: (await headers()).get("cookie") || "",
-      },
-      credentials: "include",
-      next: {
-        tags: ["dashboard-init"],
-        revalidate: 60,
-      },
-      cache: "force-cache",
-    });
-
-    if (!res.ok) {
-      console.error("Failed to fetch init data:", await res.text());
-      throw new Error("Failed to fetch init data");
-    }
-
-    const data: InitResponse = await res.json();
+    const data = await getInitialData();
 
     return (
       <ClientProviders initialData={data}>
