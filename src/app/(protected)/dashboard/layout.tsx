@@ -3,7 +3,7 @@ import Topbar from "@/components/dashboard/topbar/topbar";
 import ClientProviders from "@/components/globals/client-providers";
 import { BASE_URL } from "@/configs/urls";
 import { InitResponse } from "@/types/dashboard";
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
 
 export default async function Layout({
   children,
@@ -14,15 +14,14 @@ export default async function Layout({
     const res = await fetch(`${BASE_URL}/api/dashboard/init`, {
       method: "GET",
       headers: {
-        Cookie: (await cookies()).toString(),
+        cookie: (await headers()).get("cookie") || "",
       },
       cache: "force-cache",
     });
 
     if (!res.ok) {
-      const text = await res.text();
-
-      return <div dangerouslySetInnerHTML={{ __html: text }}></div>;
+      console.error("Failed to fetch init data:", await res.text());
+      throw new Error("Failed to fetch init data");
     }
 
     const data: InitResponse = await res.json();
