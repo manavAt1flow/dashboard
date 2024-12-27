@@ -19,6 +19,10 @@ export default async function Layout({
       cache: "force-cache",
     });
 
+    if (!res.ok) {
+      throw new Error(await res.text());
+    }
+
     const data: InitResponse = await res.json();
 
     return (
