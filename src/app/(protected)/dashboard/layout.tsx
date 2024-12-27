@@ -20,7 +20,9 @@ export default async function Layout({
     });
 
     if (!res.ok) {
-      throw new Error(await res.text());
+      const text = await res.text();
+
+      return <div dangerouslySetInnerHTML={{ __html: text }}></div>;
     }
 
     const data: InitResponse = await res.json();
