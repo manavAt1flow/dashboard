@@ -1,7 +1,6 @@
 import {
   BarChart,
   Blocks,
-  HomeIcon,
   Key,
   LucideSheet,
   Settings,
@@ -9,19 +8,19 @@ import {
   Users,
 } from "lucide-react";
 
-type SidebarLinkArgs = {
+type DashboardNavLinkArgs = {
   teamId?: string;
 };
 
-export type SidebarLink = {
+export type DashboardNavLink = {
   label: string;
-  href: (args: SidebarLinkArgs) => string;
+  href: (args: DashboardNavLinkArgs) => string;
   icon: React.ComponentType;
   group?: string;
   goesDeeper?: boolean;
 };
 
-export const MAIN_SIDEBAR_LINKS: SidebarLink[] = [
+export const MAIN_DASHBOARD_LINKS: DashboardNavLink[] = [
   /*   {
     label: "Home",
     href: (args) => `/dashboard/${args.teamId}`,
@@ -45,30 +44,27 @@ export const MAIN_SIDEBAR_LINKS: SidebarLink[] = [
   },
 ];
 
-export const SETTINGS_SIDEBAR_LINKS: SidebarLink[] = [
+export const SETTINGS_DASHBOARD_LINKS: DashboardNavLink[] = [
   {
     label: "General",
     href: (args) => `/dashboard/${args.teamId}/settings/general`,
     icon: Users,
-    group: "organization",
   },
   {
     label: "API Keys",
     href: (args) => `/dashboard/${args.teamId}/settings/keys`,
     icon: Key,
-    group: "organization",
   },
   {
     label: "Usage",
     href: (args) => `/dashboard/${args.teamId}/settings/usage`,
     icon: BarChart,
-    group: "organization",
   },
 
   {
     label: "Account",
     href: () => `/dashboard/account`,
     icon: User,
-    group: "account",
+    group: "personal",
   },
 ];

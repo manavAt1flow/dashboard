@@ -4,11 +4,11 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-interface SidebarSearchProps {
+interface DashboardSearchProps {
   className?: string;
 }
 
-export default function SidebarSearch({ className }: SidebarSearchProps) {
+export default function DashboardSearch({ className }: DashboardSearchProps) {
   const [query, setQuery] = useState("");
 
   return (

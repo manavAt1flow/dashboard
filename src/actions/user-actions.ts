@@ -1,39 +1,11 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { Database } from "@/types/supabase";
 import { User } from "@supabase/supabase-js";
 import { checkAuthenticated } from "./utils";
 import { z } from "zod";
-import { cookies, headers } from "next/headers";
-
-interface GetUserResponse {
-  user: User;
-  accessToken: Database["public"]["Tables"]["access_tokens"]["Row"];
-}
-
-export async function getUserAction(): Promise<GetUserResponse> {
-  const { user } = await checkAuthenticated();
-
-  if (!user) {
-    throw new Error("User not authenticated");
-  }
-
-  const { data: accessToken, error } = await supabaseAdmin
-    .from("access_tokens")
-    .select("*")
-    .eq("user_id", user.id)
-    .single();
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return {
-    user,
-    accessToken,
-  };
-}
+import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 const UpdateUserSchema = z.object({
   email: z.string().email().optional(),
@@ -77,6 +49,8 @@ export async function updateUserAction(
   if (error) {
     throw error;
   }
+
+  revalidatePath("/dashboard/[teamId]", "layout");
 
   return {
     newUser: updateData.user,

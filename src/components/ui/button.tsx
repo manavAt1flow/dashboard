@@ -28,7 +28,6 @@ const buttonVariants = cva(
         ].join(" "),
         ghost: [
           "bg-transparent",
-          "hover:bg-bg-200/90",
           "active:translate-y-[1px] active:shadow-none",
         ].join(" "),
         muted: [

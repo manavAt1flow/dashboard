@@ -1,13 +1,14 @@
 "use client";
 
 import { useMetadata } from "@/components/providers/metadata-provider";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { DashboardNavLink } from "@/configs/dashboard-navs";
 import {
-  MAIN_SIDEBAR_LINKS,
-  SidebarLink,
-  SETTINGS_SIDEBAR_LINKS,
-} from "@/configs/sidebar-links";
+  MAIN_DASHBOARD_LINKS,
+  SETTINGS_DASHBOARD_LINKS,
+} from "@/configs/dashboard-navs";
 import { PROTECTED_URLS } from "@/configs/urls";
+import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
@@ -52,10 +53,10 @@ const itemVariants = {
 };
 
 type GroupedLinks = {
-  [key: string]: SidebarLink[];
+  [key: string]: DashboardNavLink[];
 };
 
-export default function SidebarNav() {
+export default function DasboardNav() {
   const segments = useSelectedLayoutSegments();
   const pathname = usePathname();
 
@@ -69,10 +70,10 @@ export default function SidebarNav() {
     [segments],
   );
 
-  const navLinks = useMemo<SidebarLink[]>(() => {
-    if (level === "settings") return SETTINGS_SIDEBAR_LINKS;
+  const navLinks = useMemo<DashboardNavLink[]>(() => {
+    if (level === "settings") return SETTINGS_DASHBOARD_LINKS;
 
-    return MAIN_SIDEBAR_LINKS;
+    return MAIN_DASHBOARD_LINKS;
   }, [level]);
 
   const direction = useMemo(
@@ -92,7 +93,7 @@ export default function SidebarNav() {
   }, [navLinks]);
 
   return (
-    <AnimatePresence mode="wait" custom={direction}>
+    <AnimatePresence mode="wait" custom={direction} initial={false}>
       <motion.div
         key={level}
         custom={direction}
@@ -100,7 +101,7 @@ export default function SidebarNav() {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="relative h-full pt-2"
+        className="relative h-full"
       >
         {level !== "main" && (
           <motion.div
@@ -108,7 +109,7 @@ export default function SidebarNav() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -10 }}
             transition={{ duration: 0.3 }}
-            className="mb-2"
+            className="mb-4"
           >
             <Button
               variant="link"
@@ -131,8 +132,8 @@ export default function SidebarNav() {
               className="mt-6 flex w-full flex-col gap-1 first:mt-0"
             >
               {group && group !== "ungrouped" && (
-                <div className="mb-2 font-mono text-xs uppercase text-fg-300">
-                  [{group}]
+                <div className="mb-2 font-mono text-xs uppercase text-fg-500">
+                  <span className="text-fg-300">{group}</span>
                 </div>
               )}
               {links.map((item, index) => (
@@ -145,24 +146,25 @@ export default function SidebarNav() {
                   exit="exit"
                   className="w-full"
                 >
-                  <Button
-                    variant={
-                      pathname === item.href({ teamId: selectedTeamId })
-                        ? "default"
-                        : "ghost"
-                    }
-                    size="sm"
-                    className="w-full justify-start font-mono capitalize"
-                    asChild
+                  <Link
+                    prefetch
+                    href={item.href({ teamId: selectedTeamId })}
+                    className={cn(
+                      "h-8 p-0 pl-1",
+                      "group flex w-full items-center justify-start gap-1 font-mono text-sm font-medium capitalize hover:no-underline",
+                    )}
                   >
-                    <Link prefetch href={item.href({ teamId: selectedTeamId })}>
-                      <span className="mr-2">$</span>
-                      {item.label}
-                      {item.goesDeeper && (
-                        <ChevronRight className="ml-auto h-4 w-4" />
+                    <div
+                      className={cn(
+                        "flex items-center gap-2 px-2 py-1",
+                        pathname === item.href({ teamId: selectedTeamId }) &&
+                          "bg-fg text-bg",
                       )}
-                    </Link>
-                  </Button>
+                    >
+                      <span>{item.goesDeeper ? ">" : "$"}</span>
+                      {item.label}
+                    </div>
+                  </Link>
                 </motion.div>
               ))}
             </div>

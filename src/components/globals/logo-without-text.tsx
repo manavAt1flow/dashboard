@@ -2,11 +2,17 @@
 
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function LogoWithoutText({ className }: { className?: string }) {
   const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  if (!resolvedTheme) {
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || !resolvedTheme) {
     return null;
   }
 

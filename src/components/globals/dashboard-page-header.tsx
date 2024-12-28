@@ -10,7 +10,7 @@ export function DashboardPageDescription({
 
 export function DashboardPageTitle({ children }: { children: ReactNode }) {
   return (
-    <h1 className="w-min whitespace-nowrap bg-fg px-1.5 py-0.5 text-2xl font-bold text-bg">
+    <h1 className="w-min whitespace-nowrap bg-fg px-1.5 py-0.5 text-2xl font-light text-bg">
       {children}
     </h1>
   );

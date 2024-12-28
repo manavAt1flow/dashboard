@@ -1,11 +1,15 @@
 import { checkAuthenticated } from "@/actions/utils";
-import Sidebar from "@/components/dashboard/sidebar/sidebar";
-import Topbar from "@/components/dashboard/topbar/topbar";
+import UserMenu from "@/components/auth/user-menu";
+import DashboardNav from "@/components/dashboard/dashboard-nav";
+import TeamSelector from "@/components/dashboard/team-selector";
 import ClientProviders from "@/components/globals/client-providers";
+import { ThemeSwitcher } from "@/components/globals/theme-switcher";
+import { Button } from "@/components/ui/button";
 import { PROTECTED_URLS } from "@/configs/urls";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { InitResponse } from "@/types/dashboard";
 import { Database } from "@/types/supabase";
+import { HeartPulse } from "lucide-react";
 import { redirect } from "next/navigation";
 
 function transformTeamsData(
@@ -59,22 +63,27 @@ export default async function Layout({
 
     return (
       <ClientProviders initialData={data}>
-        <div className="flex h-[100dvh] flex-col">
-          <Topbar />
-          <main className="flex h-full gap-2 overflow-hidden">
-            <Sidebar />
-            <div className="flex-1 pb-4 pl-2 pr-4">
-              <div className="relative h-full max-h-full w-full overflow-y-auto">
-                <div className="mx-auto w-full max-w-7xl px-4">{children}</div>
+        <div className="flex h-[100dvh] flex-col gap-2">
+          <div className="flex h-full max-h-full gap-4 overflow-hidden p-4">
+            <aside className="flex w-56 flex-col gap-2">
+              <DashboardNav />
+              <TeamSelector />
+              <div className="flex items-center gap-2 pr-2">
+                <UserMenu />
+                <Button size="sm">Upgrade</Button>
+                <ThemeSwitcher />
+                <Button variant="ghost" size="icon" className="size-8">
+                  <HeartPulse className="h-4 w-4 text-fg-300" />
+                </Button>
               </div>
-            </div>
-          </main>
+            </aside>
+            <main className="flex-1">{children}</main>
+          </div>
         </div>
       </ClientProviders>
     );
   } catch (error) {
     console.error("(protected)/layout.tsx:", error);
-
     throw error;
   }
 }
