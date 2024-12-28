@@ -101,7 +101,7 @@ export default function DasboardNav() {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="relative h-full"
+        className="relative h-full w-48"
       >
         {level !== "main" && (
           <motion.div
@@ -132,8 +132,8 @@ export default function DasboardNav() {
               className="mt-6 flex w-full flex-col gap-1 first:mt-0"
             >
               {group && group !== "ungrouped" && (
-                <div className="mb-2 font-mono text-xs uppercase text-fg-500">
-                  <span className="text-fg-300">{group}</span>
+                <div className="mb-2 font-mono text-xs uppercase text-fg-300">
+                  == <span className="text-fg-500">{group}</span>
                 </div>
               )}
               {links.map((item, index) => (
@@ -150,19 +150,34 @@ export default function DasboardNav() {
                     prefetch
                     href={item.href({ teamId: selectedTeamId })}
                     className={cn(
-                      "h-8 p-0 pl-1",
-                      "group flex w-full items-center justify-start gap-1 font-mono text-sm font-medium capitalize hover:no-underline",
+                      "group flex w-full items-center font-mono text-sm hover:no-underline",
+                      pathname === item.href({ teamId: selectedTeamId })
+                        ? "text-fg"
+                        : "text-fg-300",
                     )}
                   >
-                    <div
-                      className={cn(
-                        "flex items-center gap-2 px-2 py-1",
-                        pathname === item.href({ teamId: selectedTeamId }) &&
-                          "bg-fg text-bg",
-                      )}
-                    >
-                      <span>{item.goesDeeper ? ">" : "$"}</span>
-                      {item.label}
+                    <div className="flex w-full items-center gap-1 px-2 py-1">
+                      {/*                       <span className="shrink-0">
+                        {item.goesDeeper ? ">" : "$"}
+                      </span> */}
+                      <span className="shrink-0">{item.label}</span>
+                      <span className="w-full overflow-hidden font-mono leading-[1.15] text-fg-500">
+                        {pathname === item.href({ teamId: selectedTeamId }) ? (
+                          <>
+                            {".".repeat(4)}
+                            <span className="text-fg">$</span>
+                            {".".repeat(16)}
+                          </>
+                        ) : item.goesDeeper ? (
+                          <>
+                            {".".repeat(3)}
+                            <span className="text-fg">{">>>"}</span>
+                            {".".repeat(15)}
+                          </>
+                        ) : (
+                          ".".repeat(20)
+                        )}
+                      </span>
                     </div>
                   </Link>
                 </motion.div>
