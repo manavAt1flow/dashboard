@@ -23,5 +23,5 @@ export const GET = async (req: NextRequest) => {
     return redirect(PROTECTED_URLS.NEW_TEAM);
   }
 
-  return redirect(`${PROTECTED_URLS.DASHBOARD}/${teamId}`);
+  return redirect(PROTECTED_URLS.SANDBOXES(teamId));
 };

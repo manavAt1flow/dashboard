@@ -7,6 +7,7 @@ import {
   SidebarLink,
   SETTINGS_SIDEBAR_LINKS,
 } from "@/configs/sidebar-links";
+import { PROTECTED_URLS } from "@/configs/urls";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
@@ -99,7 +100,7 @@ export default function SidebarNav() {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="relative h-full p-4"
+        className="relative h-full pt-2"
       >
         {level !== "main" && (
           <motion.div
@@ -115,7 +116,7 @@ export default function SidebarNav() {
               className="gap-1 font-mono"
               asChild
             >
-              <Link prefetch href={`/dashboard/${selectedTeamId}`}>
+              <Link prefetch href={PROTECTED_URLS.DASHBOARD}>
                 <ChevronLeft className="h-4 w-4" />
                 Back
               </Link>

@@ -1,10 +1,6 @@
 "use server";
 
-import {
-  checkAuthenticated,
-  checkUserTeamAuthorization,
-  getTeamApiKey,
-} from "./utils";
+import { checkAuthenticated, getTeamApiKey } from "./utils";
 import { Usage, TransformedUsageData } from "@/types/usage";
 
 interface GetUsageActionProps {
@@ -12,17 +8,17 @@ interface GetUsageActionProps {
 }
 
 export async function getUsageAction({ teamId }: GetUsageActionProps) {
-  await checkAuthenticated();
+  const { user } = await checkAuthenticated();
 
-  /*   const apiKey = await getTeamApiKey(user.id, teamId); */
+  const apiKey = await getTeamApiKey(user.id, teamId);
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BILLING_API_URL}/teams/${process.env.TEMP_TEAM_ID}/usage`,
+    `${process.env.NEXT_PUBLIC_BILLING_API_URL}/teams/${teamId}/usage`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "X-Team-API-Key": process.env.TEMP_TEAM_API_KEY!,
+        "X-Team-API-Key": apiKey,
       },
     },
   );

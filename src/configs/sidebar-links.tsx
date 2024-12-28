@@ -22,11 +22,11 @@ export type SidebarLink = {
 };
 
 export const MAIN_SIDEBAR_LINKS: SidebarLink[] = [
-  {
+  /*   {
     label: "Home",
     href: (args) => `/dashboard/${args.teamId}`,
     icon: HomeIcon,
-  },
+  }, */
   {
     label: "Sandboxes",
     href: (args) => `/dashboard/${args.teamId}/sandboxes`,

@@ -3,13 +3,8 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { Database } from "@/types/supabase";
-import {
-  checkAuthenticated,
-  checkUserTeamAuthorization,
-  getTeamApiKey,
-} from "./utils";
+import { checkAuthenticated, checkUserTeamAuthorization } from "./utils";
 import { z } from "zod";
-import { headers } from "next/headers";
 import { User } from "@supabase/supabase-js";
 
 interface GetUserTeamsResponse {
@@ -99,8 +94,6 @@ export async function addTeamMemberAction(teamId: string, email: string) {
   }
 
   const existingUser = existingUsers?.[0];
-
-  const origin = (await headers()).get("origin");
 
   // check if user exists / is already a member of the team
 
