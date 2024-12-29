@@ -8,6 +8,7 @@ import DashboardNav from "./dashboard-nav";
 import TeamSelector from "./team-selector";
 import { useWindowSize } from "usehooks-ts";
 import LogoWithoutText from "../globals/logo-without-text";
+import { Logo } from "../globals/logo";
 
 export default function Sidebar() {
   const { height } = useWindowSize();
@@ -15,7 +16,11 @@ export default function Sidebar() {
   const columns = Math.floor(height / 18.8);
 
   return (
-    <aside className="relative flex w-56 flex-col gap-2">
+    <aside className="relative flex w-56 flex-col gap-3">
+      <span className="inline-flex items-center">
+        <LogoWithoutText />
+        <span className="font-mono text-xs text-fg-300">E2B</span>
+      </span>
       <DashboardNav />
 
       <TeamSelector />

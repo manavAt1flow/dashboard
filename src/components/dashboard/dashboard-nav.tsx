@@ -133,7 +133,7 @@ export default function DasboardNav() {
             >
               {group && group !== "ungrouped" && (
                 <div className="mb-2 font-mono text-xs uppercase text-fg-300">
-                  == {group}
+                  -= {group}
                 </div>
               )}
               {links.map((item, index) => (
