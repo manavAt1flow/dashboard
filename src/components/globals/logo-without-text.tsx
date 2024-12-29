@@ -6,13 +6,8 @@ import { useEffect, useState } from "react";
 
 export default function LogoWithoutText({ className }: { className?: string }) {
   const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted || !resolvedTheme) {
+  if (window === undefined) {
     return null;
   }
 

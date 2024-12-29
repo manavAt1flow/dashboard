@@ -1,6 +1,7 @@
 import { checkAuthenticated } from "@/actions/utils";
 import UserMenu from "@/components/auth/user-menu";
 import DashboardNav from "@/components/dashboard/dashboard-nav";
+import Sidebar from "@/components/dashboard/sidebar";
 import TeamSelector from "@/components/dashboard/team-selector";
 import ClientProviders from "@/components/globals/client-providers";
 import { ThemeSwitcher } from "@/components/globals/theme-switcher";
@@ -65,18 +66,7 @@ export default async function Layout({
       <ClientProviders initialData={data}>
         <div className="flex h-[100dvh] flex-col gap-2">
           <div className="flex h-full max-h-full gap-4 overflow-hidden p-4">
-            <aside className="flex w-56 flex-col gap-2">
-              <DashboardNav />
-              <TeamSelector />
-              <div className="flex items-center gap-2 pr-2">
-                <UserMenu />
-                <Button size="sm">Upgrade</Button>
-                <ThemeSwitcher />
-                <Button variant="ghost" size="icon" className="size-8">
-                  <HeartPulse className="h-4 w-4 text-fg-300" />
-                </Button>
-              </div>
-            </aside>
+            <Sidebar />
             <main className="flex-1">{children}</main>
           </div>
         </div>

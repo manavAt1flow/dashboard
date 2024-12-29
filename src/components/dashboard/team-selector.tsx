@@ -39,7 +39,7 @@ export default function TeamSelector() {
         value={selectedTeamId}
         onValueChange={(value) => router.push(PROTECTED_URLS.TEAM(value))}
       >
-        <SelectTrigger className="w-auto border-none bg-transparent p-0 normal-case">
+        <SelectTrigger className="h-8 w-auto border-none bg-transparent p-0 normal-case">
           <SelectValue placeholder="Select organization" />
         </SelectTrigger>
         <SelectContent className="min-w-[16rem]">

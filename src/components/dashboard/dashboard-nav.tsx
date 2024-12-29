@@ -157,27 +157,16 @@ export default function DasboardNav() {
                     )}
                   >
                     <div className="flex w-full items-center gap-1 px-2 py-1">
-                      {/*                       <span className="shrink-0">
-                        {item.goesDeeper ? ">" : "$"}
-                      </span> */}
                       <span className="shrink-0">{item.label}</span>
                       <span className="w-full overflow-hidden font-mono leading-[1.15] text-fg-500">
-                        {pathname === item.href({ teamId: selectedTeamId }) ? (
-                          <>
-                            {".".repeat(4)}
-                            <span className="text-fg">$</span>
-                            {".".repeat(16)}
-                          </>
-                        ) : item.goesDeeper ? (
-                          <>
-                            {".".repeat(3)}
-                            <span className="text-fg">{">>>"}</span>
-                            {".".repeat(15)}
-                          </>
-                        ) : (
-                          ".".repeat(20)
-                        )}
+                        {".".repeat(20)}
                       </span>
+                      {item.goesDeeper && (
+                        <span className="shrink-0">{">>>"}</span>
+                      )}
+                      {pathname === item.href({ teamId: selectedTeamId }) && (
+                        <span className="shrink-0 text-fg">{"*"}</span>
+                      )}
                     </div>
                   </Link>
                 </motion.div>
