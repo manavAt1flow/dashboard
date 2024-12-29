@@ -1,6 +1,5 @@
 "use client";
 
-import { DashboardPageHeader } from "@/components/globals/dashboard-page-header";
 import DashboardPageLayout from "@/components/dashboard/dashboard-page-layout";
 import { NameSettings } from "@/components/dashboard/account/account-name-settings";
 import { EmailSettings } from "@/components/dashboard/account/account-email-settings";
@@ -15,10 +14,8 @@ export default function AccountPage() {
   if (!user) return null;
 
   return (
-    <DashboardPageLayout>
+    <DashboardPageLayout title="Account">
       <div className="flex flex-col gap-6">
-        <DashboardPageHeader title="Account" />
-
         <div className="grid grid-cols-12 gap-6">
           <div className={cn("col-span-full")}>
             <NameSettings />

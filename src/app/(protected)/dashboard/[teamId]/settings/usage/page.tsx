@@ -1,7 +1,6 @@
 "use client";
 
 import { getUsageAction } from "@/actions/usage-actions";
-import { DashboardPageHeader } from "@/components/globals/dashboard-page-header";
 import {
   Card,
   CardContent,
@@ -89,13 +88,11 @@ export default function UsagePage({
   const latestRAM = usageData?.ramSeries[0].data.at(-1)?.y;
 
   return (
-    <DashboardPageLayout>
+    <DashboardPageLayout
+      title="Usage"
+      description="Monitor your sandbox resource consumption and associated costs over time."
+    >
       <div className="flex flex-col gap-6">
-        <DashboardPageHeader
-          title="Usage"
-          description="Monitor your sandbox resource consumption and associated costs over time."
-        />
-
         <div className="grid grid-cols-12 gap-6">
           {/* Cost Card */}
           <Card className="col-span-12">

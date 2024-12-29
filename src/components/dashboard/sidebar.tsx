@@ -6,25 +6,13 @@ import { ThemeSwitcher } from "../globals/theme-switcher";
 import { Button } from "../ui/button";
 import DashboardNav from "./dashboard-nav";
 import TeamSelector from "./team-selector";
-import { useWindowSize } from "usehooks-ts";
 import LogoWithoutText from "../globals/logo-without-text";
-import { useEffect, useState } from "react";
-import { motion } from "motion/react";
 
 export default function Sidebar() {
-  const { height } = useWindowSize();
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const columns = Math.floor(height / 18.8);
-
   return (
-    <aside className="relative flex w-56 flex-col gap-3">
+    <aside className="relative flex w-56 flex-col gap-3 bg-gradient-to-b from-bg-200 from-80% to-transparent to-20% bg-[length:1px_22px] bg-right-top bg-repeat-y">
       <span className="inline-flex items-center">
-        <LogoWithoutText />
+        <LogoWithoutText className="size-12" />
         <span className="font-mono text-xs text-fg-300">E2B</span>
       </span>
       <DashboardNav />
@@ -37,18 +25,6 @@ export default function Sidebar() {
         <Button variant="ghost" size="icon" className="size-8">
           <HeartPulse className="h-4 w-4 text-fg-300" />
         </Button>
-      </div>
-
-      <div
-        className="absolute right-0 h-full select-none font-mono text-bg-100"
-        aria-hidden="true"
-      >
-        {isMounted &&
-          Array.from({ length: columns }).map((_, i) => (
-            <div key={i} className="leading-[1.15]">
-              |
-            </div>
-          ))}
       </div>
     </aside>
   );

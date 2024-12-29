@@ -1,6 +1,5 @@
 "use client";
 
-import { DashboardPageHeader } from "@/components/globals/dashboard-page-header";
 import {
   Card,
   CardContent,
@@ -13,25 +12,17 @@ import DashboardPageLayout from "@/components/dashboard/dashboard-page-layout";
 
 export default function Page() {
   return (
-    <DashboardPageLayout>
-      <div className="flex flex-col gap-6">
-        <DashboardPageHeader
-          title="Sandboxes"
-          description="View and manage your E2B Sandboxes."
-        />
-
-        <Card className="border-none">
-          <CardHeader>
-            <CardTitle>Running Sandboxes</CardTitle>
-            <CardDescription>
-              View and manage your active sandbox environments.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SandboxesTable />
-          </CardContent>
-        </Card>
-      </div>
+    <DashboardPageLayout
+      title="Sandboxes"
+      description="View and manage your E2B Sandboxes."
+    >
+      <h2 className="text-2xl font-medium normal-case text-fg-300">
+        Active Sandboxes
+      </h2>
+      <p className="mb-4 text-sm text-fg-500">
+        View and manage your active sandbox environments.
+      </p>
+      <SandboxesTable />
     </DashboardPageLayout>
   );
 }

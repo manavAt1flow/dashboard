@@ -2,7 +2,6 @@
 
 import ApiKeysTable from "@/components/dashboard/keys/api-keys-table";
 import CreateApiKeyDialog from "@/components/dashboard/keys/create-api-key-dialog";
-import { DashboardPageHeader } from "@/components/globals/dashboard-page-header";
 import { useMetadata } from "@/components/providers/metadata-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,10 +17,11 @@ export default function KeysPage() {
   const { selectedTeamId } = useMetadata();
 
   return (
-    <DashboardPageLayout>
+    <DashboardPageLayout
+      title="API Keys"
+      description="Manage your organization's API keys for authentication."
+    >
       <div className="flex flex-col gap-6">
-        <DashboardPageHeader title="API Keys" />
-
         {selectedTeamId && (
           <Card hideUnderline className="relative">
             <CardHeader>
