@@ -20,7 +20,7 @@ import { useState } from "react";
 import { z } from "zod";
 
 export function TeamSettingsForm() {
-  const { data: teams } = useTeams();
+  const { data: teams, refetch: refetchTeams } = useTeams();
   const { selectedTeamId } = useMetadata();
 
   const team = useMemo(
@@ -51,12 +51,13 @@ export function TeamSettingsForm() {
     startTransition(async () => {
       try {
         await updateTeamNameAction(team.id, teamName);
+        await refetchTeams();
         setMessage({ success: "Team name updated" });
       } catch (error: any) {
         setMessage({ error: error.message });
       }
     });
-  }, [team]);
+  }, [team, teamName, refetchTeams]);
 
   return (
     <Card hideUnderline>

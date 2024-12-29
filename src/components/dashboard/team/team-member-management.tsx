@@ -13,7 +13,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { QUERY_KEYS } from "@/configs/query-keys";
 import { useTimeoutMessage } from "@/hooks/use-timeout-message";
+import { useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence } from "motion/react";
 import { useParams } from "next/navigation";
 import { useTransition } from "react";
@@ -22,6 +24,7 @@ import { z } from "zod";
 
 export function MemberManagement() {
   const { teamId } = useParams();
+  const queryClient = useQueryClient();
 
   const [isPending, startTransition] = useTransition();
   const [addMemberEmail, setAddMemberEmail] = useState("");
@@ -38,6 +41,9 @@ export function MemberManagement() {
     startTransition(async () => {
       try {
         await addTeamMemberAction(teamId as string, addMemberEmail);
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.TEAM_MEMBERS(teamId as string),
+        });
         setMessage({ success: "Member added to team" });
         setAddMemberEmail("");
       } catch (error: any) {
