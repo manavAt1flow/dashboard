@@ -17,6 +17,7 @@ import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
 import { useMemo } from "react";
+import { Loader } from "../ui/loader";
 
 export default function TeamSelector() {
   const { data: teamsData, isLoading: teamsLoading } = useTeams();
@@ -43,17 +44,15 @@ export default function TeamSelector() {
         <span className="text-fg-300">{">>"}</span> selected team
       </span>
       {teamsLoading ? (
-        <Skeleton
-          frameInterval={6}
-          waveFrequency={0.4}
-          height={1}
-          width={15}
-          className="flex h-8 items-center"
-        />
+        <div className="flex h-8 items-center">
+          <Loader interval={80} variant="progress" />
+        </div>
       ) : (
         <Select
           value={selectedTeamId}
-          onValueChange={(value) => router.push(PROTECTED_URLS.TEAM(value))}
+          onValueChange={(value) =>
+            router.push(PROTECTED_URLS.SANDBOXES(value))
+          }
         >
           <SelectTrigger className="h-8 w-auto border-none bg-transparent p-0 normal-case">
             <SelectValue placeholder="Select organization" />
