@@ -133,7 +133,7 @@ export default function DasboardNav() {
             >
               {group && group !== "ungrouped" && (
                 <div className="mb-2 font-mono text-xs uppercase text-fg-300">
-                  == <span className="text-fg-500">{group}</span>
+                  == {group}
                 </div>
               )}
               {links.map((item, index) => (
@@ -153,7 +153,7 @@ export default function DasboardNav() {
                       "group flex w-full items-center font-mono text-sm hover:no-underline",
                       pathname === item.href({ teamId: selectedTeamId })
                         ? "text-fg"
-                        : "text-fg-300",
+                        : "text-fg-500",
                     )}
                   >
                     <div className="flex w-full items-center gap-1 px-2 py-1">
