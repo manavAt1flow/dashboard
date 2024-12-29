@@ -4,6 +4,7 @@ import { updateTeamNameAction } from "@/actions/team-actions";
 import { AuthFormMessage } from "@/components/auth/auth-form-message";
 import ChangeDataInput from "@/components/globals/change-data-input";
 import { useMetadata } from "@/components/providers/metadata-provider";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTeams } from "@/hooks/use-teams";
 import { useTimeoutMessage } from "@/hooks/use-timeout-message";
@@ -62,23 +64,34 @@ export function TeamSettingsForm() {
   return (
     <Card hideUnderline>
       <CardHeader>
-        <CardTitle>Organization Name</CardTitle>
+        <CardTitle>Team Name</CardTitle>
         <CardDescription>
-          Change your organization name to display on your invoices and
-          receipts.
+          Change your team name to display on your invoices and receipts.
         </CardDescription>
       </CardHeader>
       <CardContent>
         {team ? (
-          <ChangeDataInput
-            placeholder="Acme, Inc."
-            className="w-[17rem]"
-            value={teamName}
-            onChange={(e) => setTeamName(e.target.value)}
-            hasChanges={teamName !== team?.name}
-            isLoading={isPending}
-            onSave={handleUpdateName}
-          />
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleUpdateName();
+            }}
+            className="flex items-center gap-2"
+          >
+            <Input
+              placeholder="Acme, Inc."
+              className="w-[17rem]"
+              value={teamName}
+              onChange={(e) => setTeamName(e.target.value)}
+            />
+            <Button
+              loading={isPending}
+              disabled={teamName === team?.name}
+              type="submit"
+            >
+              Save Name
+            </Button>
+          </form>
         ) : (
           <Skeleton
             width={50}

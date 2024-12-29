@@ -14,19 +14,19 @@ export default function DashboardPageLayout({
 }) {
   return (
     <>
-      <div className="flex flex-col gap-1 bg-gradient-to-r from-bg-200 from-80% to-transparent to-20% bg-[length:22px_1px] bg-left-bottom bg-repeat-x pb-4">
+      <motion.div className="flex flex-col gap-1 bg-gradient-to-r from-bg-200 from-80% to-transparent to-20% bg-[length:22px_1px] bg-left-bottom bg-repeat-x pb-4">
         <AsciiTitleDecrypt title={title} interval={15} obscureCharacter="X" />
         {description && (
           <motion.p
-            initial={{ opacity: 0, x: 5 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
+            initial={{ opacity: 0, x: 5, y: 5 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            transition={{ x: { delay: 0.6 }, duration: 0.3, ease: "easeInOut" }}
             className="ml-3 text-sm text-fg-500"
           >
             {description}
           </motion.p>
         )}
-      </div>
+      </motion.div>
       <div className="relative h-full max-h-full w-full overflow-y-auto p-8 px-5">
         {children}
       </div>
@@ -84,7 +84,13 @@ function AsciiTitleDecrypt({
       {displayedText.split("").map((char, index) => (
         <span
           key={index}
-          className={char === obscureCharacter ? "bg-fg text-bg" : ""}
+          className={
+            char === obscureCharacter
+              ? "bg-fg text-bg"
+              : char === "\\"
+                ? "text-fg-500"
+                : ""
+          }
         >
           {char}
         </span>
