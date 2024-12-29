@@ -2,7 +2,7 @@
 
 import { updateUserAction } from "@/actions/user-actions";
 import { AuthFormMessage } from "@/components/auth/auth-form-message";
-import ChangeDataInput from "@/components/globals/change-data-input";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useTimeoutMessage } from "@/hooks/use-timeout-message";
 import { useUser } from "@/hooks/use-user";
 import { AnimatePresence } from "motion/react";
@@ -32,15 +33,13 @@ export function NameSettings() {
     startTransition(async () => {
       try {
         await updateUserAction({ name });
-        setMessage({ success: "Name updated successfully" });
         await refetchUser();
+        setMessage({ success: "Name updated successfully" });
       } catch (error: any) {
         setMessage({ error: error.message });
       }
     });
   };
-
-  if (!user) return null;
 
   return (
     <Card hideUnderline>
@@ -49,15 +48,27 @@ export function NameSettings() {
         <CardDescription>Will be visible to your team members.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <ChangeDataInput
-          placeholder="Name"
-          className="w-[17rem]"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          hasChanges={name !== user?.user_metadata?.name}
-          onSave={handleUpdateName}
-          isLoading={isPending}
-        />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleUpdateName();
+          }}
+          className="flex items-center gap-2"
+        >
+          <Input
+            placeholder="Name"
+            className="w-[17rem]"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <Button
+            loading={isPending}
+            disabled={name === user?.user_metadata?.name}
+            type="submit"
+          >
+            Save Name
+          </Button>
+        </form>
 
         <AnimatePresence initial={false} mode="wait">
           {message && <AuthFormMessage message={message} className="mt-4" />}

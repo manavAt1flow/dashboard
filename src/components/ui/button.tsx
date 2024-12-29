@@ -88,7 +88,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={loading || props.disabled}
         {...props}
       >
-        {loading ? <Loader variant="compute" /> : props.children}
+        {loading ? (
+          <div className="flex items-center gap-2">
+            {props.children}
+            <Loader variant="compute" />
+          </div>
+        ) : (
+          props.children
+        )}
       </Comp>
     );
   },

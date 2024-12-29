@@ -3,6 +3,7 @@
 import { updateUserAction } from "@/actions/user-actions";
 import { AuthFormMessage } from "@/components/auth/auth-form-message";
 import ChangeDataInput from "@/components/globals/change-data-input";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useTimeoutMessage } from "@/hooks/use-timeout-message";
 import { useUser } from "@/hooks/use-user";
 import { AnimatePresence } from "motion/react";
@@ -19,7 +21,7 @@ import { useTransition } from "react";
 import { z } from "zod";
 
 export function EmailSettings() {
-  const { user, setUser } = useUser();
+  const { user, setUser, refetch: refetchUser } = useUser();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [email, setEmail] = useState(
@@ -63,6 +65,8 @@ export function EmailSettings() {
         setMessage({
           success: decodeURIComponent(searchParams.get("success")!),
         });
+
+        refetchUser();
       } else {
         setMessage({
           error: decodeURIComponent(searchParams.get("error")!),
@@ -82,15 +86,27 @@ export function EmailSettings() {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <ChangeDataInput
-          placeholder="Email"
-          className="w-[25rem]"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          hasChanges={email !== user?.email}
-          onSave={handleUpdateEmail}
-          isLoading={isPending}
-        />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleUpdateEmail();
+          }}
+          className="flex items-center gap-2"
+        >
+          <Input
+            placeholder="Email"
+            className="w-[17rem]"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Button
+            loading={isPending}
+            disabled={email === user?.email}
+            type="submit"
+          >
+            Save Email
+          </Button>
+        </form>
 
         <AnimatePresence initial={false} mode="wait">
           {message && <AuthFormMessage message={message} className="mt-4" />}
