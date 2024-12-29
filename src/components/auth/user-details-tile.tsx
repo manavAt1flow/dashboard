@@ -1,6 +1,6 @@
 import { ChevronRight } from "lucide-react";
-import { useUser } from "../providers/user-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useUser } from "@/hooks/use-user";
 
 export default function UserDetailsTile() {
   const { user } = useUser();

@@ -98,6 +98,10 @@ const config = {
             height: "0",
           },
         },
+        wave: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
         shimmer: {
           "0%": {
             backgroundPosition: "100% 0",
@@ -120,6 +124,7 @@ const config = {
         "accordion-up": "accordion-up 0.2s ease-out",
         shimmer: "shimmer 1s ease-in-out infinite",
         grid: "grid 30s linear infinite",
+        wave: "wave 2s linear infinite",
       },
     },
   },

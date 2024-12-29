@@ -12,7 +12,11 @@ import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
-import { usePathname, useSelectedLayoutSegments } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useSelectedLayoutSegments,
+} from "next/navigation";
 import { useMemo } from "react";
 
 const terminalFrameVariants = {
@@ -59,6 +63,7 @@ type GroupedLinks = {
 export default function DasboardNav() {
   const segments = useSelectedLayoutSegments();
   const pathname = usePathname();
+  const params = useParams();
 
   const { selectedTeamId } = useMetadata();
 
@@ -133,7 +138,7 @@ export default function DasboardNav() {
             >
               {group && group !== "ungrouped" && (
                 <div className="mb-2 font-mono text-xs uppercase text-fg-300">
-                  -= {group}
+                  == {group}
                 </div>
               )}
               {links.map((item, index) => (
@@ -151,7 +156,10 @@ export default function DasboardNav() {
                     href={item.href({ teamId: selectedTeamId })}
                     className={cn(
                       "group flex w-full items-center font-mono text-sm hover:no-underline",
-                      pathname === item.href({ teamId: selectedTeamId })
+                      pathname ===
+                        item.href({
+                          teamId: params.teamId as string | undefined,
+                        })
                         ? "text-fg"
                         : "text-fg-500",
                     )}
@@ -164,9 +172,10 @@ export default function DasboardNav() {
                       {item.goesDeeper && (
                         <span className="shrink-0">{">>>"}</span>
                       )}
-                      {pathname === item.href({ teamId: selectedTeamId }) && (
-                        <span className="shrink-0 text-fg">{"*"}</span>
-                      )}
+                      {pathname ===
+                        item.href({
+                          teamId: params.teamId as string | undefined,
+                        }) && <span className="shrink-0 text-fg">{"*"}</span>}
                     </div>
                   </Link>
                 </motion.div>

@@ -6,29 +6,26 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { signOutAction } from "@/actions/auth-actions";
-import { useUser } from "../providers/user-provider";
 import Link from "next/link";
 import { PROTECTED_URLS } from "@/configs/urls";
 import UserDetailsTile from "./user-details-tile";
+import { useUser } from "@/hooks/use-user";
 
 export default function UserMenu() {
-  const { user } = useUser();
-
-  if (!user) return null;
+  const { data: user } = useUser();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button size="iconSm" className="min-w-8" variant="ghost">
           <Avatar className="h-full w-full">
-            <AvatarImage src={user.user_metadata.avatar_url} />
+            <AvatarImage src={user?.user_metadata.avatar_url} />
             <AvatarFallback>
-              {user.email?.charAt(0).toUpperCase() || "?"}
+              {user?.email?.charAt(0).toUpperCase() || "?"}
             </AvatarFallback>
           </Avatar>
         </Button>

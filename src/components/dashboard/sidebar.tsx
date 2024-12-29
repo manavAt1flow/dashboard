@@ -8,10 +8,16 @@ import DashboardNav from "./dashboard-nav";
 import TeamSelector from "./team-selector";
 import { useWindowSize } from "usehooks-ts";
 import LogoWithoutText from "../globals/logo-without-text";
-import { Logo } from "../globals/logo";
+import { useEffect, useState } from "react";
+import { motion } from "motion/react";
 
 export default function Sidebar() {
   const { height } = useWindowSize();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const columns = Math.floor(height / 18.8);
 
@@ -33,19 +39,17 @@ export default function Sidebar() {
         </Button>
       </div>
 
-      {/* prevents hydration issues */}
-      {window !== undefined && (
-        <div
-          className="absolute right-0 h-full select-none font-mono text-bg-300"
-          aria-hidden="true"
-        >
-          {Array.from({ length: columns }).map((_, i) => (
+      <div
+        className="absolute right-0 h-full select-none font-mono text-bg-100"
+        aria-hidden="true"
+      >
+        {isMounted &&
+          Array.from({ length: columns }).map((_, i) => (
             <div key={i} className="leading-[1.15]">
               |
             </div>
           ))}
-        </div>
-      )}
+      </div>
     </aside>
   );
 }

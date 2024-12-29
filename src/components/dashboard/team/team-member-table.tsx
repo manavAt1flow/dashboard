@@ -5,8 +5,6 @@ import {
   removeTeamMemberAction,
 } from "@/actions/team-actions";
 import { AlertDialog } from "@/components/globals/alert-dialog";
-import { useTeams } from "@/components/providers/teams-provider";
-import { useUser } from "@/components/providers/user-provider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,21 +19,19 @@ import { QUERY_KEYS } from "@/configs/query-keys";
 import { PROTECTED_URLS } from "@/configs/urls";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { produce } from "immer";
 import { Loader } from "@/components/ui/loader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useTeams } from "@/hooks/use-teams";
+import { useUser } from "@/hooks/use-user";
 
-interface MemberTableProps {
-  teamId: string;
-}
-
-export default function MemberTable({ teamId }: MemberTableProps) {
-  const { teams, setTeams } = useTeams();
-  const { user } = useUser();
+export default function MemberTable() {
+  const { refetch: refetchTeams } = useTeams();
+  const { data: user } = useUser();
   const { toast } = useToast();
   const router = useRouter();
+  const { teamId } = useParams();
 
   // states
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
@@ -46,29 +42,23 @@ export default function MemberTable({ teamId }: MemberTableProps) {
     error,
     refetch,
   } = useQuery({
-    queryKey: QUERY_KEYS.TEAM_MEMBERS(teamId),
-    queryFn: () => getTeamMembersAction(teamId),
+    queryKey: QUERY_KEYS.TEAM_MEMBERS(teamId as string),
+    queryFn: () => getTeamMembersAction(teamId as string),
     enabled: !!teamId,
   });
 
   const { mutate: mutateRemoveMember, isPending: isMutatingRemoveMember } =
     useMutation({
       mutationFn: async (userId: string) => {
-        await removeTeamMemberAction(teamId, userId);
+        await removeTeamMemberAction(teamId as string, userId);
 
         return userId;
       },
       onSuccess: (removedUserId) => {
         if (removedUserId === user?.id) {
-          router.push(PROTECTED_URLS.DASHBOARD);
+          refetchTeams();
 
-          setTimeout(() => {
-            setTeams(
-              produce((draft) => {
-                draft = draft!.filter((team) => team.id !== teamId);
-              }),
-            );
-          }, 1000);
+          router.push(PROTECTED_URLS.DASHBOARD);
 
           return toast({
             title: "You have left the team",

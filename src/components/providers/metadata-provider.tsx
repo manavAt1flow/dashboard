@@ -1,5 +1,6 @@
 "use client";
 
+import { useTeams } from "@/hooks/use-teams";
 import { useParams } from "next/navigation";
 import {
   createContext,
@@ -8,7 +9,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useTeams } from "./teams-provider";
 
 type MetadataContextType = {
   selectedTeamId: string | undefined;
@@ -36,12 +36,12 @@ export function MetadataProvider({
   children,
   initialTeamId,
 }: MetadataProviderProps) {
-  const { teams } = useTeams();
+  const { data: teamsData } = useTeams();
   const [selectedTeamId, setSelectedTeamId] = useState(initialTeamId);
   const params = useParams();
 
   const selectTeamId = async (teamId?: string) => {
-    if (teamId && !teams?.find((team) => team.id === teamId)) {
+    if (teamId && !teamsData?.teams.find((team) => team.id === teamId)) {
       return;
     }
 
@@ -49,11 +49,14 @@ export function MetadataProvider({
   };
 
   useEffect(() => {
-    if (!params.teamId || !teams?.find((team) => team.id === params.teamId))
+    if (
+      !params.teamId ||
+      !teamsData?.teams.find((team) => team.id === params.teamId)
+    )
       return;
 
     selectTeamId(params.teamId as string);
-  }, [params]);
+  }, [params, teamsData]);
 
   return (
     <MetadataContext.Provider
