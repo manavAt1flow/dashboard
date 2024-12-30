@@ -130,6 +130,7 @@ const config = {
   },
   plugins: [
     require("tailwindcss-animate"),
+    require("tailwind-scrollbar"),
     /*     plugin(function ({ addComponents }) {
       addComponents({
         ".bottom-b-solid-contrast-1": {

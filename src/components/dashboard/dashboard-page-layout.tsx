@@ -1,5 +1,6 @@
 "use client";
 
+import { exponential } from "@/lib/utils";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -20,14 +21,18 @@ export default function DashboardPageLayout({
           <motion.p
             initial={{ opacity: 0, x: 5, y: 5 }}
             animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ x: { delay: 0.6 }, duration: 0.3, ease: "easeInOut" }}
+            transition={{
+              x: { delay: 0.3 },
+              duration: 0.2,
+              ease: exponential(4),
+            }}
             className="ml-3 text-sm text-fg-500"
           >
             {description}
           </motion.p>
         )}
       </motion.div>
-      <div className="relative h-full max-h-full w-full overflow-y-auto p-8 px-5">
+      <div className="scrollbar relative h-full max-h-full w-full overflow-y-auto px-5 pb-36 pt-8">
         {children}
       </div>
     </>

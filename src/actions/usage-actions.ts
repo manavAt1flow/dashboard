@@ -13,7 +13,7 @@ export async function getUsageAction({ teamId }: GetUsageActionProps) {
   const apiKey = await getTeamApiKey(user.id, teamId);
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BILLING_API_URL}/teams/${teamId}/usage`,
+    `${process.env.BILLING_API_URL}/teams/${teamId}/usage`,
     {
       method: "GET",
       headers: {

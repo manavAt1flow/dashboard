@@ -18,13 +18,14 @@ export default function Sidebar() {
       <DashboardNav />
 
       <TeamSelector />
-      <div className="flex items-center gap-2 pr-2">
+      <div className="flex items-center justify-between gap-2 pr-2">
         <UserMenu />
-        <Button size="sm">Upgrade</Button>
-        <ThemeSwitcher />
-        <Button variant="ghost" size="icon" className="size-8">
-          <HeartPulse className="h-4 w-4 text-fg-300" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <ThemeSwitcher />
+          <Button variant="ghost" size="icon" className="size-8">
+            <HeartPulse className="h-4 w-4 text-fg-300" />
+          </Button>
+        </div>
       </div>
     </aside>
   );

@@ -6,4 +6,5 @@ export const QUERY_KEYS = {
   TEAMS: () => ["user-teams"],
   TEAM_MEMBERS: (teamId: string) => ["team-members", teamId],
   TEAM_API_KEYS: (teamId: string) => ["team-api-keys", teamId],
+  TEAM_SANDBOXES: (teamId: string) => ["team-sandboxes", teamId],
 };

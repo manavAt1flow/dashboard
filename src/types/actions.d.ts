@@ -1,13 +1,21 @@
 import { TeamWithDefault } from "./dashboard";
 
-interface ErrorResponse {
+/*
+ * Server actions do not return thrown error messages in production, for security.
+ *
+ * Instead, we return a ts type inferred success or error object,
+ * which can be used to filter information about errors in the frontend.
+ */
+interface ActionErrorResponse {
   type: "error";
   message: string;
 }
 
-interface InitResponse {
+interface ActionSuccessResponse<T> {
   type: "success";
-  teams: TeamWithDefault[];
+  data: T;
 }
 
-export type { ErrorResponse, InitResponse };
+type ActionResponse<T> = ActionErrorResponse | ActionSuccessResponse<T>;
+
+export type { ActionResponse, ActionErrorResponse, ActionSuccessResponse };

@@ -8,200 +8,70 @@ import {
   TableRow,
   TableHead,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+import { DebouncedInput, Input } from "@/components/ui/input";
 import {
   ColumnDef,
   FilterFn,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
-import { useEffect, useState, useMemo } from "react";
-import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
-
-// temporary type for mock data
-interface Sandbox {
-  alias: string;
-  clientID: string;
-  cpuCount: number;
-  endAt: string;
-  memoryMB: number;
-  metadata: Record<string, any>;
-  sandboxID: string;
-  startedAt: string;
-  templateID: string;
-}
-
-declare module "@tanstack/react-table" {
-  interface FilterFns {
-    fuzzy: FilterFn<unknown>;
-  }
-  interface FilterMeta {
-    itemRank: RankingInfo;
-  }
-}
+import { useState } from "react";
+import { rankItem } from "@tanstack/match-sorter-utils";
+import { Sandbox } from "@/types/api";
+import { QUERY_KEYS } from "@/configs/query-keys";
+import { getTeamSandboxesAction } from "@/actions/sandboxes-actions";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  if (!value || typeof value !== "string") return true;
-
-  const searchValue = value.toLowerCase();
-  const cellValue = String(row.getValue(columnId)).toLowerCase();
+  const itemRank = rankItem(row.getValue(columnId), value);
 
   addMeta({
-    itemRank: rankItem(cellValue, searchValue),
+    itemRank,
   });
 
-  return cellValue.includes(searchValue);
+  return itemRank.passed;
 };
 
-function DebouncedInput({
-  value: initialValue,
-  onChange,
-  debounce = 300,
-  ...props
-}: {
-  value: string | number;
-  onChange: (value: string | number) => void;
-  debounce?: number;
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
-  const [value, setValue] = useState(initialValue);
+export default function SandboxesTable() {
+  "use no memo";
 
-  useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
+  const { teamId } = useParams();
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value);
-    }, debounce);
+  const { data: sandboxesData, isLoading: sandboxesLoading } = useQuery({
+    queryKey: QUERY_KEYS.TEAM_SANDBOXES(teamId as string),
+    queryFn: () =>
+      getTeamSandboxesAction({
+        apiUrl: process.env.NEXT_PUBLIC_API_URL,
+        teamId: teamId as string,
+      }),
+  });
 
-    return () => clearTimeout(timeout);
-  }, [value]);
-
-  return (
-    <Input
-      {...props}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-    />
-  );
-}
-
-export function SandboxesTable() {
-  const [data] = useState<Sandbox[]>([
-    {
-      alias: "sandbox-1",
-      clientID: "client-1",
-      cpuCount: 1,
-      endAt: "2024-01-01",
-      memoryMB: 1024,
-      metadata: {},
-      sandboxID: "sandbox-1",
-      startedAt: "2024-01-01",
-      templateID: "template-1",
-    },
-    {
-      alias: "sandbox-2",
-      clientID: "client-2",
-      cpuCount: 2,
-      endAt: "2024-01-02",
-      memoryMB: 2048,
-      metadata: {},
-      sandboxID: "sandbox-2",
-      startedAt: "2024-01-02",
-      templateID: "template-2",
-    },
-  ]);
-
-  const columns = useMemo<ColumnDef<Sandbox>[]>(
-    () => [
-      {
-        accessorKey: "alias",
-        header: "Name",
-        cell: ({ row }) => (
-          <div className="font-mono font-medium">{row.getValue("alias")}</div>
-        ),
-      },
-      {
-        accessorKey: "sandboxID",
-        header: "ID",
-        cell: ({ row }) => (
-          <div className="font-mono text-xs text-fg-500">
-            {row.getValue("sandboxID")}
-          </div>
-        ),
-      },
-      {
-        accessorKey: "cpuCount",
-        header: "CPU",
-        cell: ({ row }) => (
-          <div className="font-mono">{row.getValue("cpuCount")}x vCPU</div>
-        ),
-      },
-      {
-        accessorKey: "memoryMB",
-        header: "Memory",
-        cell: ({ row }) => (
-          <div className="font-mono">
-            {(row.getValue("memoryMB") as number) / 1024}GB RAM
-          </div>
-        ),
-      },
-      {
-        accessorKey: "startedAt",
-        header: "Started",
-        cell: ({ row }) => (
-          <div className="font-mono text-xs">
-            {formatDistanceToNow(new Date(row.getValue("startedAt")), {
-              addSuffix: true,
-            })}
-          </div>
-        ),
-      },
-      {
-        accessorKey: "endAt",
-        header: "Duration",
-        cell: ({ row }) => {
-          const start = new Date(row.getValue("startedAt"));
-          const end = new Date(row.getValue("endAt"));
-          const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-          return (
-            <div className="font-mono text-xs">{duration.toFixed(1)} hours</div>
-          );
-        },
-      },
-    ],
-    [],
-  );
-
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState<string>("");
 
   const table = useReactTable({
-    data,
-    columns,
+    data: sandboxesData?.type === "success" ? sandboxesData.data : [],
+    columns: COLUMNS,
     state: {
       globalFilter,
     },
-    onGlobalFilterChange: setGlobalFilter,
     filterFns: {
       fuzzy: fuzzyFilter,
     },
-    globalFilterFn: fuzzyFilter,
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    enableGlobalFilter: true,
   });
 
   return (
     <>
       <div className="mb-4">
         <DebouncedInput
-          value={globalFilter ?? ""}
-          onChange={(value) => setGlobalFilter(String(value))}
+          value={globalFilter}
+          onChange={(v) => setGlobalFilter(v as string)}
           placeholder="Search all columns..."
           className="max-w-sm"
         />
@@ -224,8 +94,8 @@ export function SandboxesTable() {
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
+          {table.getFilteredRowModel().rows?.length ? (
+            table.getFilteredRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
@@ -239,7 +109,7 @@ export function SandboxesTable() {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
+              <TableCell colSpan={COLUMNS.length} className="h-24 text-center">
                 No sandboxes found.
               </TableCell>
             </TableRow>
@@ -249,3 +119,61 @@ export function SandboxesTable() {
     </>
   );
 }
+
+const COLUMNS: ColumnDef<Sandbox>[] = [
+  {
+    accessorKey: "alias",
+    header: "Name",
+    cell: ({ row }) => (
+      <div className="font-mono font-medium">{row.getValue("alias")}</div>
+    ),
+  },
+  {
+    accessorKey: "sandboxID",
+    header: "ID",
+    cell: ({ row }) => (
+      <div className="font-mono text-xs text-fg-500">
+        {row.getValue("sandboxID")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "cpuCount",
+    header: "CPU",
+    cell: ({ row }) => (
+      <div className="font-mono">{row.getValue("cpuCount")}x vCPU</div>
+    ),
+  },
+  {
+    accessorKey: "memoryMB",
+    header: "Memory",
+    cell: ({ row }) => (
+      <div className="font-mono">
+        {(row.getValue("memoryMB") as number) / 1024}GB RAM
+      </div>
+    ),
+  },
+  {
+    accessorKey: "startedAt",
+    header: "Started",
+    cell: ({ row }) => (
+      <div className="font-mono text-xs">
+        {formatDistanceToNow(new Date(row.getValue("startedAt")), {
+          addSuffix: true,
+        })}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "endAt",
+    header: "Duration",
+    cell: ({ row }) => {
+      const start = new Date(row.getValue("startedAt"));
+      const end = new Date(row.getValue("endAt"));
+      const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+      return (
+        <div className="font-mono text-xs">{duration.toFixed(1)} hours</div>
+      );
+    },
+  },
+];

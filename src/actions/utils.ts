@@ -3,7 +3,7 @@ import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { Database } from "@/types/supabase";
-import { UnauthenticatedError } from "@/types/errors";
+import { UnauthenticatedError, UnauthorizedError } from "@/types/errors";
 
 /*
  *  This function checks if the user is authenticated and returns the user and the supabase client.
@@ -39,14 +39,11 @@ export async function getTeamApiKey(userId: string, teamId: string) {
       .single();
 
   if (userTeamsRelationError) {
-    console.error(userTeamsRelationError);
-    throw new Error(
-      `Failed to fetch user teams relation (user: ${userId}, team: ${teamId})`,
-    );
+    throw userTeamsRelationError;
   }
 
   if (!userTeamsRelationData) {
-    throw new Error(
+    throw UnauthorizedError(
       `User is not a member of team (user: ${userId}, team: ${teamId})`,
     );
   }
