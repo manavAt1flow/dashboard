@@ -36,12 +36,12 @@ export function MetadataProvider({
   children,
   initialTeamId,
 }: MetadataProviderProps) {
-  const { data: teamsData } = useTeams();
+  const { teams } = useTeams();
   const [selectedTeamId, setSelectedTeamId] = useState(initialTeamId);
   const params = useParams();
 
   const selectTeamId = async (teamId?: string) => {
-    if (teamId && !teamsData?.teams.find((team) => team.id === teamId)) {
+    if (teamId && !teams.find((team) => team.id === teamId)) {
       return;
     }
 
@@ -49,14 +49,11 @@ export function MetadataProvider({
   };
 
   useEffect(() => {
-    if (
-      !params.teamId ||
-      !teamsData?.teams.find((team) => team.id === params.teamId)
-    )
+    if (!params.teamId || !teams.find((team) => team.id === params.teamId))
       return;
 
     selectTeamId(params.teamId as string);
-  }, [params, teamsData]);
+  }, [params, teams]);
 
   return (
     <MetadataContext.Provider

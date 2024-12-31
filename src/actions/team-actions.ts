@@ -7,9 +7,9 @@ import { z } from "zod";
 import { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { PROTECTED_URLS } from "@/configs/urls";
-import { ErrorResponse, InitResponse } from "@/types/actions";
 import { E2BError } from "@/types/errors";
 import { TeamWithDefault } from "@/types/dashboard";
+import { ActionResponse } from "@/types/actions";
 
 function transformTeamsData(
   data: (Database["public"]["Tables"]["users_teams"]["Row"] & {
@@ -23,7 +23,7 @@ function transformTeamsData(
 }
 
 export async function getUserTeamsAction(): Promise<
-  InitResponse | ErrorResponse
+  ActionResponse<TeamWithDefault[]>
 > {
   try {
     const { user } = await checkAuthenticated();
@@ -43,7 +43,7 @@ export async function getUserTeamsAction(): Promise<
 
     return {
       type: "success",
-      teams: transformTeamsData(usersTeamsData),
+      data: transformTeamsData(usersTeamsData),
     };
   } catch (error) {
     console.error(error);

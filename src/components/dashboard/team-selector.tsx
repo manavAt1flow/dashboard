@@ -15,27 +15,22 @@ import { PROTECTED_URLS } from "@/configs/urls";
 import { useTeams } from "@/hooks/use-teams";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Skeleton } from "../ui/skeleton";
 import { useMemo } from "react";
 import { Loader } from "../ui/loader";
 
 export default function TeamSelector() {
-  const { data: teamsData, isLoading: teamsLoading } = useTeams();
+  const { teams: loadedTeams, isLoading: teamsLoading } = useTeams();
   const { selectedTeamId } = useMetadata();
   const router = useRouter();
 
   const defaultTeam = useMemo(
-    () =>
-      teamsData?.teams.find(
-        (team) =>
-          team.id === teamsData?.teams.find((team) => team.is_default)?.id,
-      ),
-    [teamsData],
+    () => loadedTeams.find((team) => team.is_default),
+    [loadedTeams],
   );
 
   const teams = useMemo(
-    () => teamsData?.teams.filter((team) => team.id !== defaultTeam?.id) ?? [],
-    [teamsData, defaultTeam],
+    () => loadedTeams.filter((team) => team.id !== defaultTeam?.id) ?? [],
+    [loadedTeams, defaultTeam],
   );
 
   return (

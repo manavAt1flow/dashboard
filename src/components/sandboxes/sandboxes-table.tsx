@@ -15,6 +15,8 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
@@ -25,6 +27,11 @@ import { QUERY_KEYS } from "@/configs/query-keys";
 import { getTeamSandboxesAction } from "@/actions/sandboxes-actions";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import {
+  DataTableHead,
+  DataTableCell,
+  DataTableRow,
+} from "@/components/ui/data-table";
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -41,6 +48,9 @@ export default function SandboxesTable() {
 
   const { teamId } = useParams();
 
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState<string>("");
+
   const { data: sandboxesData, isLoading: sandboxesLoading } = useQuery({
     queryKey: QUERY_KEYS.TEAM_SANDBOXES(teamId as string),
     queryFn: () =>
@@ -50,20 +60,22 @@ export default function SandboxesTable() {
       }),
   });
 
-  const [globalFilter, setGlobalFilter] = useState<string>("");
-
   const table = useReactTable({
     data: sandboxesData?.type === "success" ? sandboxesData.data : [],
     columns: COLUMNS,
     state: {
       globalFilter,
+      sorting,
     },
     filterFns: {
       fuzzy: fuzzyFilter,
     },
     onGlobalFilterChange: setGlobalFilter,
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    enableSorting: true,
   });
 
   return (
@@ -79,40 +91,41 @@ export default function SandboxesTable() {
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <DataTableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="text-center">
+                <DataTableHead key={header.id} column={header.column}>
                   {header.isPlaceholder
                     ? ""
                     : flexRender(
                         header.column.columnDef.header,
                         header.getContext(),
                       )}
-                </TableHead>
+                </DataTableHead>
               ))}
-            </TableRow>
+            </DataTableRow>
           ))}
         </TableHeader>
         <TableBody>
-          {table.getFilteredRowModel().rows?.length ? (
-            table.getFilteredRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <DataTableRow key={row.id} isSelected={row.getIsSelected()}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="text-center">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+                  <DataTableCell
+                    key={cell.id}
+                    cell={flexRender(
+                      cell.column.columnDef.cell,
+                      cell.getContext(),
+                    )}
+                  />
                 ))}
-              </TableRow>
+              </DataTableRow>
             ))
           ) : (
-            <TableRow>
+            <DataTableRow>
               <TableCell colSpan={COLUMNS.length} className="h-24 text-center">
                 No sandboxes found.
               </TableCell>
-            </TableRow>
+            </DataTableRow>
           )}
         </TableBody>
       </Table>

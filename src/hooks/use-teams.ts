@@ -12,12 +12,12 @@ export const useTeams = () => {
         throw new Error(response.message);
       }
 
-      return response;
+      return response.data;
     },
   });
 
   return {
     ...query,
-    teams: query.data?.teams ?? [],
+    teams: query.data ?? [],
   };
 };

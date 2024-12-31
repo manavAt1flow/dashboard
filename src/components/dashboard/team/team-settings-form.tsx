@@ -22,11 +22,11 @@ import { useState } from "react";
 import { z } from "zod";
 
 export function TeamSettingsForm() {
-  const { data: teams, refetch: refetchTeams } = useTeams();
+  const { teams, refetch: refetchTeams } = useTeams();
   const { selectedTeamId } = useMetadata();
 
   const team = useMemo(
-    () => teams?.teams.find((team) => team.id === selectedTeamId),
+    () => teams.find((team) => team.id === selectedTeamId),
     [teams, selectedTeamId],
   );
 

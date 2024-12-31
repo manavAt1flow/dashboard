@@ -1,7 +1,6 @@
 "use client";
 
 import Sidebar from "@/components/dashboard/sidebar";
-import TeamSelector from "@/components/dashboard/team-selector";
 import ClientProviders from "@/components/globals/client-providers";
 
 export default function Layout({ children }: { children: React.ReactNode }) {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TableHead, TableCell } from "./table";
+import { TableHead, TableCell, TableRow } from "./table";
 import { cn } from "@/lib/utils";
 import { Column } from "@tanstack/react-table";
 
@@ -54,10 +54,36 @@ function DataTableCell<TData, TValue>({
   ...props
 }: DataTableCellProps<TData, TValue>) {
   return (
-    <TableCell className={cn("py-2.5 text-center", className)} {...props}>
+    <TableCell className={cn("py-2 text-center text-xs", className)} {...props}>
       {cell as React.ReactNode}
     </TableCell>
   );
 }
 
-export { DataTableHead, DataTableCell };
+interface DataTableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
+  isSelected?: boolean;
+}
+
+function DataTableRow({
+  children,
+  className,
+  isSelected,
+  ...props
+}: DataTableRowProps) {
+  return (
+    <TableRow
+      className={cn(
+        "transition-colors duration-0 hover:bg-bg-100/80",
+        {
+          "bg-bg-100": isSelected,
+        },
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </TableRow>
+  );
+}
+
+export { DataTableHead, DataTableCell, DataTableRow };
