@@ -5,10 +5,8 @@ import {
   TableBody,
   TableCell,
   TableHeader,
-  TableRow,
-  TableHead,
 } from "@/components/ui/table";
-import { DebouncedInput, Input } from "@/components/ui/input";
+import { DebouncedInput } from "@/components/ui/input";
 import {
   ColumnDef,
   FilterFn,
@@ -22,9 +20,8 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { rankItem } from "@tanstack/match-sorter-utils";
-import { Sandbox } from "@/types/api";
+import { Template } from "@/types/api";
 import { QUERY_KEYS } from "@/configs/query-keys";
-import { getTeamSandboxesAction } from "@/actions/sandboxes-actions";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import {
@@ -32,6 +29,7 @@ import {
   DataTableCell,
   DataTableRow,
 } from "@/components/ui/data-table";
+import { getTeamTemplatesAction } from "@/actions/templates-actions";
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -43,7 +41,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-export default function SandboxesTable() {
+export default function TemplatesTable() {
   "use no memo";
 
   const { teamId } = useParams();
@@ -51,17 +49,17 @@ export default function SandboxesTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState<string>("");
 
-  const { data: sandboxesData, isLoading: sandboxesLoading } = useQuery({
-    queryKey: QUERY_KEYS.TEAM_SANDBOXES(teamId as string),
+  const { data: templatesData, isLoading: templatesLoading } = useQuery({
+    queryKey: QUERY_KEYS.TEAM_TEMPLATES(teamId as string),
     queryFn: () =>
-      getTeamSandboxesAction({
+      getTeamTemplatesAction({
         apiUrl: process.env.NEXT_PUBLIC_API_URL,
         teamId: teamId as string,
       }),
   });
 
   const table = useReactTable({
-    data: sandboxesData?.type === "success" ? sandboxesData.data : [],
+    data: templatesData?.type === "success" ? templatesData.data : [],
     columns: COLUMNS,
     state: {
       globalFilter,
@@ -123,7 +121,7 @@ export default function SandboxesTable() {
           ) : (
             <DataTableRow>
               <TableCell colSpan={COLUMNS.length} className="h-24 text-center">
-                No sandboxes found.
+                No templates found.
               </TableCell>
             </DataTableRow>
           )}
@@ -133,20 +131,22 @@ export default function SandboxesTable() {
   );
 }
 
-const COLUMNS: ColumnDef<Sandbox>[] = [
+const COLUMNS: ColumnDef<Template>[] = [
   {
-    accessorKey: "alias",
+    accessorKey: "aliases",
     header: "Name",
     cell: ({ row }) => (
-      <div className="font-mono font-medium">{row.getValue("alias")}</div>
+      <div className="font-mono font-medium">
+        {(row.getValue("aliases") as string[])[0]}
+      </div>
     ),
   },
   {
-    accessorKey: "sandboxID",
+    accessorKey: "templateID",
     header: "ID",
     cell: ({ row }) => (
       <div className="font-mono text-xs text-fg-500">
-        {row.getValue("sandboxID")}
+        {row.getValue("templateID")}
       </div>
     ),
   },
@@ -167,26 +167,25 @@ const COLUMNS: ColumnDef<Sandbox>[] = [
     ),
   },
   {
-    accessorKey: "startedAt",
-    header: "Started",
+    accessorKey: "createdAt",
+    header: "Created",
     cell: ({ row }) => (
       <div className="font-mono text-xs">
-        {formatDistanceToNow(new Date(row.getValue("startedAt")), {
+        {formatDistanceToNow(new Date(row.getValue("createdAt")), {
           addSuffix: true,
         })}
       </div>
     ),
   },
   {
-    accessorKey: "endAt",
-    header: "Duration",
-    cell: ({ row }) => {
-      const start = new Date(row.getValue("startedAt"));
-      const end = new Date(row.getValue("endAt"));
-      const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-      return (
-        <div className="font-mono text-xs">{duration.toFixed(1)} hours</div>
-      );
-    },
+    accessorKey: "updatedAt",
+    header: "Last Updated",
+    cell: ({ row }) => (
+      <div className="font-mono text-xs">
+        {formatDistanceToNow(new Date(row.getValue("updatedAt")), {
+          addSuffix: true,
+        })}
+      </div>
+    ),
   },
 ];

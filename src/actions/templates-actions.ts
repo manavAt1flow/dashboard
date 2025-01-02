@@ -1,24 +1,24 @@
 "use server";
 
-import { Sandbox } from "@/types/api";
 import { ActionResponse } from "@/types/actions";
-import { checkAuthenticated, getTeamApiKey } from "./utils";
+import { Template } from "@/types/api";
 import { E2BError } from "@/types/errors";
 import { z } from "zod";
-import { MOCK_SANDBOXES_DATA } from "@/configs/data";
+import { checkAuthenticated, getTeamApiKey } from "./utils";
+import { MOCK_TEMPLATES_DATA } from "@/configs/data";
 
-const GetTeamSandboxesParamsSchema = z.object({
+const GetTeamTemplatesParamsSchema = z.object({
   apiUrl: z.string().url(),
   teamId: z.string().uuid(),
 });
 
-export async function getTeamSandboxesAction({
+export async function getTeamTemplatesAction({
   apiUrl,
   teamId,
-}: z.infer<typeof GetTeamSandboxesParamsSchema>): Promise<
-  ActionResponse<Sandbox[]>
+}: z.infer<typeof GetTeamTemplatesParamsSchema>): Promise<
+  ActionResponse<Template[]>
 > {
-  const { success } = GetTeamSandboxesParamsSchema.safeParse({
+  const { success } = GetTeamTemplatesParamsSchema.safeParse({
     apiUrl,
     teamId,
   });
@@ -35,27 +35,27 @@ export async function getTeamSandboxesAction({
 
     return {
       type: "success",
-      data: MOCK_SANDBOXES_DATA,
+      data: MOCK_TEMPLATES_DATA,
     };
   }
-
   try {
     const { user } = await checkAuthenticated();
 
     const apiKey = await getTeamApiKey(user.id, teamId);
 
-    const res = await fetch(`${apiUrl}/sandboxes`, {
+    const res = await fetch(`${apiUrl}/templates?teamID=${teamId}`, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
-        "X-API-KEY": apiKey,
+        Authorization: `Bearer ${apiKey}`,
       },
     });
 
     if (!res.ok) {
       const text = await res.text();
 
-      throw new Error(text ?? `Failed to fetch api endpoint: /sandboxes`);
+      throw new Error(
+        text ?? `Failed to fetch api endpoint: /templates?teamID=${teamId}`,
+      );
     }
 
     const data = await res.json();

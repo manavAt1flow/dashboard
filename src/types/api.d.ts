@@ -10,4 +10,19 @@ interface Sandbox {
   templateID: string;
 }
 
-export type { Sandbox };
+interface Template {
+  aliases: string[];
+  buildID: string;
+  cpuCount: number;
+  memoryMB: number;
+  public: boolean;
+  templateID: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: {
+    email: string;
+    id: string;
+  } | null;
+}
+
+export type { Sandbox, Template };
