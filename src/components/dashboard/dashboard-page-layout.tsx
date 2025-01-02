@@ -1,6 +1,6 @@
 "use client";
 
-import { exponential } from "@/lib/utils";
+import { exponentialSmoothing } from "@/lib/utils";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -24,7 +24,7 @@ export default function DashboardPageLayout({
             transition={{
               x: { delay: 0.3 },
               duration: 0.2,
-              ease: exponential(4),
+              ease: exponentialSmoothing(4),
             }}
             className="ml-3 text-sm text-fg-500"
           >
@@ -48,7 +48,7 @@ function AsciiTitleDecrypt({
   interval?: number;
   obscureCharacter?: string;
 }) {
-  const timeout = useRef<NodeJS.Timeout | null>(null);
+  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startPosition = 3 + title.length + 6;
   const baseText = useRef(title + " ".repeat(6)).current;
 

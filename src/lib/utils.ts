@@ -37,7 +37,7 @@ export function cn(...inputs: ClassValue[]) {
  * @param {number} speed - The speed factor that determines how quickly the value approaches the target (default: 10)
  * @returns {(t: number) => number} An easing function that takes a progress value between 0 and 1 and returns a smoothed value
  */
-export const exponential =
+export const exponentialSmoothing =
   (speed: number = 10) =>
   (t: number): number => {
     // For Framer Motion, we want to map t from [0,1] to a smoothed value
