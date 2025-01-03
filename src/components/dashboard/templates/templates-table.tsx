@@ -30,6 +30,16 @@ import {
   DataTableRow,
 } from "@/components/ui/data-table";
 import { getTeamTemplatesAction } from "@/actions/templates-actions";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import TableFilterSection from "@/components/globals/table-filter-section";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader } from "@/components/ui/loader";
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -77,57 +87,88 @@ export default function TemplatesTable() {
   });
 
   return (
-    <>
-      <div className="mb-4">
+    <Card className="mb-4">
+      <CardHeader className="flex flex-row items-start justify-between">
+        <div className="space-y-2">
+          <CardTitle>Templates</CardTitle>
+          <CardDescription>
+            View and manage your available templates.
+          </CardDescription>
+        </div>
         <DebouncedInput
           value={globalFilter}
           onChange={(v) => setGlobalFilter(v as string)}
-          placeholder="Search all columns..."
-          className="max-w-sm"
+          placeholder="Fuzzy search..."
+          className="w-[320px]"
         />
-      </div>
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <DataTableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <DataTableHead key={header.id} column={header.column}>
-                  {header.isPlaceholder
-                    ? ""
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                </DataTableHead>
-              ))}
-            </DataTableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <DataTableRow key={row.id} isSelected={row.getIsSelected()}>
-                {row.getVisibleCells().map((cell) => (
-                  <DataTableCell
-                    key={cell.id}
-                    cell={flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext(),
-                    )}
-                  />
+      </CardHeader>
+      <CardContent>
+        <TableFilterSection
+          globalFilter={globalFilter}
+          sorting={sorting}
+          table={table}
+        />
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <DataTableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <DataTableHead
+                    key={header.id}
+                    column={header.column}
+                    sorting={sorting.find((s) => s.id === header.id)?.desc}
+                  >
+                    {header.isPlaceholder
+                      ? ""
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </DataTableHead>
                 ))}
               </DataTableRow>
-            ))
-          ) : (
-            <DataTableRow>
-              <TableCell colSpan={COLUMNS.length} className="h-24 text-center">
-                No templates found.
-              </TableCell>
-            </DataTableRow>
-          )}
-        </TableBody>
-      </Table>
-    </>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {templatesLoading ? (
+              <DataTableRow>
+                <TableCell colSpan={COLUMNS.length} className="h-24">
+                  <Alert className="w-full">
+                    <AlertDescription className="flex items-center gap-2">
+                      <Loader variant="compute" />
+                      Loading templates...
+                    </AlertDescription>
+                  </Alert>
+                </TableCell>
+              </DataTableRow>
+            ) : table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <DataTableRow key={row.id} isSelected={row.getIsSelected()}>
+                  {row.getVisibleCells().map((cell) => (
+                    <DataTableCell
+                      key={cell.id}
+                      cell={flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    />
+                  ))}
+                </DataTableRow>
+              ))
+            ) : (
+              <DataTableRow>
+                <TableCell
+                  colSpan={COLUMNS.length}
+                  className="h-24 text-center"
+                >
+                  No templates found.
+                </TableCell>
+              </DataTableRow>
+            )}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }
 

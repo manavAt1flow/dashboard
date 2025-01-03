@@ -6,12 +6,15 @@ import { Column } from "@tanstack/react-table";
 interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLTableCellElement> {
   column: Column<TData, TValue>;
+  canSort?: boolean;
+  sorting?: boolean;
 }
 
 function DataTableHead<TData, TValue>({
   column,
   children,
   className,
+  sorting,
   ...props
 }: DataTableColumnHeaderProps<TData, TValue>) {
   return (
@@ -32,9 +35,11 @@ function DataTableHead<TData, TValue>({
           className="flex h-full w-full items-center"
         >
           <span>{children}</span>
-          <span className="ml-2">
-            {column.getIsSorted() === "desc" ? "↓" : "↑"}
-          </span>
+          {sorting !== undefined && (
+            <span className="ml-2 text-accent">
+              {sorting === true ? "↓" : "↑"}
+            </span>
+          )}
         </div>
       ) : (
         children

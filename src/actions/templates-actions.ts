@@ -30,7 +30,11 @@ export async function getTeamTemplatesAction({
     };
   }
 
-  if (process.env.NODE_ENV === "development") {
+  // TODO: Remove this after staging
+  if (
+    process.env.NODE_ENV === "development" ||
+    process.env.NODE_ENV === "production"
+  ) {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     return {
