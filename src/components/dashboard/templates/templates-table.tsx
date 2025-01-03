@@ -38,7 +38,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import TableFilterSection from "@/components/globals/table-filter-section";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader } from "@/components/ui/loader";
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
@@ -133,11 +133,12 @@ export default function TemplatesTable() {
             {templatesLoading ? (
               <DataTableRow>
                 <TableCell colSpan={COLUMNS.length} className="h-24">
-                  <Alert className="w-full">
-                    <AlertDescription className="flex items-center gap-2">
+                  <Alert className="w-full" variant="contrast2">
+                    <AlertTitle className="flex items-center gap-2">
                       <Loader variant="compute" />
                       Loading templates...
-                    </AlertDescription>
+                    </AlertTitle>
+                    <AlertDescription>This may take a moment.</AlertDescription>
                   </Alert>
                 </TableCell>
               </DataTableRow>
@@ -157,11 +158,13 @@ export default function TemplatesTable() {
               ))
             ) : (
               <DataTableRow>
-                <TableCell
-                  colSpan={COLUMNS.length}
-                  className="h-24 text-center"
-                >
-                  No templates found.
+                <TableCell colSpan={COLUMNS.length} className="h-24">
+                  <Alert className="w-full" variant="error">
+                    <AlertTitle>No templates found.</AlertTitle>
+                    <AlertDescription>
+                      Start more Templates or try different filters.
+                    </AlertDescription>
+                  </Alert>
                 </TableCell>
               </DataTableRow>
             )}
