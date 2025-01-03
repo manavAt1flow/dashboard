@@ -19,7 +19,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           "font-mono text-sm tracking-wider",
 
           "rounded-none border border-dashed",
-          "[border-bottom:1px_solid_hsl(var(--contrast-2))]",
 
           "placeholder:font-mono placeholder:text-fg-500",
           "focus:outline-none focus:[border-bottom:1px_solid_hsl(var(--accent))]",

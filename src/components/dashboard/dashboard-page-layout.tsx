@@ -1,8 +1,9 @@
 "use client";
 
-import { exponentialSmoothing } from "@/lib/utils";
+import { cn, exponentialSmoothing } from "@/lib/utils";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import GridPattern from "../ui/grid-pattern";
 
 export default function DashboardPageLayout({
   children,
@@ -32,7 +33,19 @@ export default function DashboardPageLayout({
           </motion.p>
         )}
       </motion.div>
-      <div className="scrollbar relative h-full max-h-full w-full overflow-y-auto px-5 pb-36 pt-8">
+      <div className="scrollbar relative h-full max-h-full w-full overflow-y-auto px-16 pb-36 pt-12">
+        <GridPattern
+          width={100}
+          height={100}
+          x={-1}
+          y={-1}
+          strokeDasharray={"4 2"}
+          gradientFrom="hsl(var(--bg-200)/0.7)"
+          gradientVia="hsl(var(--bg-200)/0.5)"
+          gradientTo="hsl(var(--bg-200)/0.7)"
+          gradientDegrees={90}
+          className="pt-4"
+        />
         {children}
       </div>
     </>

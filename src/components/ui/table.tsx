@@ -12,7 +12,7 @@ const Table = React.forwardRef<
       className={cn(
         "w-full caption-bottom",
         "font-mono text-sm",
-        "border border-dashed",
+        "border border-dashed border-border bg-bg",
         className,
       )}
       {...props}
@@ -28,7 +28,7 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      "border-b border-dashed border-fg-300/20",
+      "border-b border-dashed border-border",
       "bg-bg-300/50",
       className,
     )}
@@ -45,7 +45,7 @@ const TableBody = React.forwardRef<
     ref={ref}
     className={cn(
       "[&_tr:last-child]:border-0",
-      "border-dashed border-fg-300/20 [&_tr]:border-b",
+      "border-dashed border-border/40 [&_tr]:border-b [&_tr]:border-border/50",
       className,
     )}
     {...props}

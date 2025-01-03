@@ -55,27 +55,30 @@ export function DangerZone() {
           title="Delete Account"
           description={
             <>
-              <p className="mb-4">
-                This action cannot be undone. This will permanently delete your
-                account and remove your data from our servers.
-              </p>
-              <p className="mb-4 font-medium">
-                Please type "delete" to confirm:
-              </p>
-              <Input
-                value={deleteConfirmation}
-                onChange={(e) => setDeleteConfirmation(e.target.value)}
-                placeholder="Type 'delete' to confirm"
-              />
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
             </>
           }
           confirm="Delete Account"
           onConfirm={handleDeleteAccount}
           confirmProps={{
-            disabled: deleteConfirmation !== "delete",
+            disabled: deleteConfirmation !== "delete my account",
             loading: isPending,
           }}
-        />
+        >
+          <>
+            <p className="mb-4 text-fg-500">
+              Please type{" "}
+              <span className="font-medium text-fg">delete my account</span> to
+              confirm:
+            </p>
+            <Input
+              value={deleteConfirmation}
+              onChange={(e) => setDeleteConfirmation(e.target.value)}
+              placeholder="Type 'delete my account' to confirm"
+            />
+          </>
+        </AlertDialog>
         <AnimatePresence initial={false} mode="wait">
           {message && <AuthFormMessage className="mt-4" message={message} />}
         </AnimatePresence>
