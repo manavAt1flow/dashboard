@@ -2,9 +2,8 @@ import { checkAuthenticated } from "@/actions/utils";
 import { PROTECTED_URLS } from "@/configs/urls";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
-import { NextRequest } from "next/server";
 
-export const GET = async (req: NextRequest) => {
+export const GET = async () => {
   const { user } = await checkAuthenticated();
 
   const { data: teamsData, error: teamsError } = await supabaseAdmin

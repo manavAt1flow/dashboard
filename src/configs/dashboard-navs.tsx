@@ -1,6 +1,7 @@
 import {
   BarChart,
   Blocks,
+  Code,
   Key,
   LucideSheet,
   Settings,
@@ -49,16 +50,19 @@ export const SETTINGS_DASHBOARD_LINKS: DashboardNavLink[] = [
     label: "General",
     href: (args) => `/dashboard/${args.teamId}/settings/general`,
     icon: Users,
+    group: "team",
   },
   {
     label: "API Keys",
     href: (args) => `/dashboard/${args.teamId}/settings/keys`,
     icon: Key,
+    group: "team",
   },
   {
     label: "Usage",
     href: (args) => `/dashboard/${args.teamId}/settings/usage`,
     icon: BarChart,
+    group: "team",
   },
 
   {

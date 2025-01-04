@@ -40,6 +40,7 @@ import {
 import TableFilterSection from "@/components/globals/table-filter-section";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader } from "@/components/ui/loader";
+import { useApiUrl } from "@/hooks/use-api-url";
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -59,11 +60,13 @@ export default function SandboxesTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState<string>("");
 
+  const apiUrl = useApiUrl();
+
   const { data: sandboxesData, isLoading: sandboxesLoading } = useQuery({
     queryKey: QUERY_KEYS.TEAM_SANDBOXES(teamId as string),
     queryFn: () =>
       getTeamSandboxesAction({
-        apiUrl: process.env.NEXT_PUBLIC_API_URL,
+        apiUrl,
         teamId: teamId as string,
       }),
   });

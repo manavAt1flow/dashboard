@@ -137,7 +137,7 @@ export default function DasboardNav() {
               className="mt-6 flex w-full flex-col gap-1 first:mt-0"
             >
               {group && group !== "ungrouped" && (
-                <div className="mb-2 font-mono text-xs uppercase text-fg-300">
+                <div className="mb-2 font-mono text-xs uppercase text-fg-500">
                   == {group}
                 </div>
               )}
