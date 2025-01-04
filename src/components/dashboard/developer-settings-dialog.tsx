@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { Button } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import { Alert, AlertDescription } from "../ui/alert";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useDeveloperSettings } from "@/stores/developer-settings-store";
@@ -24,9 +24,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { AnimatePresence, motion } from "motion/react";
+import { RefreshCcwIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
-  domain: z.string().min(1, "Domain is required"),
+  domain: z
+    .string()
+    .min(1, "Domain is required")
+    .regex(
+      /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/,
+      "Please enter a valid domain (e.g. e2b.dev)",
+    ),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -60,6 +69,14 @@ export default function DeveloperSettingsDialog({
     });
   };
 
+  const canResetToDefault =
+    form.getValues("domain") !== process.env.NEXT_PUBLIC_DEFAULT_API_DOMAIN;
+  const handleResetToDefault = () => {
+    form.setValue("domain", process.env.NEXT_PUBLIC_DEFAULT_API_DOMAIN, {
+      shouldDirty: true,
+    });
+  };
+
   return (
     <Dialog {...props}>
       <DialogContent>
@@ -83,8 +100,8 @@ export default function DeveloperSettingsDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Domain</FormLabel>
-                  <div className="mt-2 flex items-center gap-2">
-                    <FormControl>
+                  <div className="mt-2 flex items-center">
+                    <FormControl className="mr-2">
                       <Input placeholder="e2b.dev" {...field} />
                     </FormControl>
                     <Button
@@ -98,6 +115,29 @@ export default function DeveloperSettingsDialog({
                         ? "Saving..."
                         : "Save Domain"}
                     </Button>
+                    <AnimatePresence mode="wait">
+                      {canResetToDefault && (
+                        <motion.button
+                          initial={{ width: 0, marginLeft: "0" }}
+                          animate={{ width: "auto", marginLeft: "0.5rem" }}
+                          exit={{ width: 0, marginLeft: "0" }}
+                          transition={{
+                            duration: 0.15,
+                          }}
+                          className={cn(
+                            buttonVariants({
+                              variant: "muted",
+                              size: "icon",
+                            }),
+                            "aspect-square",
+                          )}
+                          type="button"
+                          onClick={handleResetToDefault}
+                        >
+                          <RefreshCcwIcon className="h-4 w-4" />
+                        </motion.button>
+                      )}
+                    </AnimatePresence>
                   </div>
                   <FormMessage />
                 </FormItem>
