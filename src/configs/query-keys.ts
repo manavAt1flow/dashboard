@@ -8,4 +8,5 @@ export const QUERY_KEYS = {
   TEAM_API_KEYS: (teamId: string) => ["team-api-keys", teamId],
   TEAM_SANDBOXES: (teamId: string) => ["team-sandboxes", teamId],
   TEAM_TEMPLATES: (teamId: string) => ["team-templates", teamId],
+  TEAM_INVOICES: (teamId: string) => ["team-invoices", teamId],
 };

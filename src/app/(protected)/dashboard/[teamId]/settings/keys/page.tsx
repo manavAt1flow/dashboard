@@ -32,9 +32,11 @@ export default function KeysPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <CreateApiKeyDialog teamId={selectedTeamId}>
-                <Button className="absolute right-6 top-6">CREATE KEY</Button>
-              </CreateApiKeyDialog>
+              {selectedTeamId && (
+                <CreateApiKeyDialog teamId={selectedTeamId}>
+                  <Button className="absolute right-6 top-6">CREATE KEY</Button>
+                </CreateApiKeyDialog>
+              )}
               <ApiKeysTable teamId={selectedTeamId} />
             </CardContent>
           </Card>

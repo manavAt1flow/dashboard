@@ -17,6 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -88,20 +89,42 @@ export default function DeveloperSettingsDialog({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="py-6">
-            <Alert variant="contrast2" className="mb-6 ml-2">
-              <InformationCircleIcon className="h-4 w-4" />
-              <AlertDescription>
-                This is the domain that hosts E2B your infrastructure.
-              </AlertDescription>
-            </Alert>
             <FormField
               control={form.control}
               name="domain"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Domain</FormLabel>
+                  <div className="flex h-5 items-center gap-2">
+                    <FormLabel>Infrastructure Domain</FormLabel>
+                    <AnimatePresence mode="wait">
+                      {canResetToDefault && (
+                        <motion.button
+                          initial={{ x: 5, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          exit={{ x: 5, opacity: 0 }}
+                          transition={{
+                            duration: 0.15,
+                          }}
+                          className={cn(
+                            buttonVariants({
+                              variant: "muted",
+                              size: "sm",
+                            }),
+                            "h-5 text-xs text-accent",
+                          )}
+                          type="button"
+                          onClick={handleResetToDefault}
+                        >
+                          Reset to Default
+                        </motion.button>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                  <FormDescription>
+                    This is the domain that hosts your E2B infrastructure.
+                  </FormDescription>
                   <div className="mt-2 flex items-center">
-                    <FormControl className="mr-2">
+                    <FormControl>
                       <Input placeholder="e2b.dev" {...field} />
                     </FormControl>
                     <Button
@@ -110,34 +133,12 @@ export default function DeveloperSettingsDialog({
                         !form.formState.isDirty || !form.formState.isValid
                       }
                       loading={form.formState.isSubmitting}
+                      className="ml-2"
                     >
                       {form.formState.isSubmitting
                         ? "Saving..."
                         : "Save Domain"}
                     </Button>
-                    <AnimatePresence mode="wait">
-                      {canResetToDefault && (
-                        <motion.button
-                          initial={{ width: 0, marginLeft: "0" }}
-                          animate={{ width: "auto", marginLeft: "0.5rem" }}
-                          exit={{ width: 0, marginLeft: "0" }}
-                          transition={{
-                            duration: 0.15,
-                          }}
-                          className={cn(
-                            buttonVariants({
-                              variant: "muted",
-                              size: "icon",
-                            }),
-                            "aspect-square",
-                          )}
-                          type="button"
-                          onClick={handleResetToDefault}
-                        >
-                          <RefreshCcwIcon className="h-4 w-4" />
-                        </motion.button>
-                      )}
-                    </AnimatePresence>
                   </div>
                   <FormMessage />
                 </FormItem>

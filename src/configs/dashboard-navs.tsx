@@ -2,12 +2,14 @@ import {
   BarChart,
   Blocks,
   Code,
+  CreditCard,
   Key,
   LucideSheet,
   Settings,
   User,
   Users,
 } from "lucide-react";
+import { ForwardRefExoticComponent } from "react";
 
 type DashboardNavLinkArgs = {
   teamId?: string;
@@ -16,7 +18,7 @@ type DashboardNavLinkArgs = {
 export type DashboardNavLink = {
   label: string;
   href: (args: DashboardNavLinkArgs) => string;
-  icon: React.ComponentType;
+  icon: ForwardRefExoticComponent<any>;
   group?: string;
   goesDeeper?: boolean;
 };
@@ -62,6 +64,12 @@ export const SETTINGS_DASHBOARD_LINKS: DashboardNavLink[] = [
     label: "Usage",
     href: (args) => `/dashboard/${args.teamId}/settings/usage`,
     icon: BarChart,
+    group: "team",
+  },
+  {
+    label: "Billing",
+    href: (args) => `/dashboard/${args.teamId}/settings/billing`,
+    icon: CreditCard,
     group: "team",
   },
 

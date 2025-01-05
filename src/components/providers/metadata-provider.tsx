@@ -7,8 +7,9 @@ import {
   useContext,
   ReactNode,
   useEffect,
-  useState,
+  useLayoutEffect,
 } from "react";
+import { useLocalStorage } from "usehooks-ts";
 
 type MetadataContextType = {
   selectedTeamId: string | undefined;
@@ -37,7 +38,12 @@ export function MetadataProvider({
   initialTeamId,
 }: MetadataProviderProps) {
   const { teams } = useTeams();
-  const [selectedTeamId, setSelectedTeamId] = useState(initialTeamId);
+
+  const [selectedTeamId, setSelectedTeamId] = useLocalStorage(
+    "selectedTeamId",
+    initialTeamId,
+  );
+
   const params = useParams();
 
   const selectTeamId = async (teamId?: string) => {
@@ -48,7 +54,7 @@ export function MetadataProvider({
     setSelectedTeamId(teamId);
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!params.teamId || !teams.find((team) => team.id === params.teamId))
       return;
 

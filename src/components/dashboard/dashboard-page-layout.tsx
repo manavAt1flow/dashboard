@@ -33,7 +33,7 @@ export default function DashboardPageLayout({
           </motion.p>
         )}
       </motion.div>
-      <div className="scrollbar relative h-full max-h-full w-full overflow-y-auto px-16 pb-36 pt-12">
+      <div className="relative h-full max-h-full w-full overflow-y-auto px-16 pb-36 pt-12 scrollbar">
         <GridPattern
           width={100}
           height={100}
@@ -46,7 +46,7 @@ export default function DashboardPageLayout({
           gradientDegrees={90}
           className="pt-4"
         />
-        {children}
+        <div className="h-full w-full max-w-[1300px]">{children}</div>
       </div>
     </>
   );

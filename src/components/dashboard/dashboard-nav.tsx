@@ -122,7 +122,14 @@ export default function DasboardNav() {
               className="gap-1 font-mono"
               asChild
             >
-              <Link prefetch href={PROTECTED_URLS.DASHBOARD}>
+              <Link
+                prefetch
+                href={
+                  selectedTeamId
+                    ? PROTECTED_URLS.SANDBOXES(selectedTeamId)
+                    : PROTECTED_URLS.DASHBOARD
+                }
+              >
                 <ChevronLeft className="h-4 w-4" />
                 Back
               </Link>
@@ -154,6 +161,7 @@ export default function DasboardNav() {
                   <Link
                     prefetch
                     href={item.href({ teamId: selectedTeamId })}
+                    suppressHydrationWarning
                     className={cn(
                       "group flex w-full items-center font-mono text-sm hover:no-underline",
                       pathname ===
@@ -165,6 +173,7 @@ export default function DasboardNav() {
                     )}
                   >
                     <div className="flex w-full items-center gap-1 px-2 py-1">
+                      <item.icon className="mr-2 min-w-3.5 text-fg-300" />
                       <span className="shrink-0">{item.label}</span>
                       <span className="w-full overflow-hidden font-mono leading-[1.15] text-fg-500">
                         {".".repeat(20)}
