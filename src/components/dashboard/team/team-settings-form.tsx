@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTeams } from "@/hooks/use-teams";
+import { useSelectedTeam, useTeams } from "@/hooks/use-teams";
 import { useTimeoutMessage } from "@/hooks/use-timeout-message";
 import { AnimatePresence } from "motion/react";
 import { useCallback, useEffect, useMemo, useTransition } from "react";
@@ -22,13 +22,8 @@ import { useState } from "react";
 import { z } from "zod";
 
 export function TeamSettingsForm() {
-  const { teams, refetch: refetchTeams } = useTeams();
-  const { selectedTeamId } = useMetadata();
-
-  const team = useMemo(
-    () => teams.find((team) => team.id === selectedTeamId),
-    [teams, selectedTeamId],
-  );
+  const { refetch: refetchTeams } = useTeams();
+  const team = useSelectedTeam();
 
   const [isPending, startTransition] = useTransition();
   const [teamName, setTeamName] = useState(team?.name ?? "");

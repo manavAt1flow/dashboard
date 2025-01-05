@@ -1,5 +1,6 @@
 "use client";
 
+import { STORAGE_KEYS } from "@/configs/storage-keys";
 import { useTeams } from "@/hooks/use-teams";
 import { useParams } from "next/navigation";
 import {
@@ -40,7 +41,7 @@ export function MetadataProvider({
   const { teams } = useTeams();
 
   const [selectedTeamId, setSelectedTeamId] = useLocalStorage(
-    "selectedTeamId",
+    STORAGE_KEYS.SELECTED_TEAM_ID,
     initialTeamId,
   );
 

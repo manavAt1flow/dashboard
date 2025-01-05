@@ -10,17 +10,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useTeams } from "@/hooks/use-teams";
-import { useMemo } from "react";
+import { useSelectedTeam } from "@/hooks/use-teams";
 
 export function DangerZone() {
-  const { teams } = useTeams();
-  const { selectedTeamId } = useMetadata();
-
-  const team = useMemo(
-    () => teams?.find((team) => team.id === selectedTeamId),
-    [teams, selectedTeamId],
-  );
+  const team = useSelectedTeam();
 
   return (
     <Card className="[border-bottom:1px_solid_hsl(var(--error))]">

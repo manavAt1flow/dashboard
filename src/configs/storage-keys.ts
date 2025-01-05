@@ -1,3 +1,4 @@
 export const STORAGE_KEYS = {
-  LAST_TEAM_ID: "last_team_id",
+  SELECTED_TEAM_ID: "selected_team_id",
+  DEVELOPER_SETTINGS: "developer_settings",
 };

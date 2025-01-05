@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader } from "@/components/ui/loader";
 import { QUERY_KEYS } from "@/configs/query-keys";
 import { useQuery } from "@tanstack/react-query";
@@ -20,12 +20,18 @@ export default function BillingInvoicesTable() {
   const { teamId } = useParams();
 
   const {
-    data: invoicesData,
+    data: invoices,
     isLoading,
     error,
   } = useQuery({
     queryKey: QUERY_KEYS.TEAM_INVOICES(teamId as string),
-    queryFn: () => getTeamInvoicesAction(teamId as string),
+    queryFn: async () => {
+      const res = await getTeamInvoicesAction(teamId as string);
+      if (res.type === "error") {
+        throw new Error(res.message);
+      }
+      return res.data;
+    },
     enabled: !!teamId,
   });
 
@@ -36,49 +42,50 @@ export default function BillingInvoicesTable() {
           <TableHead>Date</TableHead>
           <TableHead>Amount</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
+          <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {isLoading && (
           <TableRow>
-            <TableCell colSpan={4} className="text-center">
-              <div className="flex items-center gap-3">
-                Loading invoices
-                <Loader variant="line" />
-              </div>
+            <TableCell colSpan={4} className="text-left">
+              <Alert className="w-full" variant="contrast2">
+                <AlertTitle className="flex items-center gap-2">
+                  <Loader variant="compute" />
+                  Loading invoices...
+                </AlertTitle>
+                <AlertDescription>This may take a moment.</AlertDescription>
+              </Alert>
             </TableCell>
           </TableRow>
         )}
 
-        {!isLoading &&
-          !error &&
-          invoicesData?.type === "success" &&
-          !invoicesData?.data?.length && (
-            <TableRow>
-              <TableCell colSpan={4} className="text-center">
-                <Alert variant="contrast1">
-                  <AlertDescription>No invoices found</AlertDescription>
-                </Alert>
-              </TableCell>
-            </TableRow>
-          )}
-
-        {error && (
+        {!isLoading && !error && !invoices?.length && (
           <TableRow>
-            <TableCell colSpan={4} className="text-center">
-              <Alert variant="error">
+            <TableCell colSpan={4} className="text-left">
+              <Alert className="w-full" variant="contrast1">
+                <AlertTitle>No invoices found.</AlertTitle>
                 <AlertDescription>
-                  Error loading invoices: {error?.message}
+                  Your team has no invoices yet.
                 </AlertDescription>
               </Alert>
             </TableCell>
           </TableRow>
         )}
 
+        {error && (
+          <TableRow>
+            <TableCell colSpan={4} className="text-left">
+              <Alert className="w-full" variant="error">
+                <AlertTitle>Error loading invoices.</AlertTitle>
+                <AlertDescription>{error?.message}</AlertDescription>
+              </Alert>
+            </TableCell>
+          </TableRow>
+        )}
+
         {!isLoading &&
-          invoicesData?.type === "success" &&
-          invoicesData?.data?.map((invoice) => (
+          invoices?.map((invoice) => (
             <TableRow key={invoice.date_created}>
               <TableCell>
                 {new Date(invoice.date_created).toLocaleDateString()}

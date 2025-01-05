@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { createComputed } from "zustand-computed";
+import { STORAGE_KEYS } from "@/configs/storage-keys";
 
 interface ComputedDeveloperSettingsState {
   apiUrl: string;
@@ -26,7 +27,7 @@ export const useDeveloperSettings = create<DeveloperSettingsState>()(
       setApiDomain: (domain) => set({ apiDomain: domain }),
     })),
     {
-      name: "developer-settings",
+      name: STORAGE_KEYS.DEVELOPER_SETTINGS,
     },
   ),
 );

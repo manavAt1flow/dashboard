@@ -11,7 +11,7 @@ export const getTeamInvoicesAction = async (
   try {
     const { user } = await checkAuthenticated();
 
-    const apiKey = await getTeamApiKey(teamId, user.id);
+    const apiKey = await getTeamApiKey(user.id, teamId);
 
     const res = await fetch(
       `${process.env.BILLING_API_URL}/teams/${teamId}/invoices`,

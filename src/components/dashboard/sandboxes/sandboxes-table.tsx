@@ -136,7 +136,10 @@ export default function SandboxesTable() {
             <TableBody>
               {sandboxesLoading ? (
                 <DataTableRow>
-                  <TableCell colSpan={COLUMNS.length} className="h-24">
+                  <TableCell
+                    colSpan={COLUMNS.length}
+                    className="h-24 text-left"
+                  >
                     <Alert className="w-full" variant="contrast2">
                       <AlertTitle className="flex items-center gap-2">
                         <Loader variant="compute" />
@@ -164,7 +167,10 @@ export default function SandboxesTable() {
                 ))
               ) : (
                 <DataTableRow>
-                  <TableCell colSpan={COLUMNS.length} className="h-24">
+                  <TableCell
+                    colSpan={COLUMNS.length}
+                    className="h-24 text-left"
+                  >
                     <Alert className="w-full" variant="error">
                       <AlertTitle>No sandboxes found.</AlertTitle>
                       <AlertDescription>

@@ -1,3 +1,5 @@
+"use client";
+
 import DashboardPageLayout from "@/components/dashboard/dashboard-page-layout";
 import BillingInvoicesTable from "@/components/dashboard/billing/billing-invoices-table";
 import {
@@ -7,8 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { TIERS } from "@/configs/tiers";
+import BillingTierCard from "@/components/dashboard/billing/billing-tier-card";
+import { useSelectedTeam } from "@/hooks/use-teams";
 
 export default function BillingPage() {
+  const team = useSelectedTeam();
+
   return (
     <DashboardPageLayout title="Billing">
       <div className="grid grid-cols-12 gap-6">
@@ -19,7 +26,16 @@ export default function BillingPage() {
               Manage your current plan and subscription details.
             </CardDescription>
           </CardHeader>
-          <CardContent></CardContent>
+          <CardContent className="flex gap-4">
+            {TIERS.map((tier) => (
+              <BillingTierCard
+                key={tier.id}
+                tier={tier}
+                isHighlighted={tier.id === "pro_v1"}
+                isSelected={!team ? true : team?.tier === tier.id}
+              />
+            ))}
+          </CardContent>
         </Card>
 
         <Card className="col-span-4">

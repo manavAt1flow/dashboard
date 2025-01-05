@@ -124,6 +124,7 @@ export default function DasboardNav() {
             >
               <Link
                 prefetch
+                suppressHydrationWarning
                 href={
                   selectedTeamId
                     ? PROTECTED_URLS.SANDBOXES(selectedTeamId)
