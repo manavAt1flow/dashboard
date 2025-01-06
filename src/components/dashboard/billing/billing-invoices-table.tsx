@@ -92,7 +92,7 @@ export default function BillingInvoicesTable() {
               </TableCell>
               <TableCell>${invoice.cost.toFixed(2)}</TableCell>
               <TableCell>{invoice.paid ? "Paid" : "Pending"}</TableCell>
-              <TableCell className="text-right">
+              <TableCell className="text-center">
                 <Button
                   variant="ghost"
                   size="sm"

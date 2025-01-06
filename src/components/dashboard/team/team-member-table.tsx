@@ -147,7 +147,7 @@ export default function MemberTable() {
                   ? "You"
                   : (member.user.name ?? "Anonymous")}
               </TableCell>
-              <TableCell>{member.user.email}</TableCell>
+              <TableCell className="text-fg-500">{member.user.email}</TableCell>
               <TableCell className="text-fg-300">
                 {member.relation.added_by === user?.id
                   ? "You"

@@ -74,8 +74,8 @@ const ApiKeysTable: FC<ApiKeysTableProps> = ({ teamId }) => {
       <Table className="w-full animate-in fade-in">
         <TableHeader>
           <TableRow>
-            <TableHead>Key</TableHead>
-            <TableHead className="text-right">Created By</TableHead>
+            <TableHead className="text-left">Key</TableHead>
+            <TableHead>Created By</TableHead>
             <TableHead className="text-right">Created At</TableHead>
             <th></th>
           </TableRow>
@@ -110,11 +110,11 @@ const ApiKeysTable: FC<ApiKeysTableProps> = ({ teamId }) => {
             keysData &&
             keysData.apiKeys.map((key, index) => (
               <TableRow key={`${key.name}-${index}`}>
-                <TableCell className="flex flex-col gap-1 font-mono">
+                <TableCell className="flex flex-col gap-1 text-left font-mono">
                   {key.name}
                   <span className="pl-1 text-fg-500">{key.maskedKey}</span>
                 </TableCell>
-                <TableCell className="max-w-36 overflow-hidden truncate text-right text-fg-500">
+                <TableCell className="max-w-36 overflow-hidden truncate text-fg-500">
                   <span className="max-w-full truncate">{key.createdBy}</span>
                 </TableCell>
                 <TableCell className="text-right text-fg-300">
