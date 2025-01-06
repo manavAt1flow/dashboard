@@ -7,8 +7,6 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Button, buttonVariants } from "../ui/button";
-import { Alert, AlertDescription } from "../ui/alert";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useDeveloperSettings } from "@/stores/developer-settings-store";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -24,10 +22,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
 import { AnimatePresence, motion } from "motion/react";
-import { RefreshCcwIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTimeoutMessage } from "@/hooks/use-timeout-message";
+import { AuthFormMessage } from "../auth/auth-form-message";
 
 const formSchema = z.object({
   domain: z
@@ -48,8 +46,6 @@ export default function DeveloperSettingsDialog({
 }: DeveloperSettingsDialogProps) {
   const { apiDomain, setApiDomain } = useDeveloperSettings();
 
-  const { toast } = useToast();
-
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -61,17 +57,36 @@ export default function DeveloperSettingsDialog({
     form.reset({ domain: apiDomain });
   }, [apiDomain, form]);
 
+  const [message, setMessage] = useTimeoutMessage(5000);
+
   const onSubmit = async (values: FormValues) => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    setApiDomain(values.domain);
-    toast({
-      title: "API domain updated",
-      description: "Your API domain has been updated",
-    });
+    try {
+      // delay for better UX
+      await new Promise((resolve) => setTimeout(resolve, 150));
+
+      const response = await fetch(`https://api.${values.domain}/health`);
+
+      if (!response.ok) {
+        throw new Error("Failed to verify API domain");
+      }
+
+      setApiDomain(values.domain);
+      setMessage({
+        success: "API domain verified and updated successfully",
+      });
+    } catch (error) {
+      setMessage({
+        error:
+          "Failed to verify API domain. Please check the URL and try again",
+      });
+
+      return;
+    }
   };
 
   const canResetToDefault =
     form.getValues("domain") !== process.env.NEXT_PUBLIC_DEFAULT_API_DOMAIN;
+
   const handleResetToDefault = () => {
     form.setValue("domain", process.env.NEXT_PUBLIC_DEFAULT_API_DOMAIN, {
       shouldDirty: true,
@@ -141,6 +156,14 @@ export default function DeveloperSettingsDialog({
                     </Button>
                   </div>
                   <FormMessage />
+                  <AnimatePresence mode="wait">
+                    {message && (
+                      <AuthFormMessage
+                        message={message}
+                        className="ml-2 mt-4"
+                      />
+                    )}
+                  </AnimatePresence>
                 </FormItem>
               )}
             />
