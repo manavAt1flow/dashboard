@@ -30,7 +30,10 @@ export async function getUsageAction({ teamId }: GetUsageActionProps) {
 
   const data = await response.json();
 
-  return transformUsageData(data.usages);
+  return {
+    ...transformUsageData(data.usages),
+    credits: data.credits as number,
+  };
 }
 
 function transformUsageData(usages: Usage[]): TransformedUsageData {

@@ -62,11 +62,11 @@ export async function getTeamSandboxesAction({
       throw new Error(text ?? `Failed to fetch api endpoint: /sandboxes`);
     }
 
-    const data = await res.json();
+    const data = (await res.json()) as Sandbox[];
 
     return {
       type: "success",
-      data: data.sandboxes,
+      data: data,
     };
   } catch (error) {
     if (error instanceof E2BError) {

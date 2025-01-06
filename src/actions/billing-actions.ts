@@ -4,6 +4,7 @@ import { ActionResponse } from "@/types/actions";
 import { Invoice } from "@/types/billing";
 import { checkAuthenticated, getTeamApiKey } from "./utils";
 import { E2BError } from "@/types/errors";
+import { redirect } from "next/navigation";
 
 export const getTeamInvoicesAction = async (
   teamId: string,
@@ -51,4 +52,45 @@ export const getTeamInvoicesAction = async (
       message: "Failed to fetch invoices",
     };
   }
+};
+
+export const redirectToCheckoutAction = async ({
+  teamId,
+  tierId,
+}: {
+  teamId: string;
+  tierId: string;
+}): Promise<ActionResponse<void>> => {
+  await checkAuthenticated();
+
+  const res = await fetch(`${process.env.BILLING_API_URL}/checkouts`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      teamID: teamId,
+      tierID: tierId,
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+
+    return {
+      type: "error",
+      message: text ?? "Failed to redirect to checkout",
+    };
+  }
+
+  const data = (await res.json()) as { url: string; error?: string };
+
+  if (data.error) {
+    return {
+      type: "error",
+      message: data.error,
+    };
+  }
+
+  throw redirect(data.url);
 };

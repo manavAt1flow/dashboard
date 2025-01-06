@@ -165,7 +165,7 @@
     padding-left: 0.5rem;
   }
   ul li::marker {
-    color: hsl(var(--accent));
+    color: hsl(var(--accent-200));
     content: "x";
   }
 }

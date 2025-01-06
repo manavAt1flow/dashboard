@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/chart";
 import { Area, AreaChart, XAxis, YAxis } from "recharts";
 import DashboardPageLayout from "@/components/dashboard/dashboard-page-layout";
+import { QUERY_KEYS } from "@/configs/query-keys";
 
 const chartConfig = {
   cost: {
@@ -73,12 +74,8 @@ export default function UsagePage({
 }) {
   const { teamId } = use<{ teamId: string }>(params);
 
-  const {
-    data: usageData,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["usage", teamId],
+  const { data: usageData, isLoading } = useQuery({
+    queryKey: QUERY_KEYS.TEAM_USAGE(teamId),
     queryFn: () => getUsageAction({ teamId }),
     enabled: !!teamId,
   });

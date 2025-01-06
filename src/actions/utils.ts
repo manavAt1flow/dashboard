@@ -14,6 +14,17 @@ import { UnauthenticatedError, UnauthorizedError } from "@/types/errors";
 export async function checkAuthenticated() {
   const supabase = await createClient();
 
+  // retrieve session from storage medium (cookies)
+  // if no stored session found, not authenticated
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    throw UnauthenticatedError();
+  }
+
+  // now retrieve user from supabase to use further
   const {
     data: { user },
   } = await supabase.auth.getUser();

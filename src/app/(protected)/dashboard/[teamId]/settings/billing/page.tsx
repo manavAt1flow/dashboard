@@ -12,6 +12,9 @@ import {
 import { TIERS } from "@/configs/tiers";
 import BillingTierCard from "@/components/dashboard/billing/billing-tier-card";
 import { useSelectedTeam } from "@/hooks/use-teams";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import BillingCreditsContent from "@/components/dashboard/billing/billing-credits-content";
 
 export default function BillingPage() {
   const team = useSelectedTeam();
@@ -25,6 +28,14 @@ export default function BillingPage() {
             <CardDescription>
               Manage your current plan and subscription details.
             </CardDescription>
+            <Button asChild variant="muted" className="absolute right-6 top-4">
+              <Link
+                href={`${process.env.NEXT_PUBLIC_STRIPE_BILLING_URL}?prefilled_email=${team?.email}`}
+              >
+                Customer Portal
+                {" >>>"}
+              </Link>
+            </Button>
           </CardHeader>
           <CardContent className="flex gap-4">
             {TIERS.map((tier) => (
@@ -32,7 +43,7 @@ export default function BillingPage() {
                 key={tier.id}
                 tier={tier}
                 isHighlighted={tier.id === "pro_v1"}
-                isSelected={!team ? true : team?.tier === tier.id}
+                isSelected={!team ? undefined : team?.tier === tier.id}
               />
             ))}
           </CardContent>
@@ -41,9 +52,10 @@ export default function BillingPage() {
         <Card className="col-span-4">
           <CardHeader>
             <CardTitle>Credits</CardTitle>
-            <CardDescription>Your team has 1000 credits.</CardDescription>
           </CardHeader>
-          <CardContent></CardContent>
+          <CardContent>
+            <BillingCreditsContent />
+          </CardContent>
         </Card>
 
         <Card className="col-span-12">

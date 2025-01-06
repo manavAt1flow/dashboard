@@ -52,6 +52,9 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
+// stable reference for fallback data
+const fallbackData: Template[] = [];
+
 export default function TemplatesTable() {
   "use no memo";
 
@@ -62,17 +65,24 @@ export default function TemplatesTable() {
 
   const apiUrl = useApiUrl();
 
-  const { data: templatesData, isLoading: templatesLoading } = useQuery({
+  const { data: templates, isLoading: templatesLoading } = useQuery({
     queryKey: QUERY_KEYS.TEAM_TEMPLATES(teamId as string),
-    queryFn: () =>
-      getTeamTemplatesAction({
+    queryFn: async () => {
+      const res = await getTeamTemplatesAction({
         apiUrl,
         teamId: teamId as string,
-      }),
+      });
+
+      if (res.type === "error") {
+        throw new Error(res.message);
+      }
+
+      return res.data;
+    },
   });
 
   const table = useReactTable({
-    data: templatesData?.type === "success" ? templatesData.data : [],
+    data: templates ?? fallbackData,
     columns: COLUMNS,
     state: {
       globalFilter,
@@ -145,7 +155,7 @@ export default function TemplatesTable() {
                   </Alert>
                 </TableCell>
               </DataTableRow>
-            ) : table.getRowModel().rows?.length ? (
+            ) : templates && table.getRowModel()?.rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <DataTableRow key={row.id} isSelected={row.getIsSelected()}>
                   {row.getVisibleCells().map((cell) => (

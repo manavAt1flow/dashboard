@@ -52,6 +52,9 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
+// stable reference for fallback data
+const fallbackData: Sandbox[] = [];
+
 export default function SandboxesTable() {
   "use no memo";
 
@@ -62,17 +65,24 @@ export default function SandboxesTable() {
 
   const apiUrl = useApiUrl();
 
-  const { data: sandboxesData, isLoading: sandboxesLoading } = useQuery({
+  const { data: sandboxes, isLoading: sandboxesLoading } = useQuery({
     queryKey: QUERY_KEYS.TEAM_SANDBOXES(teamId as string),
-    queryFn: () =>
-      getTeamSandboxesAction({
+    queryFn: async () => {
+      const res = await getTeamSandboxesAction({
         apiUrl,
         teamId: teamId as string,
-      }),
+      });
+
+      if (res.type === "error") {
+        throw new Error(res.message);
+      }
+
+      return res.data;
+    },
   });
 
   const table = useReactTable({
-    data: sandboxesData?.type === "success" ? sandboxesData.data : [],
+    data: sandboxes ?? fallbackData,
     columns: COLUMNS,
     state: {
       globalFilter,
@@ -151,7 +161,7 @@ export default function SandboxesTable() {
                     </Alert>
                   </TableCell>
                 </DataTableRow>
-              ) : table.getRowModel().rows?.length ? (
+              ) : sandboxes && table.getRowModel()?.rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <DataTableRow key={row.id} isSelected={row.getIsSelected()}>
                     {row.getVisibleCells().map((cell) => (

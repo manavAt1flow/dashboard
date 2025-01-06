@@ -42,6 +42,7 @@ export async function getTeamTemplatesAction({
       data: MOCK_TEMPLATES_DATA,
     };
   }
+
   try {
     const { user } = await checkAuthenticated();
 
@@ -62,11 +63,11 @@ export async function getTeamTemplatesAction({
       );
     }
 
-    const data = await res.json();
+    const data = (await res.json()) as Template[];
 
     return {
       type: "success",
-      data: data.sandboxes,
+      data: data,
     };
   } catch (error) {
     if (error instanceof E2BError) {
