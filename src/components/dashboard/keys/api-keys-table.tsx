@@ -83,11 +83,14 @@ const ApiKeysTable: FC<ApiKeysTableProps> = ({ teamId }) => {
         <TableBody>
           {(isLoadingKeys || isDeletingKey) && (
             <TableRow>
-              <TableCell colSpan={5} className="text-center">
-                <div className="flex items-center gap-3">
-                  Loading Keys
-                  <Loader variant="progress" />
-                </div>
+              <TableCell colSpan={5} className="h-24 text-left">
+                <Alert className="w-full text-left" variant="contrast2">
+                  <AlertTitle className="flex items-center gap-2">
+                    <Loader variant="compute" />
+                    Loading keys...
+                  </AlertTitle>
+                  <AlertDescription>This may take a moment.</AlertDescription>
+                </Alert>
               </TableCell>
             </TableRow>
           )}
@@ -95,7 +98,7 @@ const ApiKeysTable: FC<ApiKeysTableProps> = ({ teamId }) => {
           {!isLoadingKeys && keysData && keysData.apiKeys.length === 0 && (
             <TableRow>
               <TableCell colSpan={5}>
-                <Alert variant="contrast2">
+                <Alert className="text-left" variant="contrast2">
                   <AlertTitle>No API Keys</AlertTitle>
                   <AlertDescription>
                     No API keys found for this team.

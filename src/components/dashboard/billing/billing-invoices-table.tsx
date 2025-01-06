@@ -49,7 +49,7 @@ export default function BillingInvoicesTable() {
         {isLoading && (
           <TableRow>
             <TableCell colSpan={4} className="text-left">
-              <Alert className="w-full" variant="contrast2">
+              <Alert className="w-full text-left" variant="contrast2">
                 <AlertTitle className="flex items-center gap-2">
                   <Loader variant="compute" />
                   Loading invoices...
@@ -63,7 +63,7 @@ export default function BillingInvoicesTable() {
         {!isLoading && !error && !invoices?.length && (
           <TableRow>
             <TableCell colSpan={4} className="text-left">
-              <Alert className="w-full" variant="contrast1">
+              <Alert className="w-full text-left" variant="contrast1">
                 <AlertTitle>No invoices found.</AlertTitle>
                 <AlertDescription>
                   Your team has no invoices yet.
@@ -76,7 +76,7 @@ export default function BillingInvoicesTable() {
         {error && (
           <TableRow>
             <TableCell colSpan={4} className="text-left">
-              <Alert className="w-full" variant="error">
+              <Alert className="w-full text-left" variant="error">
                 <AlertTitle>Error loading invoices.</AlertTitle>
                 <AlertDescription>{error?.message}</AlertDescription>
               </Alert>
@@ -92,7 +92,7 @@ export default function BillingInvoicesTable() {
               </TableCell>
               <TableCell>${invoice.cost.toFixed(2)}</TableCell>
               <TableCell>{invoice.paid ? "Paid" : "Pending"}</TableCell>
-              <TableCell className="text-center">
+              <TableCell>
                 <Button
                   variant="ghost"
                   size="sm"

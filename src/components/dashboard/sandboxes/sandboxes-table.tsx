@@ -150,7 +150,7 @@ export default function SandboxesTable() {
                     colSpan={COLUMNS.length}
                     className="h-24 text-left"
                   >
-                    <Alert className="w-full" variant="contrast2">
+                    <Alert className="w-full text-left" variant="contrast2">
                       <AlertTitle className="flex items-center gap-2">
                         <Loader variant="compute" />
                         Loading sandboxes...
@@ -181,7 +181,7 @@ export default function SandboxesTable() {
                     colSpan={COLUMNS.length}
                     className="h-24 text-left"
                   >
-                    <Alert className="w-full" variant="error">
+                    <Alert className="w-full text-left" variant="error">
                       <AlertTitle>No sandboxes found.</AlertTitle>
                       <AlertDescription>
                         Start more Sandboxes or try different filters.

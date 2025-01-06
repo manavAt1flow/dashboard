@@ -37,7 +37,7 @@ export default function BillingPage() {
               </Link>
             </Button>
           </CardHeader>
-          <CardContent className="flex gap-4">
+          <CardContent className="flex gap-8 pt-6">
             {TIERS.map((tier) => (
               <BillingTierCard
                 key={tier.id}

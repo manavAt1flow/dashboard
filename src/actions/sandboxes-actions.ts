@@ -30,7 +30,7 @@ export async function getTeamSandboxesAction({
     };
   }
 
-  // TODO: Remove this after staging
+  /*  // TODO: Remove this after staging
   if (
     process.env.NODE_ENV === "development" ||
     process.env.NODE_ENV === "production"
@@ -41,7 +41,7 @@ export async function getTeamSandboxesAction({
       type: "success",
       data: MOCK_SANDBOXES_DATA,
     };
-  }
+  } */
 
   try {
     const { user } = await checkAuthenticated();
