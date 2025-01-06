@@ -8,7 +8,7 @@ import {
 } from "../ui/dialog";
 import { Button, buttonVariants } from "../ui/button";
 import { useDeveloperSettings } from "@/stores/developer-settings-store";
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -85,13 +85,16 @@ export default function DeveloperSettingsDialog({
   };
 
   const canResetToDefault =
-    form.getValues("domain") !== process.env.NEXT_PUBLIC_DEFAULT_API_DOMAIN;
+    form.watch("domain") !== process.env.NEXT_PUBLIC_DEFAULT_API_DOMAIN;
 
   const handleResetToDefault = () => {
     form.setValue("domain", process.env.NEXT_PUBLIC_DEFAULT_API_DOMAIN, {
       shouldDirty: true,
     });
   };
+
+  const isSaveDisabled =
+    form.watch("domain") === apiDomain || !form.formState.isValid;
 
   return (
     <Dialog {...props}>
@@ -144,9 +147,7 @@ export default function DeveloperSettingsDialog({
                     </FormControl>
                     <Button
                       type="submit"
-                      disabled={
-                        !form.formState.isDirty || !form.formState.isValid
-                      }
+                      disabled={isSaveDisabled}
                       loading={form.formState.isSubmitting}
                       className="ml-2"
                     >
@@ -160,7 +161,7 @@ export default function DeveloperSettingsDialog({
                     {message && (
                       <AuthFormMessage
                         message={message}
-                        className="ml-2 mt-4"
+                        className="!mt-4 ml-2"
                       />
                     )}
                   </AnimatePresence>
