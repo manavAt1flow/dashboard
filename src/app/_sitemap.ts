@@ -1,4 +1,4 @@
-import { MetadataRoute } from 'next'
+/* import { MetadataRoute } from 'next'
 import { XMLParser } from 'fast-xml-parser'
 import path from 'path'
 import { replaceUrls } from '@/utils/replaceUrls'
@@ -115,3 +115,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return mergedSitemap.sort((a, b) => a.url.localeCompare(b.url))
 }
+ */

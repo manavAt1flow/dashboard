@@ -10,7 +10,15 @@ export default function BillingCreditsContent() {
 
   const { data: usageData, isLoading } = useQuery({
     queryKey: QUERY_KEYS.TEAM_USAGE(teamId as string),
-    queryFn: () => getUsageAction({ teamId: teamId as string }),
+    queryFn: async () => {
+      const res = await getUsageAction({ teamId: teamId as string });
+
+      if (res.type === "error") {
+        throw new Error(res.message);
+      }
+
+      return res.data;
+    },
   });
 
   if (isLoading) return <div>Loading...</div>;
