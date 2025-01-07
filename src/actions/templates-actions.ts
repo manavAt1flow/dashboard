@@ -5,7 +5,7 @@ import { Template } from "@/types/api";
 import { E2BError } from "@/types/errors";
 import { z } from "zod";
 import { checkAuthenticated, getTeamApiKey } from "./utils";
-import { MOCK_TEMPLATES_DATA } from "@/configs/data";
+import { MOCK_TEMPLATES_DATA } from "@/configs/mock-data";
 
 const GetTeamTemplatesParamsSchema = z.object({
   apiUrl: z.string().url(),
@@ -31,10 +31,7 @@ export async function getTeamTemplatesAction({
   }
 
   // TODO: Remove this after staging
-  if (
-    process.env.NODE_ENV === "development" ||
-    process.env.NODE_ENV === "production"
-  ) {
+  if (process.env.NODE_ENV === "development") {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     return {

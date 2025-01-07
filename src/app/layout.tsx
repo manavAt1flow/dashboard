@@ -7,11 +7,24 @@ import "@/styles/globals.css";
 import { ToastProvider } from "@/components/ui/toast";
 import { Toaster } from "@/components/ui/toaster";
 import { BASE_URL } from "@/configs/urls";
+import { Metadata } from "next/types";
+import { METADATA } from "@/configs/metadata";
 
-export const metadata = {
+export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: {
+    template: "%s - E2B",
+    default: METADATA.title,
+  },
+  description: "Open-source secure sandboxes for AI code execution",
+  twitter: {
+    title: METADATA.title,
+    description: METADATA.description,
+  },
+  openGraph: {
+    title: METADATA.title,
+    description: METADATA.description,
+  },
 };
 
 export default function RootLayout({

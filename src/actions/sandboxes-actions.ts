@@ -5,7 +5,7 @@ import { ActionResponse } from "@/types/actions";
 import { checkAuthenticated, getTeamApiKey } from "./utils";
 import { E2BError } from "@/types/errors";
 import { z } from "zod";
-import { MOCK_SANDBOXES_DATA } from "@/configs/data";
+import { MOCK_SANDBOXES_DATA } from "@/configs/mock-data";
 
 const GetTeamSandboxesParamsSchema = z.object({
   apiUrl: z.string().url(),
@@ -30,18 +30,15 @@ export async function getTeamSandboxesAction({
     };
   }
 
-  /*  // TODO: Remove this after staging
-  if (
-    process.env.NODE_ENV === "development" ||
-    process.env.NODE_ENV === "production"
-  ) {
+  // TODO: Remove this after staging
+  if (process.env.NODE_ENV === "development") {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     return {
       type: "success",
       data: MOCK_SANDBOXES_DATA,
     };
-  } */
+  }
 
   try {
     const { user } = await checkAuthenticated();

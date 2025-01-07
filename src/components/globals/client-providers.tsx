@@ -3,7 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MetadataProvider } from "../providers/metadata-provider";
 import { useState } from "react";
-import { InitResponse } from "@/types/dashboard";
+import { DashboardTitleProvider } from "../providers/dashboard-title-provider";
 
 interface ClientProvidersProps {
   children: React.ReactNode;
@@ -14,7 +14,10 @@ export default function ClientProviders({ children }: ClientProvidersProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <MetadataProvider>{children}</MetadataProvider>
+      <MetadataProvider>
+        <DashboardTitleProvider />
+        {children}
+      </MetadataProvider>
     </QueryClientProvider>
   );
 }
