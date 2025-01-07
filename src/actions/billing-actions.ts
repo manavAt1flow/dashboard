@@ -2,20 +2,23 @@
 
 import { ActionResponse } from "@/types/actions";
 import { Invoice } from "@/types/billing";
-import { checkAuthenticated, getTeamApiKey } from "./utils";
-import { E2BError } from "@/types/errors";
+import { checkAuthenticated, getTeamApiKey, guardAction } from "./utils";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 
-export const getTeamInvoicesAction = async (
-  teamId: string,
-): Promise<ActionResponse<Invoice[]>> => {
-  try {
+const GetTeamInvoicesParamsSchema = z.object({
+  teamId: z.string().uuid(),
+});
+
+export const getTeamInvoicesAction = guardAction(
+  GetTeamInvoicesParamsSchema,
+  async (params) => {
     const { user } = await checkAuthenticated();
 
-    const apiKey = await getTeamApiKey(user.id, teamId);
+    const apiKey = await getTeamApiKey(user.id, params.teamId);
 
     const res = await fetch(
-      `${process.env.BILLING_API_URL}/teams/${teamId}/invoices`,
+      `${process.env.BILLING_API_URL}/teams/${params.teamId}/invoices`,
       {
         headers: {
           "X-Team-API-Key": apiKey,
@@ -27,70 +30,49 @@ export const getTeamInvoicesAction = async (
       const text = await res.text();
 
       throw new Error(
-        text ?? `Failed to fetch billing endpoint: /teams/${teamId}/invoices`,
+        text ??
+          `Failed to fetch billing endpoint: /teams/${params.teamId}/invoices`,
       );
     }
 
     const invoices = (await res.json()) as Invoice[];
 
-    return {
-      type: "success",
-      data: invoices,
-    };
-  } catch (e) {
-    console.error(e);
+    return invoices;
+  },
+);
 
-    if (e instanceof E2BError) {
-      return {
-        type: "error",
-        message: e.message,
-      };
+const RedirectToCheckoutParamsSchema = z.object({
+  teamId: z.string().uuid(),
+  tierId: z.string(),
+});
+
+export const redirectToCheckoutAction = guardAction(
+  RedirectToCheckoutParamsSchema,
+  async (params) => {
+    await checkAuthenticated();
+
+    const res = await fetch(`${process.env.BILLING_API_URL}/checkouts`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        teamID: params.teamId,
+        tierID: params.tierId,
+      }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text ?? "Failed to redirect to checkout");
     }
 
-    return {
-      type: "error",
-      message: "Failed to fetch invoices",
-    };
-  }
-};
+    const data = (await res.json()) as { url: string; error?: string };
 
-export const redirectToCheckoutAction = async ({
-  teamId,
-  tierId,
-}: {
-  teamId: string;
-  tierId: string;
-}): Promise<ActionResponse<void>> => {
-  await checkAuthenticated();
+    if (data.error) {
+      throw new Error(data.error);
+    }
 
-  const res = await fetch(`${process.env.BILLING_API_URL}/checkouts`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      teamID: teamId,
-      tierID: tierId,
-    }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-
-    return {
-      type: "error",
-      message: text ?? "Failed to redirect to checkout",
-    };
-  }
-
-  const data = (await res.json()) as { url: string; error?: string };
-
-  if (data.error) {
-    return {
-      type: "error",
-      message: data.error,
-    };
-  }
-
-  throw redirect(data.url);
-};
+    throw redirect(data.url);
+  },
+);

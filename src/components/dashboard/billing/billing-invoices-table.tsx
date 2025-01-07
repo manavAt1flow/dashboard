@@ -26,7 +26,7 @@ export default function BillingInvoicesTable() {
   } = useQuery({
     queryKey: QUERY_KEYS.TEAM_INVOICES(teamId as string),
     queryFn: async () => {
-      const res = await getTeamInvoicesAction(teamId as string);
+      const res = await getTeamInvoicesAction({ teamId: teamId as string });
       if (res.type === "error") {
         throw new Error(res.message);
       }

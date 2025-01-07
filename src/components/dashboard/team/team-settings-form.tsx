@@ -17,44 +17,51 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSelectedTeam, useTeams } from "@/hooks/use-teams";
 import { useTimeoutMessage } from "@/hooks/use-timeout-message";
 import { AnimatePresence } from "motion/react";
-import { useCallback, useEffect, useMemo, useTransition } from "react";
+import { useEffect, useMemo } from "react";
 import { useState } from "react";
 import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
 
 export function TeamSettingsForm() {
   const { refetch: refetchTeams } = useTeams();
   const team = useSelectedTeam();
-
-  const [isPending, startTransition] = useTransition();
   const [teamName, setTeamName] = useState(team?.name ?? "");
   const [message, setMessage] = useTimeoutMessage();
 
   useEffect(() => {
     if (!team) return;
-
     setTeamName(team.name);
   }, [team]);
 
-  const handleUpdateName = useCallback(async () => {
-    if (!team) {
-      return;
-    }
-
-    if (!z.string().min(1).safeParse(teamName).success) {
-      setMessage({ error: "Name cannot be empty" });
-      return;
-    }
-
-    startTransition(async () => {
-      try {
-        await updateTeamNameAction(team.id, teamName);
-        await refetchTeams();
-        setMessage({ success: "Team name updated" });
-      } catch (error: any) {
-        setMessage({ error: error.message });
+  const { mutate: updateName, isPending } = useMutation({
+    mutationFn: async () => {
+      if (!team) {
+        throw new Error("No team selected");
       }
-    });
-  }, [team, teamName, refetchTeams]);
+
+      if (!z.string().min(1).safeParse(teamName).success) {
+        throw new Error("Name cannot be empty");
+      }
+
+      const response = await updateTeamNameAction({
+        teamId: team.id,
+        name: teamName,
+      });
+
+      if (response.type === "error") {
+        throw new Error(response.message);
+      }
+
+      return response;
+    },
+    onSuccess: async () => {
+      await refetchTeams();
+      setMessage({ success: "Team name updated" });
+    },
+    onError: (error: Error) => {
+      setMessage({ error: error.message });
+    },
+  });
 
   return (
     <Card hideUnderline>
@@ -69,7 +76,7 @@ export function TeamSettingsForm() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              handleUpdateName();
+              updateName();
             }}
             className="flex items-center gap-2"
           >

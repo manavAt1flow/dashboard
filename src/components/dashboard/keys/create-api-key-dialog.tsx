@@ -34,13 +34,19 @@ const CreateApiKeyDialog: FC<CreateApiKeyDialogProps> = ({
 
   // mutations
   const {
-    data: apiKeyCreationData,
+    data: createdApiKey,
     mutate: createApiKey,
     isPending: isMutatingApiKeyCreation,
     reset: resetCreateApiKeyMutation,
   } = useMutation({
-    mutationFn: (name: string) => {
-      return createApiKeyAction({ teamId, name });
+    mutationFn: async (name: string) => {
+      const response = await createApiKeyAction({ teamId, name });
+
+      if (response.type === "error") {
+        throw new Error(response.message);
+      }
+
+      return response.data.createdApiKey;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -70,7 +76,7 @@ const CreateApiKeyDialog: FC<CreateApiKeyDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        {!apiKeyCreationData ? (
+        {!createdApiKey ? (
           <form
             key="create-form"
             onSubmit={(e) => {
@@ -101,12 +107,8 @@ const CreateApiKeyDialog: FC<CreateApiKeyDialogProps> = ({
             <div className="flex flex-col gap-3 px-2 py-6 duration-200 animate-in fade-in slide-in-from-right-5">
               <Label>[ Your API Key ]</Label>
               <div className="flex items-center gap-2">
-                <Input
-                  readOnly
-                  value={apiKeyCreationData.createdApiKey}
-                  className="font-mono"
-                />
-                <CopyButton value={apiKeyCreationData.createdApiKey} />
+                <Input readOnly value={createdApiKey} className="font-mono" />
+                <CopyButton value={createdApiKey} />
               </div>
               <Alert variant="contrast2" className="mt-4">
                 <AlertTitle>Important!</AlertTitle>

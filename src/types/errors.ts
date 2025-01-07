@@ -19,3 +19,6 @@ export const UnauthenticatedError = () =>
 
 export const UnauthorizedError = (message: string) =>
   new E2BError("UNAUTHORIZED", message);
+
+export const InvalidParametersError = (message: string) =>
+  new E2BError("INVALID_PARAMETERS", message);

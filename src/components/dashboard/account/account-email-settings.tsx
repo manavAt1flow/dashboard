@@ -2,8 +2,6 @@
 
 import { updateUserAction } from "@/actions/user-actions";
 import { AuthFormMessage } from "@/components/auth/auth-form-message";
-import ChangeDataInput from "@/components/globals/change-data-input";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,39 +9,56 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useTimeoutMessage } from "@/hooks/use-timeout-message";
 import { useUser } from "@/hooks/use-user";
 import { AnimatePresence } from "motion/react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useTransition } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+
+const formSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export function EmailSettings() {
   const { user, setUser, refetch: refetchUser } = useUser();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
-  const [email, setEmail] = useState(
-    searchParams.get("new_email") || user?.email || "",
-  );
   const [message, setMessage] = useTimeoutMessage();
 
-  const handleUpdateEmail = async () => {
-    if (!z.string().email().safeParse(email).success) {
-      setMessage({ error: "Invalid email" });
-      return;
-    }
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: searchParams.get("new_email") || user?.email || "",
+    },
+  });
 
-    startTransition(async () => {
-      try {
-        await updateUserAction({ email });
-        setMessage({ success: "Check your email for a verification link" });
-      } catch (error: any) {
-        setMessage({ error: error.message });
-      }
-    });
-  };
+  const { mutate: updateEmail, isPending } = useMutation({
+    mutationFn: async (values: FormValues) => {
+      const response = await updateUserAction({ email: values.email });
+
+      return response;
+    },
+    onSuccess: () => {
+      setMessage({ success: "Check your email for a verification link" });
+    },
+    onError: (error: Error) => {
+      setMessage({ error: error.message });
+    },
+  });
 
   useEffect(() => {
     if (
@@ -86,27 +101,36 @@ export function EmailSettings() {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleUpdateEmail();
-          }}
-          className="flex items-center gap-2"
-        >
-          <Input
-            placeholder="Email"
-            className="w-[17rem]"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Button
-            loading={isPending}
-            disabled={email === user?.email}
-            type="submit"
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit((values) => updateEmail(values))}
+            className="flex items-center gap-2"
           >
-            Save Email
-          </Button>
-        </form>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      placeholder="Email"
+                      className="w-[17rem]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              loading={isPending}
+              disabled={form.watch("email") === user?.email}
+              type="submit"
+            >
+              Save Email
+            </Button>
+          </form>
+        </Form>
 
         <AnimatePresence initial={false} mode="wait">
           {message && <AuthFormMessage message={message} className="mt-4" />}

@@ -1,40 +1,45 @@
 "use server";
 
-import { checkAuthenticated, getTeamApiKey } from "./utils";
+import { checkAuthenticated, getTeamApiKey, guardAction } from "./utils";
 import { Usage, TransformedUsageData } from "@/types/usage";
+import { z } from "zod";
 
-interface GetUsageActionProps {
-  teamId: string;
-}
+const GetUsageParamsSchema = z.object({
+  teamId: z.string().uuid(),
+});
 
-export async function getUsageAction({ teamId }: GetUsageActionProps) {
-  const { user } = await checkAuthenticated();
+export const getUsageAction = guardAction(
+  GetUsageParamsSchema,
+  async ({ teamId }) => {
+    const { user } = await checkAuthenticated();
 
-  const apiKey = await getTeamApiKey(user.id, teamId);
+    const apiKey = await getTeamApiKey(user.id, teamId);
 
-  const response = await fetch(
-    `${process.env.BILLING_API_URL}/teams/${teamId}/usage`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Team-API-Key": apiKey,
+    const response = await fetch(
+      `${process.env.BILLING_API_URL}/teams/${teamId}/usage`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Team-API-Key": apiKey,
+        },
       },
-    },
-  );
+    );
 
-  if (!response.ok) {
-    console.error(await response.text());
-    throw new Error("Failed to fetch usage data");
-  }
+    if (!response.ok) {
+      const text = await response.text();
 
-  const data = await response.json();
+      throw new Error(text ?? "Failed to fetch usage data");
+    }
 
-  return {
-    ...transformUsageData(data.usages),
-    credits: data.credits as number,
-  };
-}
+    const data = await response.json();
+
+    return {
+      ...transformUsageData(data.usages),
+      credits: data.credits as number,
+    };
+  },
+);
 
 function transformUsageData(usages: Usage[]): TransformedUsageData {
   const ramData = usages.map((usage) => ({

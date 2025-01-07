@@ -9,6 +9,7 @@ import { TeamWithDefault } from "./dashboard";
 interface ActionErrorResponse {
   type: "error";
   message: string;
+  code?: string;
 }
 
 interface ActionSuccessResponse<T> {
@@ -18,4 +19,11 @@ interface ActionSuccessResponse<T> {
 
 type ActionResponse<T> = ActionErrorResponse | ActionSuccessResponse<T>;
 
-export type { ActionResponse, ActionErrorResponse, ActionSuccessResponse };
+type ActionFunction<TInput, TOutput> = (input: TInput) => Promise<TOutput>;
+
+export type {
+  ActionResponse,
+  ActionFunction,
+  ActionErrorResponse,
+  ActionSuccessResponse,
+};

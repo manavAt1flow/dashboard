@@ -76,7 +76,15 @@ export default function UsagePage({
 
   const { data: usageData, isLoading } = useQuery({
     queryKey: QUERY_KEYS.TEAM_USAGE(teamId),
-    queryFn: () => getUsageAction({ teamId }),
+    queryFn: async () => {
+      const res = await getUsageAction({ teamId });
+
+      if (res.type === "error") {
+        throw new Error(res.message);
+      }
+
+      return res.data;
+    },
     enabled: !!teamId,
   });
 

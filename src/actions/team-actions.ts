@@ -2,14 +2,42 @@
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { Database } from "@/types/supabase";
-import { checkAuthenticated, checkUserTeamAuthorization } from "./utils";
+import {
+  checkAuthenticated,
+  checkUserTeamAuthorization,
+  guardAction,
+} from "./utils";
 import { z } from "zod";
 import { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { PROTECTED_URLS } from "@/configs/urls";
-import { E2BError } from "@/types/errors";
+import {
+  E2BError,
+  InvalidParametersError,
+  UnauthorizedError,
+} from "@/types/errors";
 import { TeamWithDefault } from "@/types/dashboard";
-import { ActionResponse } from "@/types/actions";
+
+// Get user teams
+
+export const getUserTeamsAction = guardAction(async () => {
+  const { user } = await checkAuthenticated();
+
+  const { data: usersTeamsData, error } = await supabaseAdmin
+    .from("users_teams")
+    .select("*, teams (*)")
+    .eq("user_id", user.id);
+
+  if (error) {
+    throw error;
+  }
+
+  if (!usersTeamsData || usersTeamsData.length === 0) {
+    redirect(PROTECTED_URLS.DASHBOARD);
+  }
+
+  return transformTeamsData(usersTeamsData);
+});
 
 function transformTeamsData(
   data: (Database["public"]["Tables"]["users_teams"]["Row"] & {
@@ -22,124 +50,98 @@ function transformTeamsData(
   });
 }
 
-export async function getUserTeamsAction(): Promise<
-  ActionResponse<TeamWithDefault[]>
-> {
-  try {
+// Update team name
+
+const UpdateTeamNameSchema = z.object({
+  teamId: z.string().uuid(),
+  name: z.string().min(1),
+});
+
+export const updateTeamNameAction = guardAction(
+  UpdateTeamNameSchema,
+  async ({ teamId, name }) => {
     const { user } = await checkAuthenticated();
 
-    const { data: usersTeamsData, error } = await supabaseAdmin
-      .from("users_teams")
-      .select("*, teams (*)")
-      .eq("user_id", user.id);
+    const isAuthorized = await checkUserTeamAuthorization(user.id, teamId);
+
+    if (!isAuthorized) {
+      throw UnauthorizedError("User is not authorized to update this team");
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from("teams")
+      .update({ name })
+      .eq("id", teamId)
+      .select()
+      .single();
 
     if (error) {
-      throw error;
+      throw new E2BError(error.message, "Failed to update team name");
     }
 
-    if (!usersTeamsData || usersTeamsData.length === 0) {
-      redirect(PROTECTED_URLS.DASHBOARD);
+    return data;
+  },
+);
+
+// Add team member
+
+const AddTeamMemberSchema = z.object({
+  teamId: z.string().uuid(),
+  email: z.string().email(),
+});
+
+export const addTeamMemberAction = guardAction(
+  AddTeamMemberSchema,
+  async ({ teamId, email }) => {
+    const { user } = await checkAuthenticated();
+
+    const isAuthorized = await checkUserTeamAuthorization(user.id, teamId);
+
+    if (!isAuthorized) {
+      throw UnauthorizedError("User is not authorized to add a team member");
     }
 
-    return {
-      type: "success",
-      data: transformTeamsData(usersTeamsData),
-    };
-  } catch (error) {
-    console.error(error);
+    const { data: existingUsers, error: userError } = await supabaseAdmin
+      .from("auth_users")
+      .select("*")
+      .eq("email", email);
 
-    if (error instanceof E2BError) {
-      return {
-        type: "error",
-        message: error.message,
-      };
+    if (userError) {
+      throw userError;
     }
 
-    return {
-      type: "error",
-      message: "An unexpected error occurred",
-    };
-  }
-}
+    const existingUser = existingUsers?.[0];
 
-export async function updateTeamNameAction(teamId: string, name: string) {
-  const { user } = await checkAuthenticated();
+    if (!existingUser) {
+      throw InvalidParametersError(
+        "User with this email does not exist. Account must be registered first.",
+      );
+    }
 
-  const isAuthorized = await checkUserTeamAuthorization(user.id, teamId);
+    const { data: existingTeamMember } = await supabaseAdmin
+      .from("users_teams")
+      .select("*")
+      .eq("team_id", teamId)
+      .eq("user_id", existingUser.id!)
+      .single();
 
-  if (!isAuthorized) {
-    throw new Error("User is not authorized to update this team");
-  }
+    if (existingTeamMember) {
+      throw InvalidParametersError("User is already a member of this team");
+    }
 
-  const { data, error } = await supabaseAdmin
-    .from("teams")
-    .update({ name })
-    .eq("id", teamId)
-    .select()
-    .single();
+    const { error: insertError } = await supabaseAdmin
+      .from("users_teams")
+      .insert({
+        team_id: teamId,
+        user_id: existingUser.id!,
+        added_by: user.id,
+      });
 
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data;
-}
-
-export async function addTeamMemberAction(teamId: string, email: string) {
-  if (!z.string().email().safeParse(email).success) {
-    throw new Error("Invalid email address");
-  }
-
-  const { user } = await checkAuthenticated();
-
-  const isAuthorized = await checkUserTeamAuthorization(user.id, teamId);
-
-  if (!isAuthorized) {
-    throw new Error("User is not authorized to add a team member");
-  }
-
-  const { data: existingUsers, error: userError } = await supabaseAdmin
-    .from("auth_users")
-    .select("*")
-    .eq("email", email);
-
-  if (userError) {
-    throw new Error(userError.message);
-  }
-
-  const existingUser = existingUsers?.[0];
-
-  // check if user exists / is already a member of the team
-
-  if (!existingUser) {
-    throw new Error(
-      "User with this email does not exist. Account must be registered first.",
-    );
-  }
-
-  const { data: existingTeamMember } = await supabaseAdmin
-    .from("users_teams")
-    .select("*")
-    .eq("team_id", teamId)
-    .eq("user_id", existingUser.id!)
-    .single();
-
-  if (existingTeamMember) {
-    throw new Error("User is already a member of this team");
-  }
-
-  const { error: insertError } = await supabaseAdmin
-    .from("users_teams")
-    .insert({
-      team_id: teamId,
-      user_id: existingUser.id!,
-      added_by: user.id,
-    });
-
-  if (insertError) {
-    throw new Error(insertError.message);
-  }
-}
+    if (insertError) {
+      throw insertError;
+    }
+  },
+);
 
 function memberDTO(user: User) {
   return {
@@ -151,19 +153,24 @@ function memberDTO(user: User) {
 }
 
 type GetTeamMembersResponse = {
-  user: ReturnType<typeof memberDTO>;
+  info: ReturnType<typeof memberDTO>;
   relation: Database["public"]["Tables"]["users_teams"]["Row"];
 }[];
 
-export async function getTeamMembersAction(
-  teamId: string,
-): Promise<GetTeamMembersResponse> {
+const GetTeamMembersSchema = z.object({
+  teamId: z.string().uuid(),
+});
+
+export const getTeamMembersAction = guardAction<
+  typeof GetTeamMembersSchema,
+  GetTeamMembersResponse
+>(GetTeamMembersSchema, async ({ teamId }) => {
   const { user } = await checkAuthenticated();
 
   const isAuthorized = await checkUserTeamAuthorization(user.id, teamId);
 
   if (!isAuthorized) {
-    throw new Error("User is not authorized to get team members");
+    throw UnauthorizedError("User is not authorized to get team members");
   }
 
   const { data, error } = await supabaseAdmin
@@ -172,7 +179,7 @@ export async function getTeamMembersAction(
     .eq("team_id", teamId);
 
   if (error) {
-    throw new Error(error.message);
+    throw error;
   }
 
   if (!data) {
@@ -190,56 +197,66 @@ export async function getTeamMembersAction(
   return userResponses
     .filter((user) => user !== null)
     .map((user) => ({
-      user: memberDTO(user),
+      info: memberDTO(user),
       relation: data.find((userTeam) => userTeam.user_id === user.id)!,
     }));
-}
+});
 
-export async function removeTeamMemberAction(teamId: string, userId: string) {
-  const { user } = await checkAuthenticated();
+// Remove team member
 
-  const isAuthorized = await checkUserTeamAuthorization(user.id, teamId);
+const RemoveTeamMemberSchema = z.object({
+  teamId: z.string().uuid(),
+  userId: z.string().uuid(),
+});
 
-  if (!isAuthorized) {
-    throw new Error("User is not authorized to remove team members");
-  }
+export const removeTeamMemberAction = guardAction(
+  RemoveTeamMemberSchema,
+  async ({ teamId, userId }) => {
+    const { user } = await checkAuthenticated();
 
-  const { data: teamMemberData, error: teamMemberError } = await supabaseAdmin
-    .from("users_teams")
-    .select("*")
-    .eq("team_id", teamId)
-    .eq("user_id", userId);
+    const isAuthorized = await checkUserTeamAuthorization(user.id, teamId);
 
-  if (teamMemberError || !teamMemberData || teamMemberData.length === 0) {
-    throw new Error("User is not a member of this team");
-  }
+    if (!isAuthorized) {
+      throw UnauthorizedError("User is not authorized to remove team members");
+    }
 
-  const teamMember = teamMemberData[0];
+    const { data: teamMemberData, error: teamMemberError } = await supabaseAdmin
+      .from("users_teams")
+      .select("*")
+      .eq("team_id", teamId)
+      .eq("user_id", userId);
 
-  if (teamMember.user_id !== user.id && teamMember.is_default) {
-    throw new Error("Cannot remove a default team member");
-  }
+    if (teamMemberError || !teamMemberData || teamMemberData.length === 0) {
+      throw InvalidParametersError("User is not a member of this team");
+    }
 
-  const { count, error: countError } = await supabaseAdmin
-    .from("users_teams")
-    .select("*", { count: "exact", head: true })
-    .eq("team_id", teamId);
+    const teamMember = teamMemberData[0];
 
-  if (countError) {
-    throw new Error(countError.message);
-  }
+    if (teamMember.user_id !== user.id && teamMember.is_default) {
+      throw InvalidParametersError("Cannot remove a default team member");
+    }
 
-  if (count === 1) {
-    throw new Error("Cannot remove the last team member");
-  }
+    const { count, error: countError } = await supabaseAdmin
+      .from("users_teams")
+      .select("*", { count: "exact", head: true })
+      .eq("team_id", teamId);
 
-  const { error: removeError } = await supabaseAdmin
-    .from("users_teams")
-    .delete()
-    .eq("team_id", teamId)
-    .eq("user_id", userId);
+    if (countError) {
+      throw countError;
+    }
 
-  if (removeError) {
-    throw new Error(removeError.message);
-  }
-}
+    if (count === 1) {
+      throw InvalidParametersError("Cannot remove the last team member");
+    }
+
+    const { error: removeError } = await supabaseAdmin
+      .from("users_teams")
+      .delete()
+      .eq("team_id", teamId)
+      .eq("user_id", userId);
+
+    if (removeError) {
+      throw removeError;
+    }
+  },
+);

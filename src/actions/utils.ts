@@ -3,7 +3,13 @@ import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { Database } from "@/types/supabase";
-import { UnauthenticatedError, UnauthorizedError } from "@/types/errors";
+import {
+  E2BError,
+  UnauthenticatedError,
+  UnauthorizedError,
+} from "@/types/errors";
+import { z } from "zod";
+import { ActionFunction, ActionResponse } from "@/types/actions";
 
 /*
  *  This function checks if the user is authenticated and returns the user and the supabase client.
@@ -120,4 +126,108 @@ export function maskApiKey(
   const dots = "...";
 
   return `${firstFour}${dots}${lastFour}`;
+}
+
+/**
+ * Utility function for guarding server actions with error handling and optional schema validation.
+ *
+ * This higher-order function wraps server actions to handle:
+ * - Error handling and consistent error responses
+ * - Optional Zod schema validation for input parameters
+ * - Type-safe responses using ActionResponse type
+ *
+ * @alert E2BError codes & messages are directly exposed to clients. Do not include sensitive information in these.
+ *
+ * @example
+ * // Basic usage without schema validation
+ * const guardedAction = guardAction(async (params) => {
+ *   // action implementation
+ * });
+ *
+ * @example
+ * // Usage with schema validation
+ * const schema = z.object({ id: z.string() });
+ * const guardedAction = guardAction(schema, async (params) => {
+ *   // action implementation
+ * });
+ */
+export function guardAction<TInput = void, TOutput = void>(
+  action: ActionFunction<TInput, TOutput>,
+): (params: TInput) => Promise<ActionResponse<TOutput>>;
+
+export function guardAction<TSchema extends z.ZodType, TOutput = void>(
+  schema: TSchema,
+  action: ActionFunction<z.infer<TSchema>, TOutput>,
+): (params: z.infer<TSchema>) => Promise<ActionResponse<TOutput>>;
+
+export function guardAction<TInput, TOutput>(
+  schemaOrAction: z.ZodType | ActionFunction<TInput, TOutput>,
+  maybeAction?: ActionFunction<TInput, TOutput>,
+): (params: TInput) => Promise<ActionResponse<TOutput>> {
+  // If only one argument is provided, it's the action
+  if (!maybeAction) {
+    const action = schemaOrAction as ActionFunction<TInput, TOutput>;
+    return async (params) => {
+      try {
+        const data = await action(params);
+        return {
+          type: "success",
+          data,
+        };
+      } catch (error) {
+        console.error(error);
+
+        if (error instanceof E2BError) {
+          return {
+            type: "error",
+            message: error.message,
+          };
+        }
+
+        return {
+          type: "error",
+          message: "An unexpected error occurred",
+        };
+      }
+    };
+  }
+
+  // If both arguments are provided, first is schema and second is action
+  const schema = schemaOrAction as z.ZodType;
+  const action = maybeAction;
+
+  return async (params) => {
+    const parseResult = schema.safeParse(params);
+
+    if (!parseResult.success) {
+      console.error(parseResult.error);
+      return {
+        type: "error",
+        message: "Invalid parameters",
+      };
+    }
+
+    try {
+      const data = await action(params);
+      return {
+        type: "success",
+        data,
+      };
+    } catch (error) {
+      console.error(error);
+
+      if (error instanceof E2BError) {
+        return {
+          type: "error",
+          code: error.code,
+          message: error.message,
+        };
+      }
+
+      return {
+        type: "error",
+        message: "An unexpected error occurred",
+      };
+    }
+  };
 }

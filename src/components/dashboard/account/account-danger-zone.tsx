@@ -15,30 +15,37 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useTimeoutMessage } from "@/hooks/use-timeout-message";
-import { useTransition } from "react";
 import { useState } from "react";
 import { AnimatePresence } from "motion/react";
+import { useMutation } from "@tanstack/react-query";
 
 export function DangerZone() {
   const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
   const [deleteConfirmation, setDeleteConfirmation] = useState<string>("");
   const [message, setMessage] = useTimeoutMessage();
 
-  const handleDeleteAccount = async () => {
-    startTransition(async () => {
-      try {
-        await deleteAccountAction();
-        toast({
-          title: "Account deleted",
-          description: "You have been signed out",
-        });
-        await signOutAction();
-      } catch (error: any) {
-        setMessage({ error: error.message });
+  const { mutate: deleteAccount, isPending } = useMutation({
+    mutationFn: async () => {
+      const response = await deleteAccountAction();
+
+      if (response.type === "error") {
+        throw new Error(response.message);
       }
-    });
-  };
+
+      return response;
+    },
+    onSuccess: async () => {
+      toast({
+        title: "Account deleted",
+        description: "You have been signed out",
+      });
+
+      await signOutAction();
+    },
+    onError: (error: Error) => {
+      setMessage({ error: error.message });
+    },
+  });
 
   return (
     <Card>
@@ -60,7 +67,7 @@ export function DangerZone() {
             </>
           }
           confirm="Delete Account"
-          onConfirm={handleDeleteAccount}
+          onConfirm={() => deleteAccount()}
           confirmProps={{
             disabled: deleteConfirmation !== "delete my account",
             loading: isPending,

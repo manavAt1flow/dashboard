@@ -5,6 +5,7 @@ import {
   checkAuthenticated,
   checkUserTeamAuthorization,
   maskApiKey,
+  guardAction,
 } from "./utils";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { z } from "zod";
@@ -27,14 +28,11 @@ interface GetTeamApiKeysResponse {
   apiKeys: ObscuredApiKey[];
 }
 
-export const getTeamApiKeysAction = async ({
-  teamId,
-}: z.infer<typeof GetApiKeysSchema>): Promise<GetTeamApiKeysResponse> => {
-  try {
-    GetApiKeysSchema.parse({
-      teamId,
-    });
-
+export const getTeamApiKeysAction = guardAction(
+  GetApiKeysSchema,
+  async ({
+    teamId,
+  }: z.infer<typeof GetApiKeysSchema>): Promise<GetTeamApiKeysResponse> => {
     const { user } = await checkAuthenticated();
 
     const isAuthorized = await checkUserTeamAuthorization(user.id, teamId);
@@ -74,12 +72,8 @@ export const getTeamApiKeysAction = async ({
     }
 
     return { apiKeys: resultApiKeys };
-  } catch (e) {
-    console.error("get-team-api-keys-action:", e);
-
-    throw e;
-  }
-};
+  },
+);
 
 // Create API Key
 
@@ -92,10 +86,6 @@ const CreateApiKeySchema = z.object({
     .trim(),
 });
 
-interface CreateApiKeyResponse {
-  createdApiKey: string;
-}
-
 function generateTeamApiKey(): string {
   const randomBytes = crypto.getRandomValues(new Uint8Array(20));
   const hexString = Array.from(randomBytes)
@@ -105,16 +95,9 @@ function generateTeamApiKey(): string {
   return API_KEY_PREFIX + hexString;
 }
 
-export const createApiKeyAction = async ({
-  teamId,
-  name,
-}: z.infer<typeof CreateApiKeySchema>): Promise<CreateApiKeyResponse> => {
-  try {
-    CreateApiKeySchema.parse({
-      teamId,
-      name,
-    });
-
+export const createApiKeyAction = guardAction(
+  CreateApiKeySchema,
+  async ({ teamId, name }: z.infer<typeof CreateApiKeySchema>) => {
     const { user } = await checkAuthenticated();
 
     const isAuthorized = await checkUserTeamAuthorization(user.id, teamId);
@@ -141,11 +124,8 @@ export const createApiKeyAction = async ({
     return {
       createdApiKey: apiKeyValue,
     };
-  } catch (e) {
-    console.error("create-api-key-action:", e);
-    throw e;
-  }
-};
+  },
+);
 
 // Delete API Key
 
@@ -154,20 +134,9 @@ const DeleteApiKeySchema = z.object({
   apiKeyId: z.string({ required_error: "API Key ID is required" }).uuid(),
 });
 
-interface DeleteApiKeyResponse {
-  success: boolean;
-}
-
-export const deleteApiKeyAction = async ({
-  teamId,
-  apiKeyId,
-}: z.infer<typeof DeleteApiKeySchema>): Promise<DeleteApiKeyResponse> => {
-  try {
-    DeleteApiKeySchema.parse({
-      teamId,
-      apiKeyId,
-    });
-
+export const deleteApiKeyAction = guardAction(
+  DeleteApiKeySchema,
+  async ({ teamId, apiKeyId }) => {
     const { user } = await checkAuthenticated();
 
     const isAuthorized = await checkUserTeamAuthorization(user.id, teamId);
@@ -186,8 +155,5 @@ export const deleteApiKeyAction = async ({
     return {
       success: true,
     };
-  } catch (e) {
-    console.error("delete-api-key-action:", e);
-    throw e;
-  }
-};
+  },
+);

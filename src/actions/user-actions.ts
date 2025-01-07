@@ -2,7 +2,7 @@
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { User } from "@supabase/supabase-js";
-import { checkAuthenticated } from "./utils";
+import { checkAuthenticated, guardAction } from "./utils";
 import { z } from "zod";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -19,16 +19,10 @@ interface UpdateUserResponse {
   newUser: User;
 }
 
-export async function updateUserAction(
-  data: UpdateUserSchemaType,
-): Promise<UpdateUserResponse> {
-  const parsedData = UpdateUserSchema.safeParse(data);
-
-  if (!parsedData.success) {
-    console.error(parsedData.error);
-    throw new Error("Invalid data");
-  }
-
+export const updateUserAction = guardAction<
+  typeof UpdateUserSchema,
+  UpdateUserResponse
+>(UpdateUserSchema, async (data) => {
   const { supabase } = await checkAuthenticated();
 
   const origin = (await headers()).get("origin");
@@ -55,28 +49,14 @@ export async function updateUserAction(
   return {
     newUser: updateData.user,
   };
-}
+});
 
-interface DeleteAccountResponse {
-  deleted: boolean;
-}
+export const deleteAccountAction = guardAction(async () => {
+  const { user } = await checkAuthenticated();
 
-export const deleteAccountAction = async (): Promise<DeleteAccountResponse> => {
-  try {
-    const { user } = await checkAuthenticated();
+  const { error } = await supabaseAdmin.auth.admin.deleteUser(user.id);
 
-    const { error } = await supabaseAdmin.auth.admin.deleteUser(user.id);
-
-    if (error) {
-      throw error;
-    }
-
-    return {
-      deleted: true,
-    };
-  } catch (e) {
-    console.error("delete-account-action:", e);
-
-    throw new Error("Failed to delete account");
+  if (error) {
+    throw error;
   }
-};
+});

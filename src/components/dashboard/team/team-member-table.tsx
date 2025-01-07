@@ -43,14 +43,29 @@ export default function MemberTable() {
     refetch,
   } = useQuery({
     queryKey: QUERY_KEYS.TEAM_MEMBERS(teamId as string),
-    queryFn: () => getTeamMembersAction(teamId as string),
+    queryFn: async () => {
+      const res = await getTeamMembersAction({ teamId: teamId as string });
+
+      if (res.type === "error") {
+        throw new Error(res.message);
+      }
+
+      return res.data;
+    },
     enabled: !!teamId,
   });
 
   const { mutate: mutateRemoveMember, isPending: isMutatingRemoveMember } =
     useMutation({
       mutationFn: async (userId: string) => {
-        await removeTeamMemberAction(teamId as string, userId);
+        const res = await removeTeamMemberAction({
+          teamId: teamId as string,
+          userId,
+        });
+
+        if (res.type === "error") {
+          throw new Error(res.message);
+        }
 
         return userId;
       },
@@ -133,34 +148,34 @@ export default function MemberTable() {
         {!isLoading &&
           members &&
           members.map((member) => (
-            <TableRow key={member.user.id}>
+            <TableRow key={member.info.id}>
               <TableCell>
                 <Avatar className="size-8">
-                  <AvatarImage src={member.user?.avatar_url} />
+                  <AvatarImage src={member.info?.avatar_url} />
                   <AvatarFallback>
-                    {member.user?.email?.charAt(0).toUpperCase() || "?"}
+                    {member.info?.email?.charAt(0).toUpperCase() || "?"}
                   </AvatarFallback>
                 </Avatar>
               </TableCell>
               <TableCell>
-                {member.user.id === user?.id
+                {member.info.id === user?.id
                   ? "You"
-                  : (member.user.name ?? "Anonymous")}
+                  : (member.info.name ?? "Anonymous")}
               </TableCell>
-              <TableCell className="text-fg-500">{member.user.email}</TableCell>
+              <TableCell className="text-fg-500">{member.info.email}</TableCell>
               <TableCell className="text-fg-300">
                 {member.relation.added_by === user?.id
                   ? "You"
-                  : (members.find((m) => m.user.id === member.relation.added_by)
-                      ?.user.name ?? "")}
+                  : (members.find((m) => m.info.id === member.relation.added_by)
+                      ?.info.name ?? "")}
               </TableCell>
               <TableCell className="text-end">
-                {!member.relation.is_default && user?.id !== member.user.id && (
+                {!member.relation.is_default && user?.id !== member.info.id && (
                   <AlertDialog
                     title="Remove Member"
                     description="Are you sure you want to remove this member from the team?"
                     confirm="Remove"
-                    onConfirm={() => mutateRemoveMember(member.user.id)}
+                    onConfirm={() => mutateRemoveMember(member.info.id)}
                     confirmProps={{
                       loading: isMutatingRemoveMember,
                     }}

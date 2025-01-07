@@ -43,7 +43,15 @@ const ApiKeysTable: FC<ApiKeysTableProps> = ({ teamId }) => {
     isLoading: isLoadingKeys,
   } = useQuery({
     queryKey: QUERY_KEYS.TEAM_API_KEYS(teamId),
-    queryFn: () => getTeamApiKeysAction({ teamId }),
+    queryFn: async () => {
+      const res = await getTeamApiKeysAction({ teamId });
+
+      if (res.type === "error") {
+        throw new Error(res.message);
+      }
+
+      return res.data;
+    },
   });
 
   // mutations

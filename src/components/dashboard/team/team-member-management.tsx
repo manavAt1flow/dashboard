@@ -15,42 +15,62 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { QUERY_KEYS } from "@/configs/query-keys";
 import { useTimeoutMessage } from "@/hooks/use-timeout-message";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { AnimatePresence } from "motion/react";
 import { useParams } from "next/navigation";
-import { useTransition } from "react";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+const addMemberSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+type AddMemberForm = z.infer<typeof addMemberSchema>;
 
 export function MemberManagement() {
   const { teamId } = useParams();
   const queryClient = useQueryClient();
-
-  const [isPending, startTransition] = useTransition();
-  const [addMemberEmail, setAddMemberEmail] = useState("");
   const [message, setMessage] = useTimeoutMessage();
 
-  const handleAddMember = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<AddMemberForm>({
+    resolver: zodResolver(addMemberSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
 
-    if (!z.string().email().safeParse(addMemberEmail).success) {
-      setMessage({ error: "Invalid email address" });
-      return;
-    }
+  const { mutate: addMember, isPending } = useMutation({
+    mutationFn: async (data: AddMemberForm) => {
+      const response = await addTeamMemberAction({
+        teamId: teamId as string,
+        email: data.email,
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.TEAM_MEMBERS(teamId as string),
+      });
+      setMessage({ success: "Member added to team" });
+      form.reset();
+    },
+    onError: (error: Error) => {
+      setMessage({ error: error.message });
+    },
+  });
 
-    startTransition(async () => {
-      try {
-        await addTeamMemberAction(teamId as string, addMemberEmail);
-        queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.TEAM_MEMBERS(teamId as string),
-        });
-        setMessage({ success: "Member added to team" });
-        setAddMemberEmail("");
-      } catch (error: any) {
-        setMessage({ error: error.message });
-      }
-    });
-  };
+  function onSubmit(data: AddMemberForm) {
+    addMember(data);
+  }
 
   return (
     <Card>
@@ -59,29 +79,35 @@ export function MemberManagement() {
         <CardDescription>Manage your organization members.</CardDescription>
       </CardHeader>
       <CardContent className="pt-10">
-        <form onSubmit={handleAddMember} className="mb-6 flex w-1/2 gap-2">
-          <div className="relative w-full">
-            <Label
-              className="absolute bottom-[115%] left-1 text-xs text-fg-300"
-              htmlFor="addMemberEmail"
-            >
-              E-Mail
-            </Label>
-            <Input
-              placeholder="member@acme.com"
-              name="addMemberEmail"
-              value={addMemberEmail}
-              onChange={(e) => setAddMemberEmail(e.target.value)}
-            />
-          </div>
-          <Button
-            loading={isPending}
-            type="submit"
-            disabled={addMemberEmail.length === 0}
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="mb-6 flex w-1/2 gap-2"
           >
-            Add Member
-          </Button>
-        </form>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem className="relative w-full">
+                  <FormLabel className="absolute bottom-[115%] left-1 text-xs text-fg-300">
+                    E-Mail
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="member@acme.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              loading={isPending}
+              type="submit"
+              disabled={!form.formState.isValid}
+            >
+              Add Member
+            </Button>
+          </form>
+        </Form>
 
         <AnimatePresence mode="wait" initial={false}>
           {message && <AuthFormMessage className="mb-6" message={message} />}

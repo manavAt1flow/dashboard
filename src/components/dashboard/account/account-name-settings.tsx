@@ -10,36 +10,55 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useTimeoutMessage } from "@/hooks/use-timeout-message";
 import { useUser } from "@/hooks/use-user";
 import { AnimatePresence } from "motion/react";
-import { useTransition } from "react";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+
+const formSchema = z.object({
+  name: z.string().min(1, "Name cannot be empty"),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export function NameSettings() {
   const { user, refetch: refetchUser } = useUser();
-  const [isPending, startTransition] = useTransition();
-  const [name, setName] = useState<string>(user?.user_metadata?.name || "");
   const [message, setMessage] = useTimeoutMessage();
 
-  const handleUpdateName = async () => {
-    if (!z.string().min(1).safeParse(name).success) {
-      setMessage({ error: "Name cannot be empty" });
-      return;
-    }
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: user?.user_metadata?.name || "",
+    },
+  });
 
-    startTransition(async () => {
-      try {
-        await updateUserAction({ name });
-        await refetchUser();
-        setMessage({ success: "Name updated successfully" });
-      } catch (error: any) {
-        setMessage({ error: error.message });
-      }
-    });
-  };
+  const { mutate: updateName, isPending } = useMutation({
+    mutationFn: async (values: FormValues) => {
+      const response = await updateUserAction({ name: values.name });
+      return response;
+    },
+    onSuccess: async () => {
+      await refetchUser();
+
+      setMessage({ success: "Name updated successfully" });
+    },
+    onError: (error: Error) => {
+      setMessage({ error: error.message });
+    },
+  });
+
+  if (!user) return null;
 
   return (
     <Card hideUnderline>
@@ -48,27 +67,36 @@ export function NameSettings() {
         <CardDescription>Will be visible to your team members.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleUpdateName();
-          }}
-          className="flex items-center gap-2"
-        >
-          <Input
-            placeholder="Name"
-            className="w-[17rem]"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <Button
-            loading={isPending}
-            disabled={name === user?.user_metadata?.name}
-            type="submit"
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit((values) => updateName(values))}
+            className="flex items-center gap-2"
           >
-            Save Name
-          </Button>
-        </form>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      placeholder="Name"
+                      className="w-[17rem]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              loading={isPending}
+              disabled={form.watch("name") === user?.user_metadata?.name}
+              type="submit"
+            >
+              Save Name
+            </Button>
+          </form>
+        </Form>
 
         <AnimatePresence initial={false} mode="wait">
           {message && <AuthFormMessage message={message} className="mt-4" />}
