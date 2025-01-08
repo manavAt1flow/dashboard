@@ -62,7 +62,7 @@ const TableFilterSection = ({
                   variant="outline"
                   size="sm"
                   onClick={() => table.setGlobalFilter("")}
-                  className="font-sans normal-case"
+                  className="normal-case"
                 >
                   <Search className="size-3" />{" "}
                   <span className="text-accent">{globalFilter}</span>
@@ -83,7 +83,7 @@ const TableFilterSection = ({
                   variant="outline"
                   size="sm"
                   onClick={() => table.getColumn(sort.id)?.clearSorting()}
-                  className="font-sans normal-case"
+                  className="normal-case"
                 >
                   {sort.desc ? (
                     <SortDesc className="size-3" />
