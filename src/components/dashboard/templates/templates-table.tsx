@@ -71,7 +71,7 @@ export default function TemplatesTable() {
   const { teamId } = useParams();
 
   const [sorting, setSorting, removeSorting] = useSessionStorage<SortingState>(
-    "sorting",
+    "templates:sorting",
     [],
     {
       deserializer: (value) => JSON.parse(value),
@@ -80,7 +80,7 @@ export default function TemplatesTable() {
   );
 
   const [globalFilter, setGlobalFilter, removeGlobalFilter] =
-    useSessionStorage<string>("globalFilter", "");
+    useSessionStorage<string>("templates:globalFilter", "");
 
   const apiUrl = useApiUrl();
 
@@ -245,7 +245,7 @@ export default function TemplatesTable() {
             ) : templatesLoading ? (
               <DataTableRow>
                 <TableCell colSpan={COLUMNS.length} className="h-24 text-left">
-                  <Alert className="w-full text-left" variant="contrast2">
+                  <Alert className="w-full text-left" variant="contrast1">
                     <AlertTitle className="flex items-center gap-2">
                       <Loader variant="compute" />
                       Loading templates...
@@ -279,7 +279,7 @@ export default function TemplatesTable() {
                   <Alert
                     className="w-full text-left"
                     suppressHydrationWarning
-                    variant="contrast1"
+                    variant="contrast2"
                   >
                     <AlertTitle suppressHydrationWarning>
                       No templates found.

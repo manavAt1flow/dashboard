@@ -41,6 +41,14 @@ import TableFilterSection from "@/components/globals/table-filter-section";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader } from "@/components/ui/loader";
 import { useApiUrl } from "@/hooks/use-api-url";
+import { useSessionStorage } from "usehooks-ts";
+import { useShareableState } from "@/hooks/use-sharable-state";
+import { motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import { useClipboard } from "@/hooks/use-clipboard";
+import { Share, Check } from "lucide-react";
+import { GradientBorder } from "@/components/ui/gradient-border";
+import { Button } from "@/components/ui/button";
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -60,8 +68,42 @@ export default function SandboxesTable() {
 
   const { teamId } = useParams();
 
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [sorting, setSorting, removeSorting] = useSessionStorage<SortingState>(
+    "sandboxes:sorting",
+    [],
+    {
+      deserializer: (value) => JSON.parse(value),
+      serializer: (value) => JSON.stringify(value),
+    },
+  );
+
+  const [globalFilter, setGlobalFilter, removeGlobalFilter] =
+    useSessionStorage<string>("sandboxes:globalFilter", "");
+
+  const { getShareableUrl } = useShareableState({
+    configs: [
+      {
+        key: "sort",
+        parser: (value: string): SortingState => JSON.parse(value),
+        serializer: (value: SortingState): string => JSON.stringify(value),
+      },
+      {
+        key: "search",
+        parser: (value: string): string => value,
+        serializer: (value: string): string => value,
+      },
+    ],
+    onParams: ({ sort, search }) => {
+      // Clear existing values if sharable state is being used
+      removeSorting();
+      removeGlobalFilter();
+
+      if (sort) setSorting(sort);
+      if (search) setGlobalFilter(search);
+    },
+  });
+
+  const [wasCopied, copy] = useClipboard();
 
   const apiUrl = useApiUrl();
 
@@ -114,12 +156,51 @@ export default function SandboxesTable() {
               View and manage your active sandbox environments.
             </CardDescription>
           </div>
-          <DebouncedInput
-            value={globalFilter}
-            onChange={(v) => setGlobalFilter(v as string)}
-            placeholder="Fuzzy search..."
-            className="w-[320px]"
-          />
+          <div className="flex items-center gap-3">
+            <AnimatePresence>
+              {(sorting.length > 0 || globalFilter) && (
+                <motion.div
+                  initial={{ opacity: 0, x: -5 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -5 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <GradientBorder>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-fg-300 focus:ring-0"
+                      onClick={() => {
+                        const url = getShareableUrl({
+                          sort: sorting,
+                          search: globalFilter,
+                        });
+                        copy(url);
+                      }}
+                    >
+                      {wasCopied ? (
+                        <>
+                          <Check className="size-3.5 text-fg" />
+                          Link Copied
+                        </>
+                      ) : (
+                        <>
+                          <Share className="size-3.5 text-fg" />
+                          Share
+                        </>
+                      )}
+                    </Button>
+                  </GradientBorder>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <DebouncedInput
+              value={globalFilter}
+              onChange={(v) => setGlobalFilter(v as string)}
+              placeholder="Fuzzy search..."
+              className="w-[320px]"
+            />
+          </div>
         </CardHeader>
         <CardContent>
           <TableFilterSection
@@ -169,7 +250,7 @@ export default function SandboxesTable() {
                     colSpan={COLUMNS.length}
                     className="h-24 text-left"
                   >
-                    <Alert className="w-full text-left" variant="contrast2">
+                    <Alert className="w-full text-left" variant="contrast1">
                       <AlertTitle className="flex items-center gap-2">
                         <Loader variant="compute" />
                         Loading sandboxes...
@@ -205,7 +286,7 @@ export default function SandboxesTable() {
                     <Alert
                       className="w-full text-left"
                       suppressHydrationWarning
-                      variant="error"
+                      variant="contrast2"
                     >
                       <AlertTitle suppressHydrationWarning>
                         No sandboxes found.
