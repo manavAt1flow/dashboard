@@ -40,9 +40,17 @@ import TableFilterSection from "@/components/globals/table-filter-section";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader } from "@/components/ui/loader";
 import { useApiUrl } from "@/hooks/use-api-url";
-import { useState } from "react";
 import { useShareableState } from "@/hooks/use-sharable-state";
+import { buttonVariants } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
+import { useSessionStorage } from "usehooks-ts";
+import { motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import { useClipboard } from "@/hooks/use-clipboard";
+import { Copy, Share } from "lucide-react";
+import { Check } from "lucide-react";
+import { GradientBorder } from "@/components/ui/gradient-border";
+import { cn } from "@/lib/utils";
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -62,8 +70,17 @@ export default function TemplatesTable() {
 
   const { teamId } = useParams();
 
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [sorting, setSorting, removeSorting] = useSessionStorage<SortingState>(
+    "sorting",
+    [],
+    {
+      deserializer: (value) => JSON.parse(value),
+      serializer: (value) => JSON.stringify(value),
+    },
+  );
+
+  const [globalFilter, setGlobalFilter, removeGlobalFilter] =
+    useSessionStorage<string>("globalFilter", "");
 
   const apiUrl = useApiUrl();
 
@@ -120,10 +137,16 @@ export default function TemplatesTable() {
       },
     ],
     onParams: ({ sort, search }) => {
+      // Clear existing values if sharable state is being used
+      removeSorting();
+      removeGlobalFilter();
+
       if (sort) setSorting(sort);
       if (search) setGlobalFilter(search);
     },
   });
+
+  const [wasCopied, copy] = useClipboard();
 
   return (
     <Card className="mb-4">
@@ -134,12 +157,51 @@ export default function TemplatesTable() {
             View and manage your available templates.
           </CardDescription>
         </div>
-        <DebouncedInput
-          value={globalFilter}
-          onChange={(v) => setGlobalFilter(v as string)}
-          placeholder="Fuzzy search..."
-          className="w-[320px]"
-        />
+        <div className="flex items-center gap-3">
+          <AnimatePresence>
+            {(sorting.length > 0 || globalFilter) && (
+              <motion.div
+                initial={{ opacity: 0, x: -5 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -5 }}
+                transition={{ duration: 0.2 }}
+              >
+                <GradientBorder>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-fg-300 focus:ring-0"
+                    onClick={() => {
+                      const url = getShareableUrl({
+                        sort: sorting,
+                        search: globalFilter,
+                      });
+                      copy(url);
+                    }}
+                  >
+                    {wasCopied ? (
+                      <>
+                        <Check className="size-3.5 text-fg" />
+                        Link Copied
+                      </>
+                    ) : (
+                      <>
+                        <Share className="size-3.5 text-fg" />
+                        Share
+                      </>
+                    )}
+                  </Button>
+                </GradientBorder>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <DebouncedInput
+            value={globalFilter}
+            onChange={(v) => setGlobalFilter(v as string)}
+            placeholder="Fuzzy search..."
+            className="w-[320px]"
+          />
+        </div>
       </CardHeader>
       <CardContent>
         <TableFilterSection
