@@ -106,7 +106,11 @@ export function useShareableState<
       // Clean up URL after reading parameters
       const newSearchParams = new URLSearchParams(searchParams.toString());
       configs.forEach((config) => newSearchParams.delete(config.key));
-      router.replace(
+
+      // Update the URL without reloading the page
+      window.history.replaceState(
+        null,
+        "",
         `${window.location.pathname}${newSearchParams.toString() ? `?${newSearchParams.toString()}` : ""}`,
       );
     }
