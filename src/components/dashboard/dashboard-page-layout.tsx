@@ -16,7 +16,7 @@ export default function DashboardPageLayout({
 }) {
   return (
     <>
-      <motion.div className="flex flex-col gap-1 bg-gradient-to-r from-bg-200 from-80% to-transparent to-20% bg-[length:22px_1px] bg-left-bottom bg-repeat-x pb-4">
+      <motion.div className="flex flex-col gap-1 bg-gradient-to-r from-bg-200 from-80% to-transparent to-20% bg-[length:22px_1px] bg-left-bottom bg-repeat-x p-4 pl-0">
         <AsciiTitleDecrypt title={title} interval={15} obscureCharacter="X" />
         {description && (
           <motion.p

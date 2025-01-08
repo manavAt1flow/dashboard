@@ -49,9 +49,13 @@ export default function BillingPage() {
           </CardContent>
         </Card>
 
-        <Card className="col-span-4">
+        <Card className="col-span-4 h-min">
           <CardHeader>
             <CardTitle>Credits</CardTitle>
+            <CardDescription>
+              Your current credits balance. Your usage costs are deducted from
+              your credits.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <BillingCreditsContent />

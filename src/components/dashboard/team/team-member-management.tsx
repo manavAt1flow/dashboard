@@ -89,23 +89,25 @@ export function MemberManagement() {
               name="email"
               render={({ field }) => (
                 <FormItem className="relative w-full">
-                  <FormLabel className="absolute bottom-[115%] left-1 text-xs text-fg-300">
+                  <FormLabel className="absolute bottom-[115%] left-1">
                     E-Mail
                   </FormLabel>
-                  <FormControl>
-                    <Input placeholder="member@acme.com" {...field} />
-                  </FormControl>
+                  <div className="flex items-center gap-2">
+                    <FormControl>
+                      <Input placeholder="member@acme.com" {...field} />
+                    </FormControl>
+                    <Button
+                      loading={isPending}
+                      type="submit"
+                      disabled={!form.formState.isValid}
+                    >
+                      Add Member
+                    </Button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button
-              loading={isPending}
-              type="submit"
-              disabled={!form.formState.isValid}
-            >
-              Add Member
-            </Button>
           </form>
         </Form>
 

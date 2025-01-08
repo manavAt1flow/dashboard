@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 // Add this before the Button component
@@ -31,9 +32,11 @@ const LOADER_VARIANTS = {
 export const Loader = ({
   variant = "line",
   interval = 150,
+  className,
 }: {
   variant?: keyof typeof LOADER_VARIANTS;
   interval?: number;
+  className?: string;
 }) => {
   const [index, setIndex] = useState(0);
   const chars = LOADER_VARIANTS[variant];
@@ -45,5 +48,5 @@ export const Loader = ({
     return () => clearInterval(timer);
   }, [chars, interval]);
 
-  return <span className="font-mono">{chars[index]}</span>;
+  return <span className={cn("font-mono", className)}>{chars[index]}</span>;
 };

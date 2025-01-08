@@ -1,6 +1,7 @@
 "use client";
 
 import { getUsageAction } from "@/actions/usage-actions";
+import { Loader } from "@/components/ui/loader";
 import { QUERY_KEYS } from "@/configs/query-keys";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
@@ -21,7 +22,12 @@ export default function BillingCreditsContent() {
     },
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader className="text-2xl" variant="square" />;
 
-  return <div>{usageData?.credits}</div>;
+  return (
+    <span className="ml-2 text-2xl font-bold">
+      {usageData?.credits}
+      <span className="text-sm font-normal text-accent"> $</span>
+    </span>
+  );
 }

@@ -47,10 +47,10 @@ export default function BillingTierCard({
 
   return (
     <GradientBorder
+      gradientVia="via-transparent"
       {...(isHighlighted
         ? {
             gradientFrom: "from-accent",
-            gradientVia: "via-accent/50",
             gradientTo: "to-transparent",
           }
         : {})}
