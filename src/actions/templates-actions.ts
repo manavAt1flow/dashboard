@@ -2,7 +2,12 @@
 
 import { Template } from "@/types/api";
 import { z } from "zod";
-import { checkAuthenticated, getTeamApiKey, guardAction } from "./utils";
+import {
+  checkAuthenticated,
+  getTeamApiKey,
+  getUserAccessToken,
+  guardAction,
+} from "./utils";
 import { MOCK_TEMPLATES_DATA } from "@/configs/mock-data";
 
 const GetTeamTemplatesParamsSchema = z.object({
@@ -20,13 +25,13 @@ export const getTeamTemplatesAction = guardAction(
     }
 
     const { user } = await checkAuthenticated();
-    const apiKey = await getTeamApiKey(user.id, teamId);
+    const accessToken = await getUserAccessToken(user.id);
 
     const res = await fetch(`${apiUrl}/templates?teamID=${teamId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "X-API-KEY": apiKey,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 

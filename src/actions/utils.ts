@@ -86,6 +86,25 @@ export async function getTeamApiKey(userId: string, teamId: string) {
   return teamApiKeyData[0].api_key;
 }
 
+/*
+ *  This function fetches a user access token for a given user.
+ *  If the user does not have an active access token, it throws an error.
+ */
+export async function getUserAccessToken(userId: string) {
+  const { data: userAccessTokenData, error: userAccessTokenError } =
+    await supabaseAdmin.from("access_tokens").select("*").eq("user_id", userId);
+
+  if (userAccessTokenError) {
+    throw userAccessTokenError;
+  }
+
+  if (!userAccessTokenData || userAccessTokenData.length === 0) {
+    throw new Error(`No user access token found for user (user: ${userId})`);
+  }
+
+  return userAccessTokenData[0].access_token;
+}
+
 // TODO: we should probably add some team permission system here
 
 /*
