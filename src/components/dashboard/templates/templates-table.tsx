@@ -65,25 +65,6 @@ export default function TemplatesTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState<string>("");
 
-  const { getShareableUrl } = useShareableState({
-    configs: [
-      {
-        key: "sort",
-        parser: (value: string): SortingState => JSON.parse(value),
-        serializer: (value: SortingState): string => JSON.stringify(value),
-      },
-      {
-        key: "search",
-        parser: (value: string): string => value,
-        serializer: (value: string): string => value,
-      },
-    ] as const,
-    onParams: ({ sort, search }) => {
-      if (sort) setSorting(sort);
-      if (search) setGlobalFilter(search);
-    },
-  });
-
   const apiUrl = useApiUrl();
 
   const {
@@ -123,6 +104,25 @@ export default function TemplatesTable() {
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     enableSorting: true,
+  });
+
+  const { getShareableUrl } = useShareableState({
+    configs: [
+      {
+        key: "sort",
+        parser: (value: string): SortingState => JSON.parse(value),
+        serializer: (value: SortingState): string => JSON.stringify(value),
+      },
+      {
+        key: "search",
+        parser: (value: string): string => value,
+        serializer: (value: string): string => value,
+      },
+    ],
+    onParams: ({ sort, search }) => {
+      if (sort) setSorting(sort);
+      if (search) setGlobalFilter(search);
+    },
   });
 
   return (

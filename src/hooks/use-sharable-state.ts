@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 /**
  * Configuration object for a shareable state parameter
@@ -32,7 +32,7 @@ type ShareParams<T extends readonly StateConfig<any>[]> = Partial<{
 
 type ShareableState<TConfigs extends readonly StateConfig<any>[]> = {
   /** Array of state configurations defining how to serialize/deserialize each state */
-  configs: TConfigs;
+  configs: TConfigs & { readonly length: number };
   /** Callback function that receives the parsed state from URL parameters */
   onParams: (params: Partial<ConfigToRecord<TConfigs>>) => void;
 };
@@ -74,10 +74,9 @@ type ShareableState<TConfigs extends readonly StateConfig<any>[]> = {
  * @returns An object containing the getShareableUrl function for creating shareable URLs
  */
 export function useShareableState<
-  TConfigs extends readonly StateConfig<any>[],
+  const TConfigs extends readonly StateConfig<any>[],
 >({ configs, onParams }: ShareableState<TConfigs>) {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   // Read and apply state from URL on mount
   useEffect(() => {
