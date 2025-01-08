@@ -14,7 +14,7 @@
     "db:studio": "drizzle-kit studio",
     "<-- storybook --->": "",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -o public/storybook",
+    "storybook:build": "storybook build -o public/storybook",
     "<-- helpers --->": "",
     "shad": "pnpm dlx shadcn@latest",
     "prebuild": "tsx scripts/check-env.ts",
