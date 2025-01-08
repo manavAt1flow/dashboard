@@ -14,10 +14,9 @@
     "db:studio": "drizzle-kit studio",
     "<-- storybook --->": "",
     "storybook": "storybook dev -p 6006",
-    "storybook:build": "storybook build -o public/storybook",
     "<-- helpers --->": "",
     "shad": "pnpm dlx shadcn@latest",
-    "prebuild": "tsx scripts/check-env.ts",
+    "prebuild": "tsx scripts/check-env.ts && tsx scripts/build-storybook.ts",
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
