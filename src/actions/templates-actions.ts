@@ -25,7 +25,8 @@ export const getTeamTemplatesAction = guardAction(
     const res = await fetch(`${apiUrl}/templates?teamID=${teamId}`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        "X-API-KEY": apiKey,
       },
     });
 

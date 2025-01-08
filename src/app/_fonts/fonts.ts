@@ -27,11 +27,5 @@ export const aeonik = localFont({
     },
   ],
   variable: "--font-aeonik",
-  display: "swap",
-  declarations: [
-    {
-      prop: "font-variation-settings",
-      value: '"opsz" 32',
-    },
-  ],
+  fallback: ["sans-serif"],
 });

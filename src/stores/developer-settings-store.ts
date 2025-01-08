@@ -21,13 +21,18 @@ const computedInfrastructureUrl = createComputed<
 }));
 
 export const useDeveloperSettings = create<DeveloperSettingsState>()(
-  persist(
-    computedInfrastructureUrl((set) => ({
-      apiDomain: process.env.NEXT_PUBLIC_DEFAULT_API_DOMAIN,
-      setApiDomain: (domain) => set({ apiDomain: domain }),
-    })),
-    {
-      name: STORAGE_KEYS.DEVELOPER_SETTINGS,
-    },
+  computedInfrastructureUrl(
+    persist(
+      (set) => ({
+        apiDomain: process.env.NEXT_PUBLIC_DEFAULT_API_DOMAIN,
+        setApiDomain: (domain) => set({ apiDomain: domain }),
+      }),
+      {
+        name: STORAGE_KEYS.DEVELOPER_SETTINGS,
+        partialize: (state) => ({
+          apiDomain: state.apiDomain,
+        }),
+      },
+    ),
   ),
 );

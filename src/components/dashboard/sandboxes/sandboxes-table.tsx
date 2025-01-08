@@ -65,8 +65,12 @@ export default function SandboxesTable() {
 
   const apiUrl = useApiUrl();
 
-  const { data: sandboxes, isLoading: sandboxesLoading } = useQuery({
-    queryKey: QUERY_KEYS.TEAM_SANDBOXES(teamId as string),
+  const {
+    data: sandboxes,
+    isLoading: sandboxesLoading,
+    error: sandboxesError,
+  } = useQuery({
+    queryKey: QUERY_KEYS.TEAM_SANDBOXES(teamId as string, apiUrl),
     queryFn: async () => {
       const res = await getTeamSandboxesAction({
         apiUrl,
@@ -79,6 +83,7 @@ export default function SandboxesTable() {
 
       return res.data;
     },
+    enabled: Boolean(teamId && apiUrl),
   });
 
   const table = useReactTable({
@@ -144,7 +149,21 @@ export default function SandboxesTable() {
               ))}
             </TableHeader>
             <TableBody>
-              {sandboxesLoading ? (
+              {sandboxesError ? (
+                <DataTableRow>
+                  <TableCell
+                    colSpan={COLUMNS.length}
+                    className="h-24 text-left"
+                  >
+                    <Alert className="w-full text-left" variant="error">
+                      <AlertTitle>Error loading sandboxes.</AlertTitle>
+                      <AlertDescription>
+                        {sandboxesError.message}
+                      </AlertDescription>
+                    </Alert>
+                  </TableCell>
+                </DataTableRow>
+              ) : sandboxesLoading ? (
                 <DataTableRow>
                   <TableCell
                     colSpan={COLUMNS.length}
@@ -176,14 +195,22 @@ export default function SandboxesTable() {
                   </DataTableRow>
                 ))
               ) : (
-                <DataTableRow>
+                /* we suppress hydration warning here because the table is not hydrated until the query is enabled */
+                <DataTableRow suppressHydrationWarning>
                   <TableCell
+                    suppressHydrationWarning
                     colSpan={COLUMNS.length}
                     className="h-24 text-left"
                   >
-                    <Alert className="w-full text-left" variant="error">
-                      <AlertTitle>No sandboxes found.</AlertTitle>
-                      <AlertDescription>
+                    <Alert
+                      className="w-full text-left"
+                      suppressHydrationWarning
+                      variant="error"
+                    >
+                      <AlertTitle suppressHydrationWarning>
+                        No sandboxes found.
+                      </AlertTitle>
+                      <AlertDescription suppressHydrationWarning>
                         Start more Sandboxes or try different filters.
                       </AlertDescription>
                     </Alert>

@@ -18,7 +18,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
-import { useState } from "react";
 import { rankItem } from "@tanstack/match-sorter-utils";
 import { Template } from "@/types/api";
 import { QUERY_KEYS } from "@/configs/query-keys";
@@ -41,6 +40,9 @@ import TableFilterSection from "@/components/globals/table-filter-section";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader } from "@/components/ui/loader";
 import { useApiUrl } from "@/hooks/use-api-url";
+import { useState } from "react";
+import { useShareableState } from "@/hooks/use-sharable-state";
+import { Button } from "@/components/ui/button";
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -63,10 +65,33 @@ export default function TemplatesTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState<string>("");
 
+  const { getShareableUrl } = useShareableState({
+    configs: [
+      {
+        key: "sort",
+        parser: (value: string): SortingState => JSON.parse(value),
+        serializer: (value: SortingState): string => JSON.stringify(value),
+      },
+      {
+        key: "search",
+        parser: (value: string): string => value,
+        serializer: (value: string): string => value,
+      },
+    ] as const,
+    onParams: ({ sort, search }) => {
+      if (sort) setSorting(sort);
+      if (search) setGlobalFilter(search);
+    },
+  });
+
   const apiUrl = useApiUrl();
 
-  const { data: templates, isLoading: templatesLoading } = useQuery({
-    queryKey: QUERY_KEYS.TEAM_TEMPLATES(teamId as string),
+  const {
+    data: templates,
+    isLoading: templatesLoading,
+    error: templatesError,
+  } = useQuery({
+    queryKey: QUERY_KEYS.TEAM_TEMPLATES(teamId as string, apiUrl),
     queryFn: async () => {
       const res = await getTeamTemplatesAction({
         apiUrl,
@@ -79,6 +104,7 @@ export default function TemplatesTable() {
 
       return res.data;
     },
+    enabled: Boolean(teamId && apiUrl),
   });
 
   const table = useReactTable({
@@ -143,7 +169,18 @@ export default function TemplatesTable() {
             ))}
           </TableHeader>
           <TableBody>
-            {templatesLoading ? (
+            {templatesError ? (
+              <DataTableRow>
+                <TableCell colSpan={COLUMNS.length} className="h-24 text-left">
+                  <Alert className="w-full text-left" variant="error">
+                    <AlertTitle>Error loading templates.</AlertTitle>
+                    <AlertDescription>
+                      {templatesError.message}
+                    </AlertDescription>
+                  </Alert>
+                </TableCell>
+              </DataTableRow>
+            ) : templatesLoading ? (
               <DataTableRow>
                 <TableCell colSpan={COLUMNS.length} className="h-24 text-left">
                   <Alert className="w-full text-left" variant="contrast2">
@@ -170,11 +207,22 @@ export default function TemplatesTable() {
                 </DataTableRow>
               ))
             ) : (
-              <DataTableRow>
-                <TableCell colSpan={COLUMNS.length} className="h-24 text-left">
-                  <Alert className="w-full text-left" variant="error">
-                    <AlertTitle>No templates found.</AlertTitle>
-                    <AlertDescription>
+              /* we suppress hydration warning here because the table is not hydrated until the query is enabled */
+              <DataTableRow suppressHydrationWarning>
+                <TableCell
+                  suppressHydrationWarning
+                  colSpan={COLUMNS.length}
+                  className="h-24 text-left"
+                >
+                  <Alert
+                    className="w-full text-left"
+                    suppressHydrationWarning
+                    variant="contrast1"
+                  >
+                    <AlertTitle suppressHydrationWarning>
+                      No templates found.
+                    </AlertTitle>
+                    <AlertDescription suppressHydrationWarning>
                       Start more Templates or try different filters.
                     </AlertDescription>
                   </Alert>

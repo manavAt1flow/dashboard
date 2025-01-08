@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { BASE_URL } from "@/configs/urls";
 import { Metadata } from "next/types";
 import { METADATA } from "@/configs/metadata";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -44,7 +45,7 @@ export default function RootLayout({
           }}
         >
           <ToastProvider>
-            {children}
+            <NuqsAdapter>{children}</NuqsAdapter>
             <Toaster />
           </ToastProvider>
         </RootProvider>

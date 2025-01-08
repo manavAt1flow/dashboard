@@ -7,7 +7,6 @@ const config = {
   reactStrictMode: true,
   experimental: {
     reactCompiler: true,
-    turbo: true,
   },
   async rewrites() {
     return [
