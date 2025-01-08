@@ -7,7 +7,7 @@ import {
 } from "motion/react";
 import { SortingState } from "@tanstack/react-table";
 import { Button } from "../ui/button";
-import { X } from "lucide-react";
+import { Search, SortAsc, SortDesc, X } from "lucide-react";
 import { exponentialSmoothing } from "@/lib/utils";
 
 const filterItemVariants = {
@@ -45,8 +45,8 @@ const TableFilterSection = ({
         exit="exit"
         transition={{ duration: 0.2, ease: exponentialSmoothing(5) }}
       >
-        <h4 className="text-xs text-fg-300">
-          ++ <span className="text-fg-500">Filters</span> ++
+        <h4 className="text-xs text-accent">
+          -- <span className="text-fg">Filters</span> --
         </h4>
         <div className="flex flex-wrap gap-2">
           <AnimatePresence mode="popLayout" initial={false}>
@@ -59,12 +59,13 @@ const TableFilterSection = ({
                 transition={{ duration: 0.2 }}
               >
                 <Button
-                  variant="muted"
+                  variant="outline"
                   size="sm"
                   onClick={() => table.setGlobalFilter("")}
-                  className="flex items-center gap-1 normal-case"
+                  className="font-sans normal-case"
                 >
-                  Search: <span className="text-accent">{globalFilter}</span>
+                  <Search className="size-3" />{" "}
+                  <span className="text-accent">{globalFilter}</span>
                   <X className="ml-1 h-3 w-3" />
                 </Button>
               </motion.div>
@@ -79,19 +80,22 @@ const TableFilterSection = ({
                 transition={{ duration: 0.2 }}
               >
                 <Button
-                  variant="muted"
+                  variant="outline"
                   size="sm"
-                  onClick={() => table.getColumn(sort.id)?.toggleSorting()}
-                  className="flex items-center gap-1 normal-case"
+                  onClick={() => table.getColumn(sort.id)?.clearSorting()}
+                  className="font-sans normal-case"
                 >
-                  Sorting:{" "}
+                  {sort.desc ? (
+                    <SortDesc className="size-3" />
+                  ) : (
+                    <SortAsc className="size-3" />
+                  )}{" "}
                   <span className="text-accent">
                     {
                       table.getFlatHeaders().find((h) => h.id === sort.id)
                         ?.column.columnDef.header as string
                     }
                   </span>{" "}
-                  {sort.desc ? "↓" : "↑"}
                   <X className="ml-1 h-3 w-3" />
                 </Button>
               </motion.div>
