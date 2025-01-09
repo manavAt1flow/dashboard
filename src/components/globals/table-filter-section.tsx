@@ -35,7 +35,7 @@ const TableFilterSection = ({
   sorting,
   table,
 }: TableFilterSectionProps) => (
-  <AnimatePresence>
+  <AnimatePresence initial={false}>
     {(globalFilter || sorting.length > 0) && (
       <motion.div
         className="flex flex-col gap-3"

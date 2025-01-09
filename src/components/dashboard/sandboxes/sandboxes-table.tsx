@@ -157,7 +157,7 @@ export default function SandboxesTable() {
             </CardDescription>
           </div>
           <div className="flex items-center gap-3">
-            <AnimatePresence>
+            <AnimatePresence initial={false}>
               {(sorting.length > 0 || globalFilter) && (
                 <motion.div
                   initial={{ opacity: 0, x: -5 }}
