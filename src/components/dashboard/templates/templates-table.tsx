@@ -21,7 +21,7 @@ import { formatDistanceToNow } from "date-fns";
 import { rankItem } from "@tanstack/match-sorter-utils";
 import { Template } from "@/types/api";
 import { QUERY_KEYS } from "@/configs/query-keys";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import {
   DataTableHead,
@@ -41,16 +41,26 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader } from "@/components/ui/loader";
 import { useApiUrl } from "@/hooks/use-api-url";
 import { useShareableState } from "@/hooks/use-sharable-state";
-import { buttonVariants } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
 import { useSessionStorage } from "usehooks-ts";
 import { motion } from "motion/react";
 import { AnimatePresence } from "motion/react";
 import { useClipboard } from "@/hooks/use-clipboard";
-import { Copy, Share } from "lucide-react";
+import { Share } from "lucide-react";
 import { Check } from "lucide-react";
 import { GradientBorder } from "@/components/ui/gradient-border";
-import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreVertical, Lock, LockOpen, Trash } from "lucide-react";
+import {
+  deleteTemplateAction,
+  updateTemplateAction,
+} from "@/actions/templates-actions";
+import { useToast } from "@/hooks/use-toast";
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -165,6 +175,7 @@ export default function TemplatesTable() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -5 }}
                 transition={{ duration: 0.2 }}
+                suppressHydrationWarning
               >
                 <GradientBorder>
                   <Button
@@ -269,7 +280,7 @@ export default function TemplatesTable() {
                 </DataTableRow>
               ))
             ) : (
-              /* we suppress hydration warning here because the table is not hydrated until the query is enabled */
+              /* we suppress hydration warning here because the table is not hydrated correctly until the query is enabled on mount */
               <DataTableRow suppressHydrationWarning>
                 <TableCell
                   suppressHydrationWarning
@@ -354,5 +365,115 @@ const COLUMNS: ColumnDef<Template>[] = [
         })}
       </div>
     ),
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    enableSorting: false,
+    enableGlobalFilter: false,
+    cell: ({ row }) => {
+      const template = row.original;
+      const queryClient = useQueryClient();
+      const apiUrl = useApiUrl();
+      const { teamId } = useParams();
+      const { toast } = useToast();
+
+      const { mutate: togglePublish } = useMutation({
+        mutationFn: async () => {
+          const response = await updateTemplateAction({
+            apiUrl,
+            templateId: template.templateID,
+            props: {
+              isPublic: !template.public,
+            },
+          });
+
+          if (response.type === "error") {
+            throw new Error(response.message);
+          }
+
+          return response;
+        },
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEYS.TEAM_TEMPLATES(teamId as string, apiUrl),
+          });
+          toast({
+            title: "Success",
+            description: `Template ${template.public ? "unpublished" : "published"} successfully`,
+          });
+        },
+        onError: (error) => {
+          toast({
+            title: "Failed to update template visibility",
+            description: error.message,
+            variant: "error",
+          });
+        },
+      });
+
+      const { mutate: deleteTemplate } = useMutation({
+        mutationFn: async () => {
+          const response = await deleteTemplateAction({
+            apiUrl,
+            templateId: template.templateID,
+          });
+
+          if (response.type === "error") {
+            throw new Error(response.message);
+          }
+
+          return response;
+        },
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEYS.TEAM_TEMPLATES(teamId as string, apiUrl),
+          });
+          toast({
+            title: "Success",
+            description: "Template deleted successfully",
+          });
+        },
+        onError: (error) => {
+          toast({
+            title: "Failed to delete template",
+            description: error.message,
+            variant: "error",
+          });
+        },
+      });
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <MoreVertical className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => togglePublish()}>
+              {template.public ? (
+                <>
+                  <Lock className="mr-2 size-4" />
+                  Unpublish
+                </>
+              ) : (
+                <>
+                  <LockOpen className="mr-2 size-4" />
+                  Publish
+                </>
+              )}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => deleteTemplate()}
+              className="text-destructive focus:text-destructive"
+            >
+              <Trash className="mr-2 size-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
   },
 ];

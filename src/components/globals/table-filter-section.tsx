@@ -64,8 +64,7 @@ const TableFilterSection = ({
                   onClick={() => table.setGlobalFilter("")}
                   className="normal-case"
                 >
-                  <Search className="size-3" />{" "}
-                  <span className="text-accent">{globalFilter}</span>
+                  <Search className="size-3 text-accent" /> {globalFilter}
                   <X className="ml-1 h-3 w-3" />
                 </Button>
               </motion.div>
@@ -85,17 +84,17 @@ const TableFilterSection = ({
                   onClick={() => table.getColumn(sort.id)?.clearSorting()}
                   className="normal-case"
                 >
-                  {sort.desc ? (
-                    <SortDesc className="size-3" />
-                  ) : (
-                    <SortAsc className="size-3" />
-                  )}{" "}
                   <span className="text-accent">
-                    {
-                      table.getFlatHeaders().find((h) => h.id === sort.id)
-                        ?.column.columnDef.header as string
-                    }
+                    {sort.desc ? (
+                      <SortDesc className="size-3" />
+                    ) : (
+                      <SortAsc className="size-3" />
+                    )}
                   </span>{" "}
+                  {
+                    table.getFlatHeaders().find((h) => h.id === sort.id)?.column
+                      .columnDef.header as string
+                  }{" "}
                   <X className="ml-1 h-3 w-3" />
                 </Button>
               </motion.div>

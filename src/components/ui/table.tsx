@@ -88,7 +88,7 @@ TableRow.displayName = "TableRow";
 
 const TableHead = React.forwardRef<
   HTMLTableCellElement,
-  React.ThHTMLAttributes<HTMLTableCellElement>
+  React.ThHTMLAttributes<HTMLTableCellElement> & { children: React.ReactNode }
 >(({ className, children, ...props }, ref) => (
   <th
     ref={ref}
@@ -102,9 +102,13 @@ const TableHead = React.forwardRef<
     {...props}
   >
     <span className="inline-flex items-center gap-1">
-      <span className="opacity-50">[</span>
-      {children}
-      <span className="opacity-50">]</span>
+      {children && (
+        <>
+          <span className="opacity-50">[</span>
+          {children}
+          <span className="opacity-50">]</span>
+        </>
+      )}
     </span>
   </th>
 ));

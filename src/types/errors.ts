@@ -1,6 +1,11 @@
 // Types
 
-export type E2bErrorCode = "UNAUTHENTICATED" | "UNAUTHORIZED" | string;
+export type E2bErrorCode =
+  | "UNAUTHENTICATED"
+  | "UNAUTHORIZED"
+  | "INVALID_PARAMETERS"
+  | "INTERNAL_SERVER_ERROR"
+  | string;
 
 export class E2BError extends Error {
   public code: E2bErrorCode;

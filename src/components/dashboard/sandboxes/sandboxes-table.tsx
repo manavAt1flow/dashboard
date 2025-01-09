@@ -276,7 +276,7 @@ export default function SandboxesTable() {
                   </DataTableRow>
                 ))
               ) : (
-                /* we suppress hydration warning here because the table is not hydrated until the query is enabled */
+                /* we suppress hydration warning here because the table is not hydrated correctly until the query is enabled on mount */
                 <DataTableRow suppressHydrationWarning>
                   <TableCell
                     suppressHydrationWarning
