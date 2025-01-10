@@ -2,7 +2,12 @@
 
 import Sidebar from "@/components/dashboard/sidebar";
 import ClientProviders from "@/components/globals/client-providers";
-import NetworkStateBanner from "@/components/providers/network-state-banner";
+import dynamic from "next/dynamic";
+
+const NetworkStateBanner = dynamic(
+  () => import("@/components/providers/network-state-banner"),
+  { ssr: false },
+);
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

@@ -1,21 +1,16 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
 import { GridPattern } from "@/components/ui/grid-pattern";
 import { GradientBorder } from "@/components/ui/gradient-border";
 import { cn } from "@/lib/utils";
-import NetworkStateBanner from "@/components/providers/network-state-banner";
+import dynamic from "next/dynamic";
 
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const supabase = await createClient();
+const NetworkStateBanner = dynamic(
+  () => import("@/components/providers/network-state-banner"),
+  { ssr: false },
+);
 
-  if ((await supabase.auth.getUser()).data.user) {
-    return redirect("/dashboard");
-  }
-
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative flex h-[100dvh] flex-col">
       <GridPattern
