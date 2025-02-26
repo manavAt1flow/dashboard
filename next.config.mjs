@@ -42,6 +42,19 @@ const config = {
     },
   ],
   skipTrailingSlashRedirect: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  logging: {
+    level: 'info',
+    detailed: true,
+  },
+  images: {
+    domains: [
+      // Add your image domains here if needed
+    ],
+  },
+  productionBrowserSourceMaps: true,
 }
 
 export default withMDX(config)
